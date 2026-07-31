@@ -5,16 +5,18 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   User, MapPin, Sprout, Save, FileText, Settings, ShieldCheck, 
   Mail, Phone, Award, ShoppingBag, Edit3, Trash2, Star, CheckCircle2, MessageSquare, ExternalLink,
-  Camera, Upload, Image as ImageIcon
+  Camera, Upload, Image as ImageIcon, UserCheck, X
 } from "lucide-react";
 import Link from "next/link";
 import { UserFeedback } from "../feedback/page";
 
-const DP_PRESETS = [
-  { label: "Kisan Leader", url: "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=300&h=300" },
-  { label: "Organic Cultivator", url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&h=300" },
-  { label: "Smart Agri Farmer", url: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&h=300" },
-  { label: "Mandi Trader", url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&h=300" }
+// CARTOON & VECTOR GENERATED DP AVATAR PRESETS
+const CARTOON_DP_PRESETS = [
+  { label: "Desi Farmer 👨‍🌾", url: "https://api.dicebear.com/7.x/adventurer/svg?seed=DesiKisan&backgroundColor=b6e3f4" },
+  { label: "Kisan Girl 👩‍🌾", url: "https://api.dicebear.com/7.x/avataaars/svg?seed=KisanKanya&backgroundColor=c0aede" },
+  { label: "Agri Leader 🌾", url: "https://api.dicebear.com/7.x/big-smile/svg?seed=AgriMaster&backgroundColor=ffd5dc" },
+  { label: "Mandi Trader 👳‍♂️", url: "https://api.dicebear.com/7.x/bottts/svg?seed=MandiTrader&backgroundColor=d1d4f9" },
+  { label: "Smart Kisan 🤖", url: "https://api.dicebear.com/7.x/micah/svg?seed=SmartKisan&backgroundColor=ffdfbf" }
 ];
 
 export default function UserProfile() {
@@ -33,7 +35,7 @@ export default function UserProfile() {
     farmSize: "8.5 Acres",
     savingsGoal: "₹2,50,000 / year",
     verificationBadge: "Government APMC Verified",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&h=300"
+    avatar: "" // Empty string represents WhatsApp-style Default Human Face Silhouette
   });
 
   const [myFeedbacks, setMyFeedbacks] = useState<UserFeedback[]>([]);
@@ -58,7 +60,7 @@ export default function UserProfile() {
           primaryCrop: parsed.primaryCrops?.[0] || prev.primaryCrop,
           farmSize: parsed.farmSize || prev.farmSize,
           savingsGoal: parsed.savingsGoal || prev.savingsGoal,
-          avatar: parsed.avatar || prev.avatar
+          avatar: parsed.avatar !== undefined ? parsed.avatar : prev.avatar
         }));
       } catch (e) { console.error(e); }
     }
@@ -72,7 +74,7 @@ export default function UserProfile() {
     }
   }, []);
 
-  // HANDLE DP FILE UPLOAD FROM COMPUTER/DEVICE
+  // HANDLE CUSTOM DP FILE UPLOAD FROM DEVICE
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -135,6 +137,26 @@ export default function UserProfile() {
     setEditingFeedback(null);
   };
 
+  // WHATSAPP-STYLE DEFAULT HUMAN SILHOUETTE COMPONENT
+  const RenderUserDP = ({ size = "w-20 h-20", textSize = "text-3xl" }: { size?: string; textSize?: string }) => {
+    if (profileData.avatar && profileData.avatar.trim() !== "") {
+      return (
+        <img 
+          src={profileData.avatar} 
+          alt={profileData.fullName}
+          className={`${size} rounded-3xl object-cover border-4 border-green-400 shadow-xl`}
+        />
+      );
+    }
+
+    // WhatsApp-style default silhouette (clean gray/green human face)
+    return (
+      <div className={`${size} rounded-3xl bg-gray-200 dark:bg-gray-800 border-4 border-green-400 flex items-center justify-center text-gray-500 dark:text-gray-400 shadow-xl relative overflow-hidden`}>
+        <User className="w-12 h-12 text-gray-400 dark:text-gray-500" />
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 p-4 md:p-8 font-sans max-w-6xl mx-auto space-y-8 pt-[78px]">
       
@@ -153,11 +175,7 @@ export default function UserProfile() {
           
           {/* PROFILE PICTURE (DP) DISPLAY & EDIT BADGE */}
           <div className="relative group">
-            <img 
-              src={profileData.avatar} 
-              alt={profileData.fullName}
-              className="w-20 h-20 rounded-3xl object-cover border-4 border-green-400 shadow-xl"
-            />
+            <RenderUserDP size="w-20 h-20" />
             <button 
               onClick={() => fileInputRef.current?.click()}
               className="absolute -bottom-1 -right-1 bg-green-500 hover:bg-green-400 text-white p-2 rounded-xl shadow-lg border border-white transition-transform group-hover:scale-110"
@@ -219,7 +237,7 @@ export default function UserProfile() {
               : "bg-white dark:bg-[#1a1b23] text-gray-600 dark:text-gray-400 hover:bg-green-50"
           }`}
         >
-          <Edit3 className="w-4 h-4" /> Edit Profile & DP
+          <Edit3 className="w-4 h-4" /> Edit Profile & Cartoon DP
         </button>
 
         <button
@@ -249,7 +267,7 @@ export default function UserProfile() {
       {activeTab === "card" && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           
-          {/* DIGITAL PASSPORT BADGE WITH DP */}
+          {/* DIGITAL PASSPORT BADGE WITH WHATSAPP-STYLE SILHOUETTE OR CARTOON DP */}
           <div className="md:col-span-1 bg-gradient-to-br from-green-800 via-emerald-800 to-teal-900 text-white rounded-3xl p-6 shadow-xl border border-green-600 flex flex-col justify-between space-y-6">
             <div className="space-y-4">
               <div className="flex justify-between items-center pb-3 border-b border-white/20">
@@ -259,11 +277,7 @@ export default function UserProfile() {
 
               <div className="text-center space-y-3">
                 <div className="relative w-24 h-24 mx-auto group">
-                  <img 
-                    src={profileData.avatar} 
-                    alt={profileData.fullName}
-                    className="w-24 h-24 rounded-3xl object-cover border-4 border-green-400 shadow-2xl mx-auto"
-                  />
+                  <RenderUserDP size="w-24 h-24" />
                   <button 
                     onClick={() => fileInputRef.current?.click()}
                     className="absolute -bottom-1 -right-1 bg-green-500 text-white p-2 rounded-xl shadow-lg border border-white"
@@ -331,7 +345,7 @@ export default function UserProfile() {
 
             <div className="pt-2 flex gap-3">
               <button onClick={() => setActiveTab("edit")} className="px-5 py-2.5 bg-green-600 text-white font-extrabold text-xs rounded-xl shadow-md flex items-center gap-2">
-                <Edit3 className="w-4 h-4" /> Edit Profile Information & DP
+                <Edit3 className="w-4 h-4" /> Edit Profile & DP Options
               </button>
               <Link href="/community" className="px-5 py-2.5 bg-gray-100 dark:bg-white/10 text-gray-800 dark:text-gray-200 font-bold text-xs rounded-xl">
                 Open Community Chat
@@ -341,7 +355,7 @@ export default function UserProfile() {
         </div>
       )}
 
-      {/* TAB 2: EDIT PROFILE & PROFILE PICTURE (DP) */}
+      {/* TAB 2: EDIT PROFILE & CARTOON DP / WHATSAPP SILHOUETTE */}
       {activeTab === "edit" && (
         <div className="bg-white dark:bg-[#1a1b23] rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 dark:border-white/10 max-w-2xl mx-auto space-y-6">
           <h3 className="text-base font-black text-gray-900 dark:text-white border-b border-gray-100 dark:border-white/10 pb-3">
@@ -351,42 +365,51 @@ export default function UserProfile() {
           {/* PROFILE PICTURE (DP) SELECTION / UPLOAD SECTION */}
           <div className="bg-gray-50 dark:bg-white/5 p-5 rounded-2xl border border-gray-200/60 dark:border-white/5 space-y-4">
             <label className="block font-black text-xs text-gray-900 dark:text-white uppercase tracking-wider">
-              Profile Display Picture (DP):
+              Profile Display Picture (DP) Style:
             </label>
 
-            <div className="flex items-center gap-5">
-              <img 
-                src={profileData.avatar} 
-                alt="Profile DP" 
-                className="w-20 h-20 rounded-3xl object-cover border-4 border-green-500 shadow-md"
-              />
+            <div className="flex flex-col sm:flex-row items-center gap-5">
+              <RenderUserDP size="w-20 h-20" />
 
-              <div className="space-y-2">
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-black text-xs rounded-xl shadow-md flex items-center gap-2"
-                >
-                  <Upload className="w-4 h-4" /> Upload DP from Computer / Phone
-                </button>
-                <p className="text-[10px] text-gray-400 font-medium">Supports PNG, JPG, or WEBP up to 5MB.</p>
+              <div className="space-y-2 flex-1">
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="px-3.5 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-black text-xs rounded-xl shadow-md flex items-center gap-1.5"
+                  >
+                    <Upload className="w-3.5 h-3.5" /> Upload Custom Photo
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setProfileData({ ...profileData, avatar: "" })}
+                    className="px-3.5 py-2 bg-gray-200 dark:bg-white/10 text-gray-800 dark:text-gray-200 font-bold text-xs rounded-xl flex items-center gap-1.5 hover:bg-red-100 hover:text-red-600 transition-colors"
+                  >
+                    <User className="w-3.5 h-3.5" /> WhatsApp Default Silhouette (No DP)
+                  </button>
+                </div>
+                <p className="text-[10px] text-gray-400 font-medium">Upload custom photo or reset to classic human face silhouette.</p>
               </div>
             </div>
 
-            {/* PRESET AVATARS */}
-            <div>
-              <span className="text-[11px] font-bold text-gray-500 dark:text-gray-400 block mb-2">Or Choose from Preset Farmer Avatars:</span>
-              <div className="flex items-center gap-3">
-                {DP_PRESETS.map((preset, idx) => (
+            {/* CARTOON / VECTOR GENERATED DP PRESETS */}
+            <div className="pt-2 border-t border-gray-200/60 dark:border-white/10">
+              <span className="text-[11px] font-bold text-gray-600 dark:text-gray-300 block mb-2.5">
+                🎨 Cartoon & Vector DP Presets:
+              </span>
+              <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
+                {CARTOON_DP_PRESETS.map((preset, idx) => (
                   <button
                     key={idx}
                     type="button"
                     onClick={() => setProfileData({ ...profileData, avatar: preset.url })}
-                    className={`p-1 rounded-2xl border-2 transition-all ${
-                      profileData.avatar === preset.url ? "border-green-500 scale-110 shadow-md" : "border-transparent opacity-70 hover:opacity-100"
+                    className={`p-2 rounded-2xl border-2 transition-all flex flex-col items-center gap-1 bg-white dark:bg-[#16171f] ${
+                      profileData.avatar === preset.url ? "border-green-500 ring-2 ring-green-500/30 scale-105 shadow-md" : "border-gray-200 dark:border-white/10 opacity-80 hover:opacity-100"
                     }`}
                   >
-                    <img src={preset.url} alt={preset.label} className="w-12 h-12 rounded-xl object-cover" />
+                    <img src={preset.url} alt={preset.label} className="w-12 h-12 rounded-xl object-contain bg-gray-50" />
+                    <span className="text-[9px] font-bold text-gray-700 dark:text-gray-300 truncate w-full text-center">{preset.label}</span>
                   </button>
                 ))}
               </div>
