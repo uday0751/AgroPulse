@@ -336,6 +336,8 @@ export default function CustomerMarketplacePage() {
   const [sortBy, setSortBy] = useState<"newest" | "price_asc" | "price_desc" | "quantity">("newest");
   const [selectedGrade, setSelectedGrade] = useState("All");
   const [statusFilter, setStatusFilter] = useState<string>("All");
+  const [orderSort, setOrderSort] = useState<"newest" | "oldest">("newest");
+  const [monthFilter, setMonthFilter] = useState<string>("All");
 
   // Detailed Modals State
   const [inspectingCrop, setInspectingCrop] = useState<FarmerCropListing | null>(null);
@@ -448,35 +450,72 @@ export default function CustomerMarketplacePage() {
 
   // Filter listings
   const filteredListings = useMemo(() => {
-    let result = listings.filter((item) => {
-      const matchSearch = !searchQuery.trim() || 
-        item.cropName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.farmerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.district.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.state.toLowerCase().includes(searchQuery.toLowerCase());
+    let result = [...listings];
 
-      const matchCategory = selectedCategory === "All Categories" || item.category === selectedCategory;
-      const matchState = selectedState === "All" || item.state === selectedState;
-      const matchGrade = selectedGrade === "All" || item.qualityGrade === selectedGrade;
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(item => 
+        item.cropName.toLowerCase().includes(q) ||
+        item.farmerName.toLowerCase().includes(q) ||
+        item.district.toLowerCase().includes(q) ||
+        item.state.toLowerCase().includes(q) ||
+        item.category.toLowerCase().includes(q)
+      );
+    }
 
-      return matchSearch && matchCategory && matchState && matchGrade;
-    });
+    if (selectedCategory !== "All Categories") {
+      result = result.filter(item => item.category === selectedCategory);
+    }
 
-    if (sortBy === "price_asc") result.sort((a, b) => a.pricePerQuintal - b.pricePerQuintal);
-    else if (sortBy === "price_desc") result.sort((a, b) => b.pricePerQuintal - a.pricePerQuintal);
-    else if (sortBy === "quantity") result.sort((a, b) => b.availableQuantityQuintals - a.availableQuantityQuintals);
+    if (selectedState !== "All") {
+      result = result.filter(item => item.state === selectedState);
+    }
+
+    if (selectedGrade !== "All") {
+      result = result.filter(item => item.qualityGrade === selectedGrade);
+    }
+
+    if (sortBy === "price_asc") {
+      result.sort((a, b) => a.pricePerQuintal - b.pricePerQuintal);
+    } else if (sortBy === "price_desc") {
+      result.sort((a, b) => b.pricePerQuintal - a.pricePerQuintal);
+    } else if (sortBy === "quantity") {
+      result.sort((a, b) => b.availableQuantityQuintals - a.availableQuantityQuintals);
+    }
 
     return result;
   }, [listings, searchQuery, selectedCategory, selectedState, selectedGrade, sortBy]);
 
-  // Filter Orders with explicit "Cancelled by Farmer" support
+  // Filter & Sort Orders (Newest to Oldest, Oldest to Newest, Month-Wise)
   const filteredOrders = useMemo(() => {
-    return orders.filter(o => {
-      if (statusFilter === "All") return true;
-      return o.status === statusFilter;
+    let list = orders.filter(o => {
+      const matchStatus = statusFilter === "All" || o.status === statusFilter;
+      const matchMonth = monthFilter === "All" || (o.orderDate && o.orderDate.toLowerCase().includes(monthFilter.toLowerCase()));
+      return matchStatus && matchMonth;
     });
-  }, [orders, statusFilter]);
+
+    if (orderSort === "newest") {
+      list.sort((a, b) => (b.sequenceNo || 0) - (a.sequenceNo || 0));
+    } else {
+      list.sort((a, b) => (a.sequenceNo || 0) - (b.sequenceNo || 0));
+    }
+
+    return list;
+  }, [orders, statusFilter, monthFilter, orderSort]);
+
+  // Month-Wise Transaction Stats Calculation
+  const monthWiseStats = useMemo(() => {
+    const months = ["July 2026", "June 2026", "May 2026", "April 2026"];
+    return months.map(m => {
+      const mOrders = orders.filter(o => o.orderDate && o.orderDate.toLowerCase().includes(m.toLowerCase()));
+      const totalAmount = mOrders.reduce((sum, o) => sum + o.totalPrice, 0);
+      return {
+        monthName: m,
+        count: mOrders.length,
+        totalAmount
+      };
+    });
+  }, [orders]);
 
   // Lifetime Customer Transaction Stats
   const buyerTransactionStats = useMemo(() => {
@@ -866,32 +905,96 @@ export default function CustomerMarketplacePage() {
             </div>
           </div>
 
+          {/* Month-Wise Transaction Breakdown Summary Cards */}
+          <div className="bg-white dark:bg-[#1a1b23] p-5 rounded-3xl border border-gray-100 dark:border-white/10 shadow-sm space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="text-xs font-black uppercase text-gray-400 tracking-wider flex items-center gap-1.5">
+                <Calendar className="w-4 h-4 text-green-600" /> Month-Wise Purchase Transaction Details
+              </span>
+              <span className="text-[10px] font-extrabold text-green-700 bg-green-50 dark:bg-green-950 px-2.5 py-1 rounded-lg border border-green-200 dark:border-green-800">
+                Sorted & Filterable Month-by-Month
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+              {monthWiseStats.map((item) => (
+                <button
+                  key={item.monthName}
+                  onClick={() => setMonthFilter(monthFilter === item.monthName ? "All" : item.monthName)}
+                  className={`p-3.5 rounded-2xl border text-left transition-all ${
+                    monthFilter === item.monthName 
+                      ? "bg-green-600 border-green-600 text-white shadow-md ring-2 ring-green-500/20" 
+                      : "bg-gray-50 dark:bg-white/5 border-gray-100 dark:border-white/5 hover:border-green-500/40 text-gray-900 dark:text-white"
+                  }`}
+                >
+                  <div className="font-extrabold text-xs">{item.monthName}</div>
+                  <div className="text-sm font-black mt-1">₹{item.totalAmount.toLocaleString("en-IN")}</div>
+                  <div className="text-[10px] opacity-80 font-bold mt-0.5">{item.count} Transactions</div>
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="bg-white dark:bg-[#1a1b23] border border-gray-100 dark:border-white/10 rounded-3xl overflow-hidden shadow-md">
             <div className="p-5 border-b border-gray-100 dark:border-white/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gray-50/50 dark:bg-white/5">
               <div>
                 <h3 className="text-base font-extrabold text-gray-900 dark:text-white flex items-center gap-2">
                   <User className="w-5 h-5 text-green-600" />
-                  My Customer Purchase Orders
+                  My Customer Purchase Orders ({filteredOrders.length})
                 </h3>
-                <p className="text-xs text-gray-400 font-medium">Filter by status to view pending, accepted, dispatched, or farmer-cancelled crop orders.</p>
+                <p className="text-xs text-gray-400 font-medium">Filter & sort latest transactions or month-wise crop orders.</p>
               </div>
 
-              {/* ENHANCED STATUS FILTER DROPDOWN WITH EXPLICIT "CANCELLED BY FARMER" OPTION */}
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-gray-400 font-bold">Filter Status:</span>
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="px-4 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1a1b23] text-xs font-black text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-green-500"
-                >
-                  <option value="All">All Statuses ({orders.length})</option>
-                  <option value="Pending">⏳ Pending Approval ({buyerTransactionStats.pendingCount})</option>
-                  <option value="Accepted">🔵 Accepted by Farmer ({buyerTransactionStats.acceptedCount})</option>
-                  <option value="Dispatched">🚚 Dispatched — En Route ({buyerTransactionStats.dispatchedCount})</option>
-                  <option value="Completed">✅ Completed & Delivered ({buyerTransactionStats.completedCount})</option>
-                  <option value="Cancelled by Farmer">❌ Cancelled by Farmer ({buyerTransactionStats.cancelledByFarmerCount})</option>
-                  <option value="Cancelled by Buyer">🚫 Cancelled by Buyer ({buyerTransactionStats.cancelledByBuyerCount})</option>
-                </select>
+              {/* ENHANCED SORT & MONTH-WISE TRANSACTION CONTROLS */}
+              <div className="flex flex-wrap items-center gap-2">
+                
+                {/* SORT ORDER: NEWEST TO OLDEST / OLDEST TO NEWEST */}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs text-gray-400 font-bold">Sort:</span>
+                  <select
+                    value={orderSort}
+                    onChange={(e: any) => setOrderSort(e.target.value)}
+                    className="px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1a1b23] text-xs font-black text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-green-500"
+                  >
+                    <option value="newest">🕒 Newest to Oldest (Latest First)</option>
+                    <option value="oldest">⏳ Oldest to Newest</option>
+                  </select>
+                </div>
+
+                {/* MONTH FILTER */}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs text-gray-400 font-bold">Month:</span>
+                  <select
+                    value={monthFilter}
+                    onChange={(e) => setMonthFilter(e.target.value)}
+                    className="px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1a1b23] text-xs font-black text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-green-500"
+                  >
+                    <option value="All">All Months</option>
+                    <option value="July 2026">🗓️ July 2026</option>
+                    <option value="June 2026">🗓️ June 2026</option>
+                    <option value="May 2026">🗓️ May 2026</option>
+                    <option value="April 2026">🗓️ April 2026</option>
+                  </select>
+                </div>
+
+                {/* STATUS FILTER DROPDOWN */}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs text-gray-400 font-bold">Status:</span>
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1a1b23] text-xs font-black text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-green-500"
+                  >
+                    <option value="All">All Statuses ({orders.length})</option>
+                    <option value="Pending">⏳ Pending Approval ({buyerTransactionStats.pendingCount})</option>
+                    <option value="Accepted">🔵 Accepted by Farmer ({buyerTransactionStats.acceptedCount})</option>
+                    <option value="Dispatched">🚚 Dispatched — En Route ({buyerTransactionStats.dispatchedCount})</option>
+                    <option value="Completed">✅ Completed & Delivered ({buyerTransactionStats.completedCount})</option>
+                    <option value="Cancelled by Farmer">❌ Cancelled by Farmer ({buyerTransactionStats.cancelledByFarmerCount})</option>
+                    <option value="Cancelled by Buyer">🚫 Cancelled by Buyer ({buyerTransactionStats.cancelledByBuyerCount})</option>
+                  </select>
+                </div>
+
               </div>
             </div>
 

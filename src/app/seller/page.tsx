@@ -123,6 +123,8 @@ export default function FarmerSellerPortalPage() {
   const [inspectingCrop, setInspectingCrop] = useState<FarmerCropListing | null>(null);
   const [inspectingOrder, setInspectingOrder] = useState<BuyerOrderRequest | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>("All");
+  const [orderSort, setOrderSort] = useState<"newest" | "oldest">("newest");
+  const [monthFilter, setMonthFilter] = useState<string>("All");
 
   // New Farmer Listing Form state
   const [newCropName, setNewCropName] = useState("");
@@ -160,11 +162,33 @@ export default function FarmerSellerPortalPage() {
   }, []);
 
   const filteredOrders = useMemo(() => {
-    return orders.filter(o => {
-      if (statusFilter === "All") return true;
-      return o.status === statusFilter;
+    let list = orders.filter(o => {
+      const matchStatus = statusFilter === "All" || o.status === statusFilter;
+      const matchMonth = monthFilter === "All" || (o.orderDate && o.orderDate.toLowerCase().includes(monthFilter.toLowerCase()));
+      return matchStatus && matchMonth;
     });
-  }, [orders, statusFilter]);
+
+    if (orderSort === "newest") {
+      list.sort((a, b) => (b.sequenceNo || 0) - (a.sequenceNo || 0));
+    } else {
+      list.sort((a, b) => (a.sequenceNo || 0) - (b.sequenceNo || 0));
+    }
+
+    return list;
+  }, [orders, statusFilter, monthFilter, orderSort]);
+
+  const monthWiseSalesStats = useMemo(() => {
+    const months = ["July 2026", "June 2026", "May 2026", "April 2026"];
+    return months.map(m => {
+      const mOrders = orders.filter(o => o.orderDate && o.orderDate.toLowerCase().includes(m.toLowerCase()));
+      const totalRevenue = mOrders.filter(o => !o.status.includes("Cancelled")).reduce((sum, o) => sum + o.totalPrice, 0);
+      return {
+        monthName: m,
+        count: mOrders.length,
+        totalRevenue
+      };
+    });
+  }, [orders]);
 
   const orderStats = useMemo(() => {
     const activeOrders = orders.filter(o => !o.status.includes("Cancelled"));
@@ -510,29 +534,94 @@ export default function FarmerSellerPortalPage() {
             </div>
           </div>
 
+          {/* Month-Wise Sales Revenue Breakdown Summary Cards */}
+          <div className="bg-white dark:bg-[#1a1b23] p-5 rounded-3xl border border-gray-100 dark:border-white/10 shadow-sm space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="text-xs font-black uppercase text-gray-400 tracking-wider flex items-center gap-1.5">
+                <Calendar className="w-4 h-4 text-green-600" /> Month-Wise Sales & Revenue Breakdown
+              </span>
+              <span className="text-[10px] font-extrabold text-green-700 bg-green-50 dark:bg-green-950 px-2.5 py-1 rounded-lg border border-green-200 dark:border-green-800">
+                Farmer Revenue Monthly Analytics
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+              {monthWiseSalesStats.map((item) => (
+                <button
+                  key={item.monthName}
+                  onClick={() => setMonthFilter(monthFilter === item.monthName ? "All" : item.monthName)}
+                  className={`p-3.5 rounded-2xl border text-left transition-all ${
+                    monthFilter === item.monthName 
+                      ? "bg-green-600 border-green-600 text-white shadow-md ring-2 ring-green-500/20" 
+                      : "bg-gray-50 dark:bg-white/5 border-gray-100 dark:border-white/5 hover:border-green-500/40 text-gray-900 dark:text-white"
+                  }`}
+                >
+                  <div className="font-extrabold text-xs">{item.monthName}</div>
+                  <div className="text-sm font-black mt-1 text-green-600 dark:text-green-400">₹{item.totalRevenue.toLocaleString("en-IN")}</div>
+                  <div className="text-[10px] opacity-80 font-bold mt-0.5">{item.count} Sales Requests</div>
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="bg-white dark:bg-[#1a1b23] border border-gray-100 dark:border-white/10 rounded-3xl overflow-hidden shadow-md">
             <div className="p-5 border-b border-gray-100 dark:border-white/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gray-50/50 dark:bg-white/5">
               <div>
                 <h3 className="text-base font-extrabold text-gray-900 dark:text-white flex items-center gap-2">
                   <ClipboardList className="w-5 h-5 text-green-600" />
-                  Received Buyer Orders (Farmer Desk Review)
+                  Received Buyer Orders ({filteredOrders.length})
                 </h3>
-                <p className="text-xs text-gray-400 font-medium mt-0.5">Click any order to view full invoice & buyer details. Sequenced by order number.</p>
+                <p className="text-xs text-gray-400 font-medium mt-0.5">Filter & sort transactions from newest to oldest or month-wise.</p>
               </div>
 
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-gray-400 font-bold">Filter Status:</span>
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="px-3 py-1.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1a1b23] text-xs font-bold text-gray-800 dark:text-gray-200"
-                >
-                  <option value="All">All Statuses ({orders.length})</option>
-                  <option value="Pending">⏳ Pending Approval</option>
-                  <option value="Accepted">🔵 Accepted</option>
-                  <option value="Dispatched">🚚 Dispatched</option>
-                  <option value="Completed">✅ Completed</option>
-                </select>
+              {/* ENHANCED SORT & MONTH-WISE TRANSACTION CONTROLS */}
+              <div className="flex flex-wrap items-center gap-2">
+                
+                {/* SORT ORDER: NEWEST TO OLDEST / OLDEST TO NEWEST */}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs text-gray-400 font-bold">Sort:</span>
+                  <select
+                    value={orderSort}
+                    onChange={(e: any) => setOrderSort(e.target.value)}
+                    className="px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1a1b23] text-xs font-black text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-green-500"
+                  >
+                    <option value="newest">🕒 Newest to Oldest (Latest First)</option>
+                    <option value="oldest">⏳ Oldest to Newest</option>
+                  </select>
+                </div>
+
+                {/* MONTH FILTER */}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs text-gray-400 font-bold">Month:</span>
+                  <select
+                    value={monthFilter}
+                    onChange={(e) => setMonthFilter(e.target.value)}
+                    className="px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1a1b23] text-xs font-black text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-green-500"
+                  >
+                    <option value="All">All Months</option>
+                    <option value="July 2026">🗓️ July 2026</option>
+                    <option value="June 2026">🗓️ June 2026</option>
+                    <option value="May 2026">🗓️ May 2026</option>
+                    <option value="April 2026">🗓️ April 2026</option>
+                  </select>
+                </div>
+
+                {/* STATUS FILTER */}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs text-gray-400 font-bold">Status:</span>
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1a1b23] text-xs font-black text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-green-500"
+                  >
+                    <option value="All">All Statuses ({orders.length})</option>
+                    <option value="Pending">⏳ Pending Approval</option>
+                    <option value="Accepted">🔵 Accepted</option>
+                    <option value="Dispatched">🚚 Dispatched</option>
+                    <option value="Completed">✅ Completed</option>
+                  </select>
+                </div>
+
               </div>
             </div>
 
