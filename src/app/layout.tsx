@@ -16,10 +16,11 @@ const geistMono = localFont({
 import { Providers } from "@/components/Providers";
 import { Sidebar } from "@/components/Sidebar";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "AgroPulse - Modern Agriculture Intelligence",
-  description: "A professional platform for farmers to browse real-time market prices, find nearby mandis, plan crops, and check weather analytics.",
+  title: "AgroPulse - Modern Agriculture & Direct Farm Trading Portal",
+  description: "India's direct farm trading ecosystem by Uday Pratap Singh Chauhan (udchauhan0987@gmail.com). Mandi rates, weather predictions, and verified farmer community.",
 };
 
 export default function RootLayout({
@@ -40,6 +41,7 @@ export default function RootLayout({
               <main className="flex-1">
                 {children}
               </main>
+              <Footer />
             </div>
           </div>
         </Providers>

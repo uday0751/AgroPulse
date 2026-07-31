@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, LineChart, Cloud, Users, Calendar, Settings, Landmark, Stethoscope, User, MapPin, BarChart, ShoppingBag, Sprout } from "lucide-react";
+import { Home, LineChart, Cloud, Users, Calendar, Settings, Landmark, Stethoscope, User, MapPin, BarChart, ShoppingBag, Sprout, MessageSquareHeart } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslation } from "react-i18next";
@@ -24,6 +24,7 @@ export function Sidebar() {
     { href: "/mandi-finder", label: t("mandi_finder") || "Mandi Finder", icon: MapPin },
     { href: "/weather", label: t("weather") || "Weather", icon: Cloud },
     { href: "/community", label: t("community") || "Community", icon: Users },
+    { href: "/feedback", label: "Feedback & Support", icon: MessageSquareHeart },
     { href: "/experts", label: t("expert_consultation") || "Experts", icon: Stethoscope },
     { href: "/planner", label: t("planner") || "Crop Planner", icon: Calendar },
     { href: "/compare", label: t("compare") || "Compare Crops", icon: BarChart },
