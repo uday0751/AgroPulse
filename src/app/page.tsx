@@ -305,7 +305,7 @@ export default function Dashboard() {
     <div className="min-h-screen p-4 md:p-8 font-sans max-w-7xl mx-auto space-y-10">
       
       {/* Clean Top Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b-[3px] border-gray-300 dark:border-white/20 pb-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gray-100 dark:border-white/10 pb-4">
         <div>
           <div className="flex items-center gap-2">
             <span className="w-3.5 h-3.5 rounded-full bg-green-500 animate-ping" />
@@ -318,7 +318,7 @@ export default function Dashboard() {
           </h1>
         </div>
 
-        <div className="flex items-center gap-2 bg-white dark:bg-[#1a1b23] border-[3px] border-gray-300 dark:border-white/20 px-3.5 py-2 rounded-xl shadow-sm">
+        <div className="flex items-center gap-2 bg-white dark:bg-[#1a1b23] border border-gray-200 dark:border-white/10 px-3.5 py-2 rounded-xl shadow-sm">
           <span className="text-[11px] font-extrabold text-gray-400 uppercase">{t("select_language")}</span>
           <select 
             onChange={(e) => changeLanguage(e.target.value)}
@@ -335,7 +335,7 @@ export default function Dashboard() {
       {/* GSAP Animated Hero Banner */}
       <div 
         ref={heroRef}
-        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-green-900 via-emerald-800 to-green-950 p-6 md:p-10 text-white shadow-2xl border-[3px] border-green-600/70 dark:border-green-500/60"
+        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-green-900 via-emerald-800 to-green-950 p-6 md:p-10 text-white shadow-2xl border border-green-700/30"
       >
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-green-500/20 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-emerald-400/20 rounded-full blur-3xl pointer-events-none" />
@@ -412,7 +412,7 @@ export default function Dashboard() {
       {/* Live Market Price Ticker */}
       <div 
         ref={tickerRef}
-        className="bg-white dark:bg-[#1a1b23] border-[3px] border-gray-300 dark:border-white/20 p-4 rounded-2xl shadow-sm flex flex-col md:flex-row items-center justify-between gap-4"
+        className="bg-white dark:bg-[#1a1b23] border border-gray-100 dark:border-white/10 p-4 rounded-2xl shadow-sm flex flex-col md:flex-row items-center justify-between gap-4"
       >
         <div className="flex items-center gap-2 shrink-0">
           <span className="bg-green-600 text-white text-[10px] font-black uppercase px-2 py-1 rounded-md flex items-center gap-1">
@@ -422,25 +422,25 @@ export default function Dashboard() {
         </div>
 
         <div className="flex items-center gap-4 overflow-x-auto w-full scrollbar-none text-xs font-bold">
-          <div className="flex items-center gap-1.5 shrink-0 bg-gray-50 dark:bg-white/5 px-3 py-1.5 rounded-xl border-[2.5px] border-gray-300 dark:border-white/15">
+          <div className="flex items-center gap-1.5 shrink-0 bg-gray-50 dark:bg-white/5 px-3 py-1.5 rounded-xl border border-gray-100 dark:border-white/5">
             <span>🌾 Wheat Lokwan:</span>
             <span className="text-green-600 dark:text-green-400 font-extrabold">₹2,550/q</span>
             <ArrowUpRight className="w-3.5 h-3.5 text-green-500" />
           </div>
 
-          <div className="flex items-center gap-1.5 shrink-0 bg-gray-50 dark:bg-white/5 px-3 py-1.5 rounded-xl border-[2.5px] border-gray-300 dark:border-white/15">
+          <div className="flex items-center gap-1.5 shrink-0 bg-gray-50 dark:bg-white/5 px-3 py-1.5 rounded-xl border border-gray-100 dark:border-white/5">
             <span>🌾 Basmati 1121:</span>
             <span className="text-green-600 dark:text-green-400 font-extrabold">₹4,350/q</span>
             <ArrowUpRight className="w-3.5 h-3.5 text-green-500" />
           </div>
 
-          <div className="flex items-center gap-1.5 shrink-0 bg-gray-50 dark:bg-white/5 px-3 py-1.5 rounded-xl border-[2.5px] border-gray-300 dark:border-white/15">
+          <div className="flex items-center gap-1.5 shrink-0 bg-gray-50 dark:bg-white/5 px-3 py-1.5 rounded-xl border border-gray-100 dark:border-white/5">
             <span>🌱 Soybean JS-335:</span>
             <span className="text-green-600 dark:text-green-400 font-extrabold">₹4,920/q</span>
             <ArrowUpRight className="w-3.5 h-3.5 text-green-500" />
           </div>
 
-          <div className="flex items-center gap-1.5 shrink-0 bg-gray-50 dark:bg-white/5 px-3 py-1.5 rounded-xl border-[2.5px] border-gray-300 dark:border-white/15">
+          <div className="flex items-center gap-1.5 shrink-0 bg-gray-50 dark:bg-white/5 px-3 py-1.5 rounded-xl border border-gray-100 dark:border-white/5">
             <span>🧅 Nashik Red Onion:</span>
             <span className="text-green-600 dark:text-green-400 font-extrabold">₹2,100/q</span>
             <ArrowUpRight className="w-3.5 h-3.5 text-green-500" />
@@ -459,7 +459,7 @@ export default function Dashboard() {
               Comprehensive agricultural management suite designed for modern Indian farmers & crop buyers.
             </p>
           </div>
-          <span className="text-xs font-black text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-950 px-3 py-1 rounded-full border-[2.5px] border-green-400 dark:border-green-800">
+          <span className="text-xs font-black text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-950 px-3 py-1 rounded-full border border-green-200 dark:border-green-800">
             10 Active Suite Tools
           </span>
         </div>
@@ -474,7 +474,7 @@ export default function Dashboard() {
               <Link 
                 key={i} 
                 href={mod.href}
-                className={`group bg-white dark:bg-[#1a1b23] p-6 rounded-3xl border-[3px] border-gray-300 dark:border-white/20 shadow-sm hover:shadow-2xl hover:border-green-500 dark:hover:border-green-500 transition-all duration-300 flex flex-col justify-between ${mod.bgGradient}`}
+                className={`group bg-white dark:bg-[#1a1b23] p-6 rounded-3xl border border-gray-100 dark:border-white/10 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between ${mod.bgGradient}`}
               >
                 <div className="space-y-4">
                   <div className="flex justify-between items-start">

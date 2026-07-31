@@ -9,7 +9,7 @@ import { Logo } from "./Logo";
 
 export function Footer() {
   return (
-    <footer className="bg-white dark:bg-[#12131a] border-t-[3px] border-gray-300 dark:border-white/20 mt-12 py-10 px-4 md:px-8 text-gray-700 dark:text-gray-300">
+    <footer className="bg-white dark:bg-[#12131a] border-t border-gray-200 dark:border-white/10 mt-12 py-10 px-4 md:px-8 text-gray-700 dark:text-gray-300">
       <div className="max-w-7xl mx-auto space-y-8">
         
         {/* TOP SECTION: PLATFORM BRAND & DEVELOPER INFO */}

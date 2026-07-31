@@ -692,8 +692,8 @@ export default function MarketPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 p-4 md:p-8 font-sans max-w-7xl mx-auto space-y-8 pt-[78px]">
       
-      {/* HEADER BANNER WITH THICK 3PX BORDER */}
-      <div className="bg-gradient-to-r from-green-900 via-emerald-800 to-green-950 text-white rounded-3xl p-6 md:p-10 shadow-xl border-[3px] border-green-600/70 dark:border-green-500/60 relative overflow-hidden space-y-4">
+      {/* HEADER BANNER WITH SLEEK ORIGINAL BORDER */}
+      <div className="bg-gradient-to-r from-green-900 via-emerald-800 to-green-950 text-white rounded-3xl p-6 md:p-10 shadow-xl border border-green-700/30 relative overflow-hidden space-y-4">
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-green-500/20 rounded-full blur-3xl pointer-events-none" />
         
         <div className="relative z-10 space-y-2">
@@ -713,7 +713,7 @@ export default function MarketPage() {
       </div>
 
       {/* SEARCH BAR WITH LIVE POP-UP SUGGESTIONS DROPDOWN */}
-      <div className="bg-white dark:bg-[#1a1b23] rounded-3xl p-5 md:p-6 shadow-sm border-[3px] border-gray-300 dark:border-white/20 space-y-4">
+      <div className="bg-white dark:bg-[#1a1b23] rounded-3xl p-5 md:p-6 shadow-sm border border-gray-100 dark:border-white/10 space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           
           {/* SEARCH INPUT & LIVE POPUP DROPDOWN */}
@@ -728,7 +728,7 @@ export default function MarketPage() {
                 setSearchTerm(e.target.value);
                 setShowSearchDropdown(true);
               }}
-              className="w-full pl-10 pr-8 py-2.5 rounded-xl border-2 border-gray-300 dark:border-white/20 bg-gray-50 dark:bg-white/5 font-bold text-xs text-gray-900 dark:text-white focus:outline-none focus:border-green-500"
+              className="w-full pl-10 pr-8 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 font-bold text-xs text-gray-900 dark:text-white focus:outline-none focus:border-green-500"
             />
             {searchTerm && (
               <button onClick={() => { setSearchTerm(""); setShowSearchDropdown(false); }} className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 z-10">
@@ -738,7 +738,7 @@ export default function MarketPage() {
 
             {/* LIVE POP-UP DROPDOWN FOR MATCHING FRUITS, CROPS & VEGGIES */}
             {showSearchDropdown && searchTerm.trim() !== "" && (
-              <div className="absolute left-0 right-0 top-full mt-2 bg-white dark:bg-[#16171f] border-[3px] border-green-500 rounded-2xl shadow-2xl z-50 overflow-hidden text-xs">
+              <div className="absolute left-0 right-0 top-full mt-2 bg-white dark:bg-[#16171f] border border-green-500/40 rounded-2xl shadow-2xl z-50 overflow-hidden text-xs">
                 {searchSuggestions.length > 0 ? (
                   <div className="p-2 space-y-1">
                     <span className="text-[10px] font-black uppercase text-gray-400 px-3 py-1 block">Live Matching Commodities:</span>
@@ -783,7 +783,7 @@ export default function MarketPage() {
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border-2 border-gray-300 dark:border-white/20 bg-gray-50 dark:bg-white/5 font-bold text-xs text-gray-900 dark:text-white focus:outline-none focus:border-green-500 cursor-pointer"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 font-bold text-xs text-gray-900 dark:text-white focus:outline-none focus:border-green-500 cursor-pointer"
             >
               <option value="All Categories">All Categories (Crops, Fruits, Veggies)</option>
               <option value="Cereals & Grains">🌾 Cereals & Grains</option>
@@ -800,7 +800,7 @@ export default function MarketPage() {
             <select
               value={selectedState}
               onChange={(e) => setSelectedState(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border-2 border-gray-300 dark:border-white/20 bg-gray-50 dark:bg-white/5 font-bold text-xs text-gray-900 dark:text-white focus:outline-none focus:border-green-500 cursor-pointer"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 font-bold text-xs text-gray-900 dark:text-white focus:outline-none focus:border-green-500 cursor-pointer"
             >
               {ALL_INDIAN_STATES.map((st, idx) => (
                 <option key={idx} value={st}>{st === "All States" ? "📍 All Indian States" : `📍 ${st}`}</option>
@@ -810,7 +810,7 @@ export default function MarketPage() {
 
         </div>
 
-        <div className="flex justify-between items-center pt-2 text-xs font-black text-gray-500 border-t border-gray-200/80 dark:border-white/10">
+        <div className="flex justify-between items-center pt-2 text-xs font-black text-gray-500 border-t border-gray-100 dark:border-white/5">
           <span>Showing {filteredCrops.length} active Mandi listings</span>
           {searchTerm && (
             <button onClick={() => { setSearchTerm(""); setSelectedCategory("All Categories"); setSelectedState("All States"); }} className="text-green-600 dark:text-green-400 hover:underline">
@@ -822,7 +822,7 @@ export default function MarketPage() {
 
       {/* NOT AVAILABLE ALERT BANNER IF SEARCH HAS NO MATCHES */}
       {filteredCrops.length === 0 && (
-        <div className="bg-amber-50 dark:bg-amber-950/60 border-[3px] border-amber-400 dark:border-amber-800 p-6 rounded-3xl text-center space-y-2">
+        <div className="bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-800 p-6 rounded-3xl text-center space-y-2">
           <AlertCircle className="w-8 h-8 text-amber-600 dark:text-amber-400 mx-auto" />
           <h3 className="font-black text-base text-amber-900 dark:text-amber-200">
             Market Price Currently Not Available for "{searchTerm}"
@@ -839,7 +839,7 @@ export default function MarketPage() {
         </div>
       )}
 
-      {/* COMMODITY GRID WITH 3PX THICK BORDERS */}
+      {/* COMMODITY GRID WITH SLEEK ORIGINAL CARD STYLING */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredCrops.map((crop) => {
           const stateSpecific = selectedState !== "All States" 
@@ -852,7 +852,7 @@ export default function MarketPage() {
           return (
             <div 
               key={crop.id}
-              className="bg-white dark:bg-[#1a1b23] rounded-3xl border-[3px] border-gray-300 dark:border-white/20 p-6 shadow-sm hover:shadow-2xl hover:border-green-500 transition-all duration-300 flex flex-col justify-between space-y-4"
+              className="bg-white dark:bg-[#1a1b23] rounded-3xl border border-gray-100 dark:border-white/10 p-6 shadow-sm hover:shadow-xl hover:border-green-500/50 transition-all duration-300 flex flex-col justify-between space-y-4"
             >
               <div className="space-y-3">
                 <div className="flex justify-between items-start">

@@ -22,19 +22,8 @@ body {
 
 @layer utilities {
   .surface-card {
-    @apply bg-white dark:bg-[#1a1b23] border-[3px] border-gray-300 dark:border-white/20 rounded-2xl shadow-sm hover:border-green-500 transition-colors;
+    @apply bg-white dark:bg-[#1a1b23] border border-gray-100 dark:border-white/10 rounded-2xl shadow-sm;
   }
-}
-
-/* Thicker high-contrast border lines all over app features */
-.border-thick {
-  border-width: 3px !important;
-  border-color: rgba(209, 213, 219, 1) !important;
-}
-
-.dark .border-thick {
-  border-width: 3px !important;
-  border-color: rgba(255, 255, 255, 0.22) !important;
 }
 
 /* Smooth dark mode transitions */
