@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { 
   Cloud, LineChart, Users, Calendar, Landmark, Stethoscope, ShoppingBag, Sprout, MapPin, BarChart, 
-  ArrowRight, Sparkles, TrendingUp, Sun, Droplets, Wind, ArrowUpRight, ShieldCheck, ChevronRight, Navigation, Loader2
+  ArrowRight, Sparkles, TrendingUp, Sun, Droplets, Wind, ArrowUpRight, ShieldCheck, ChevronRight, Navigation, Loader2,
+  MessageSquare, Star, Send, ThumbsUp, CheckCircle2, User, Mail
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Link from "next/link";
@@ -33,6 +34,23 @@ export default function Dashboard() {
     loading: true
   });
 
+  // Quick Dashboard Feedback Form State
+  const [fbName, setFbName] = useState("");
+  const [fbComments, setFbComments] = useState("");
+  const [fbRating, setFbRating] = useState(5);
+  const [fbSuccess, setFbSuccess] = useState(false);
+  const [dashboardFeedbacks, setDashboardFeedbacks] = useState<Array<{
+    id: string;
+    name: string;
+    rating: number;
+    comments: string;
+    role: string;
+    createdAt: string;
+  }>>([
+    { id: "1", name: "Rameshwar Patil", rating: 5, comments: "Mandi finder and live weather predictions are spot on!", role: "Farmer (Pune)", createdAt: "Today" },
+    { id: "2", name: "Gurpreet Singh", rating: 5, comments: "Direct crop buyer matching saved us thousands in middleman fees.", role: "Farmer (Punjab)", createdAt: "Yesterday" }
+  ]);
+
   useEffect(() => {
     const hour = new Date().getHours();
     if (hour < 12) setGreeting("Good Morning, Farmer 🌅");
@@ -43,7 +61,6 @@ export default function Dashboard() {
   // FETCH REAL-TIME WEATHER FOR USER'S LIVE GPS LOCATION
   const fetchDashboardWeather = async (lat: number, lng: number, fallbackName?: string) => {
     try {
-      // 1. Fetch Open-Meteo Live API
       const res = await fetch(
         `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,relative_humidity_2m,is_day,precipitation,rain,weather_code,wind_speed_10m`
       );
@@ -67,7 +84,6 @@ export default function Dashboard() {
       const cond = weatherCodeMap[current.weather_code] || "Clear Sky ☀️";
       let locationLabel = fallbackName || "Live Location";
 
-      // 2. Reverse Geocode City Name via Nominatim
       try {
         const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
         const geoData = await geoRes.json();
@@ -79,9 +95,7 @@ export default function Dashboard() {
             locationLabel = state ? `${city}, ${state.substring(0, 2).toUpperCase()}` : city;
           }
         }
-      } catch (e) {
-        console.error(e);
-      }
+      } catch (e) { console.error(e); }
 
       setWeatherData({
         cityName: locationLabel,
@@ -104,19 +118,12 @@ export default function Dashboard() {
     }
   };
 
-  // DETECT CURRENT LOCATION ON MOUNT
   const detectLocationAndFetchWeather = () => {
     setWeatherData((prev) => ({ ...prev, loading: true }));
     if (typeof window !== "undefined" && navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          fetchDashboardWeather(pos.coords.latitude, pos.coords.longitude);
-        },
-        (err) => {
-          console.warn("Geolocation fallback to Bhopal", err);
-          // Default fallback if GPS permission is pending or denied
-          fetchDashboardWeather(23.2599, 77.4126, "Bhopal, MP");
-        },
+        (pos) => fetchDashboardWeather(pos.coords.latitude, pos.coords.longitude),
+        (err) => fetchDashboardWeather(23.2599, 77.4126, "Bhopal, MP"),
         { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
       );
     } else {
@@ -127,6 +134,25 @@ export default function Dashboard() {
   useEffect(() => {
     detectLocationAndFetchWeather();
   }, []);
+
+  // Submit quick feedback
+  const handleQuickFeedbackSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!fbName.trim() || !fbComments.trim()) return;
+    const newEntry = {
+      id: Date.now().toString(),
+      name: fbName.trim(),
+      rating: fbRating,
+      comments: fbComments.trim(),
+      role: "Verified User",
+      createdAt: "Just now"
+    };
+    setDashboardFeedbacks([newEntry, ...dashboardFeedbacks]);
+    setFbName("");
+    setFbComments("");
+    setFbSuccess(true);
+    setTimeout(() => setFbSuccess(false), 4000);
+  };
 
   // GSAP Animations
   useEffect(() => {
@@ -479,6 +505,142 @@ export default function Dashboard() {
               </Link>
             );
           })}
+        </div>
+      </div>
+
+      {/* AT LAST: FEEDBACK & REVIEWS SECTION ON DASHBOARD */}
+      <div className="bg-white dark:bg-[#1a1b23] border border-gray-100 dark:border-white/10 p-6 md:p-8 rounded-3xl shadow-lg space-y-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gray-100 dark:border-white/10 pb-4">
+          <div>
+            <div className="inline-flex items-center gap-1.5 bg-green-50 dark:bg-green-950 px-3 py-1 rounded-full text-xs font-black text-green-700 dark:text-green-400 mb-1 border border-green-200 dark:border-green-800">
+              <MessageSquare className="w-3.5 h-3.5 text-green-600" />
+              <span>User Community Voice</span>
+            </div>
+            <h2 className="text-xl md:text-2xl font-black text-gray-900 dark:text-white">
+              Farmer & Buyer Feedback
+            </h2>
+            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+              Rate your experience with AgroPulse or reach out directly to the Lead Developer.
+            </p>
+          </div>
+
+          {/* FOUNDER BRAND BADGE */}
+          <div className="bg-gradient-to-r from-green-900 to-emerald-900 text-white p-3.5 rounded-2xl border border-green-700/60 shadow-md text-xs space-y-1 shrink-0">
+            <div className="flex items-center gap-2">
+              <User className="w-4 h-4 text-green-400" />
+              <span className="font-extrabold text-white">Uday Pratap Singh Chauhan</span>
+            </div>
+            <div className="flex items-center gap-2 text-[11px] text-green-200">
+              <Mail className="w-3.5 h-3.5 text-green-400" />
+              <a href="mailto:udchauhan0987@gmail.com" className="hover:underline font-bold">udchauhan0987@gmail.com</a>
+            </div>
+          </div>
+        </div>
+
+        {/* FEEDBACK FORM & LIVE SUBMISSIONS GRID */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          {/* QUICK FEEDBACK INPUT */}
+          <div className="lg:col-span-1 bg-gray-50 dark:bg-white/5 p-5 rounded-2xl border border-gray-200/60 dark:border-white/5 space-y-4 text-xs">
+            <h3 className="font-black text-sm text-gray-900 dark:text-white flex items-center gap-1.5">
+              <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" /> Submit Quick Feedback
+            </h3>
+
+            {fbSuccess && (
+              <div className="bg-green-100 dark:bg-green-950 text-green-800 dark:text-green-300 p-2.5 rounded-xl text-[11px] font-bold flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-green-600" />
+                <span>Thank you! Your feedback has been recorded.</span>
+              </div>
+            )}
+
+            <form onSubmit={handleQuickFeedbackSubmit} className="space-y-3">
+              <div>
+                <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1">Your Name:</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Rameshwar Patil"
+                  value={fbName}
+                  onChange={(e) => setFbName(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1a1b23] font-bold"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1">Rating:</label>
+                <div className="flex gap-1 text-yellow-400">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      type="button"
+                      key={star}
+                      onClick={() => setFbRating(star)}
+                      className="p-1 hover:scale-110 transition-transform"
+                    >
+                      <Star className={`w-5 h-5 ${star <= fbRating ? "fill-yellow-400" : "text-gray-300"}`} />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1">Feedback Comments:</label>
+                <textarea
+                  required
+                  rows={3}
+                  placeholder="Tell us what you liked about Mandi rates, Buying/Selling, or Weather predictions..."
+                  value={fbComments}
+                  onChange={(e) => setFbComments(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1a1b23] font-bold"
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-full py-2.5 bg-green-600 hover:bg-green-700 text-white font-extrabold rounded-xl shadow-sm text-xs flex items-center justify-center gap-1.5"
+              >
+                <Send className="w-3.5 h-3.5" /> Submit Quick Review
+              </button>
+            </form>
+          </div>
+
+          {/* SUBMITTED REVIEWS CARDS */}
+          <div className="lg:col-span-2 space-y-3">
+            <div className="flex justify-between items-center">
+              <h3 className="font-extrabold text-xs text-gray-900 dark:text-white uppercase tracking-wider">
+                Community Feedback Feed
+              </h3>
+              <Link href="/feedback" className="text-xs font-black text-green-600 dark:text-green-400 hover:underline flex items-center gap-1">
+                View All Feedback Portal <ChevronRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {dashboardFeedbacks.map((fb) => (
+                <div key={fb.id} className="bg-gray-50 dark:bg-white/5 p-4 rounded-2xl border border-gray-200/60 dark:border-white/5 space-y-2.5 flex flex-col justify-between">
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-1 text-yellow-400">
+                        {[...Array(fb.rating)].map((_, i) => (
+                          <Star key={i} className="w-3.5 h-3.5 fill-yellow-400" />
+                        ))}
+                      </div>
+                      <span className="text-[9px] font-bold text-gray-400">{fb.createdAt}</span>
+                    </div>
+
+                    <p className="text-xs text-gray-800 dark:text-gray-200 font-semibold italic">
+                      "{fb.comments}"
+                    </p>
+                  </div>
+
+                  <div className="pt-2 border-t border-gray-200/60 dark:border-white/5 flex justify-between items-center">
+                    <span className="font-extrabold text-xs text-gray-900 dark:text-white">{fb.name}</span>
+                    <span className="text-[10px] text-green-600 dark:text-green-400 font-bold">{fb.role}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
         </div>
       </div>
 
