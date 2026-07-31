@@ -2,16 +2,21 @@
 
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useRouter } from "next/navigation";
 import { 
   Settings, Globe, Bell, Sun, Sparkles, Moon, ShieldCheck, 
-  User, Mail, Smartphone, Volume2, Database, Trash2, RefreshCw, CheckCircle2, DollarSign
+  User, Mail, Smartphone, Volume2, Database, Trash2, RefreshCw, CheckCircle2, DollarSign,
+  LogOut, ShieldAlert
 } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
 import { motion, AnimatePresence } from "framer-motion";
+import { auth } from "@/lib/firebase";
+import { signOut } from "firebase/auth";
 
 export default function SettingsPage() {
   const { t, i18n } = useTranslation();
   const { darkMode, toggleDarkMode } = useTheme();
+  const router = useRouter();
 
   // Settings States
   const [notifications, setNotifications] = useState(true);
@@ -20,6 +25,7 @@ export default function SettingsPage() {
   const [weatherAlerts, setWeatherAlerts] = useState(true);
   const [currency, setCurrency] = useState("₹ INR");
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
   // Load saved settings on mount
   useEffect(() => {
@@ -68,6 +74,22 @@ export default function SettingsPage() {
     }
   };
 
+  // HANDLER FOR USER SIGN OUT / LOGOUT
+  const handleSignOut = async () => {
+    if (confirm("Are you sure you want to sign out of your AgroPulse account?")) {
+      setIsSigningOut(true);
+      try {
+        await signOut(auth);
+      } catch (e) {
+        console.warn("Firebase sign out warning", e);
+      } finally {
+        localStorage.removeItem("agropulse_current_user_account");
+        alert("You have been signed out successfully.");
+        router.push("/auth");
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 p-4 md:p-8 font-sans max-w-5xl mx-auto space-y-8 pt-[78px]">
       
@@ -86,7 +108,7 @@ export default function SettingsPage() {
           </h1>
 
           <p className="text-green-100/90 text-xs font-medium max-w-xl">
-            Configure multi-lingual translation, APMC Mandi SMS alerts, dark mode aesthetics, and currency defaults.
+            Configure multi-lingual translation, APMC Mandi SMS alerts, dark mode aesthetics, and account sign-out.
           </p>
         </div>
 
@@ -261,18 +283,43 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* SECTION 4: DATA RESET */}
-        <div className="pt-4 border-t border-gray-100 dark:border-white/10 flex justify-between items-center">
-          <div>
-            <h3 className="font-black text-xs text-gray-900 dark:text-white">Reset Preferences</h3>
-            <p className="text-[11px] text-gray-400 font-medium">Revert all custom preferences back to factory defaults.</p>
+        {/* SECTION 4: ACCOUNT SIGN OUT & DATA RESET */}
+        <div className="pt-6 border-t border-gray-100 dark:border-white/10 space-y-4">
+          <h2 className="text-xs font-black text-red-600 dark:text-red-400 uppercase tracking-widest flex items-center gap-2 pb-2 border-b border-gray-100 dark:border-white/10">
+            <ShieldAlert className="w-4 h-4" /> Account Session & Privacy
+          </h2>
+
+          {/* SIGN OUT BUTTON */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 bg-red-50/70 dark:bg-red-950/40 rounded-2xl border border-red-200 dark:border-red-900/60">
+            <div className="flex gap-3 items-center">
+              <LogOut className="w-5 h-5 text-red-600 dark:text-red-400 shrink-0" />
+              <div>
+                <h3 className="font-extrabold text-gray-900 dark:text-white text-xs">Sign Out of AgroPulse Account</h3>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400 font-semibold">Safely log out of your e-Farmer session and return to authentication desk.</p>
+              </div>
+            </div>
+
+            <button
+              onClick={handleSignOut}
+              disabled={isSigningOut}
+              className="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-black text-xs rounded-xl shadow-md flex items-center gap-2 transition-all shrink-0"
+            >
+              <LogOut className="w-4 h-4" /> {isSigningOut ? "Signing Out..." : "Sign Out Account"}
+            </button>
           </div>
-          <button
-            onClick={handleResetSettings}
-            className="px-4 py-2 bg-red-50 dark:bg-red-950/60 text-red-600 dark:text-red-400 font-extrabold text-xs rounded-xl border border-red-200 dark:border-red-900 flex items-center gap-1.5 hover:bg-red-100 transition-colors"
-          >
-            <RotateCcw className="w-3.5 h-3.5" /> Reset Defaults
-          </button>
+
+          <div className="flex justify-between items-center pt-2">
+            <div>
+              <h3 className="font-black text-xs text-gray-900 dark:text-white">Reset Preferences</h3>
+              <p className="text-[11px] text-gray-400 font-medium">Revert all custom preferences back to factory defaults.</p>
+            </div>
+            <button
+              onClick={handleResetSettings}
+              className="px-4 py-2 bg-gray-100 dark:bg-white/10 text-gray-800 dark:text-gray-200 font-bold text-xs rounded-xl flex items-center gap-1.5 hover:bg-gray-200 transition-colors"
+            >
+              <RotateCcw className="w-3.5 h-3.5" /> Reset Defaults
+            </button>
+          </div>
         </div>
 
       </div>
