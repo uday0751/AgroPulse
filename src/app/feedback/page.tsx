@@ -432,26 +432,24 @@ export default function FeedbackPage() {
                       ))}
                     </div>
 
-                    {/* EDIT & DELETE BUTTONS SHOWN ONLY FOR AUTHOR'S OWN COMMENT */}
-                    {isMyComment && (
-                      <div className="flex items-center gap-1 bg-green-100 dark:bg-green-950/80 px-2 py-1 rounded-lg border border-green-300 dark:border-green-800">
-                        <button
-                          onClick={() => setEditingFeedback(fb)}
-                          className="p-1 text-green-700 dark:text-green-300 hover:text-green-900 rounded-md transition-colors"
-                          title="Edit My Comment"
-                        >
-                          <Edit3 className="w-3.5 h-3.5" />
-                        </button>
+                    {/* EDIT & DELETE BUTTONS ALWAYS VISIBLE */}
+                    <div className="flex items-center gap-1.5 bg-gray-100 dark:bg-white/10 px-2 py-1 rounded-lg border border-gray-200 dark:border-white/10">
+                      <button
+                        onClick={() => setEditingFeedback(fb)}
+                        className="p-1 text-green-700 dark:text-green-400 hover:text-green-900 dark:hover:text-green-300 rounded-md transition-colors flex items-center gap-1 font-bold text-[10px]"
+                        title="Edit Comment"
+                      >
+                        <Edit3 className="w-3.5 h-3.5" /> Edit
+                      </button>
 
-                        <button
-                          onClick={() => handleDeleteFeedback(fb)}
-                          className="p-1 text-red-600 dark:text-red-400 hover:text-red-800 rounded-md transition-colors"
-                          title="Delete My Comment"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    )}
+                      <button
+                        onClick={() => handleDeleteFeedback(fb)}
+                        className="p-1 text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 rounded-md transition-colors flex items-center gap-1 font-bold text-[10px]"
+                        title="Delete Comment"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" /> Delete
+                      </button>
+                    </div>
                   </div>
 
                   <span className="inline-block text-[10px] font-black uppercase px-2 py-0.5 rounded-md bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-300">

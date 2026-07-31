@@ -631,7 +631,31 @@ export default function Dashboard() {
                         <Star key={i} className="w-3.5 h-3.5 fill-yellow-400" />
                       ))}
                     </div>
-                    <span className="text-[10px] font-bold text-gray-400">{fb.createdAt}</span>
+
+                    <div className="flex items-center gap-2 text-[10px] font-bold">
+                      <span className="text-gray-400">{fb.createdAt}</span>
+                      <button
+                        onClick={() => {
+                          const newComment = prompt("Edit your feedback comment:", fb.comments);
+                          if (newComment && newComment.trim()) {
+                            setDashboardFeedbacks(dashboardFeedbacks.map(item => item.id === fb.id ? { ...item, comments: newComment.trim() } : item));
+                          }
+                        }}
+                        className="text-green-600 dark:text-green-400 hover:underline"
+                      >
+                        ✏️ Edit
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (confirm("Delete this feedback?")) {
+                            setDashboardFeedbacks(dashboardFeedbacks.filter(item => item.id !== fb.id));
+                          }
+                        }}
+                        className="text-red-500 hover:underline"
+                      >
+                        🗑️ Delete
+                      </button>
+                    </div>
                   </div>
 
                   <p className="text-xs text-gray-800 dark:text-gray-200 font-semibold italic">
