@@ -34,7 +34,7 @@ export default function Dashboard() {
     loading: true
   });
 
-  // Quick Dashboard Feedback Form State
+  // Feedback Form State at Bottom of Dashboard
   const [fbName, setFbName] = useState("");
   const [fbComments, setFbComments] = useState("");
   const [fbRating, setFbRating] = useState(5);
@@ -302,7 +302,7 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="min-h-screen p-4 md:p-8 font-sans max-w-7xl mx-auto space-y-8">
+    <div className="min-h-screen p-4 md:p-8 font-sans max-w-7xl mx-auto space-y-10">
       
       {/* Clean Top Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gray-100 dark:border-white/10 pb-4">
@@ -508,132 +508,138 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* AT LAST: FEEDBACK & REVIEWS SECTION ON DASHBOARD */}
-      <div className="bg-white dark:bg-[#1a1b23] border border-gray-100 dark:border-white/10 p-6 md:p-8 rounded-3xl shadow-lg space-y-6">
+      {/* FEEDBACK FORM AT THE VERY BOTTOM OF THE DASHBOARD */}
+      <div className="bg-white dark:bg-[#1a1b23] border-2 border-green-500/30 dark:border-green-500/40 p-6 md:p-8 rounded-3xl shadow-xl space-y-6">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gray-100 dark:border-white/10 pb-4">
           <div>
-            <div className="inline-flex items-center gap-1.5 bg-green-50 dark:bg-green-950 px-3 py-1 rounded-full text-xs font-black text-green-700 dark:text-green-400 mb-1 border border-green-200 dark:border-green-800">
+            <div className="inline-flex items-center gap-1.5 bg-green-100 dark:bg-green-950 px-3.5 py-1 rounded-full text-xs font-black text-green-800 dark:text-green-300 mb-1 border border-green-300 dark:border-green-800">
               <MessageSquare className="w-3.5 h-3.5 text-green-600" />
-              <span>User Community Voice</span>
+              <span>Feedback Portal</span>
             </div>
             <h2 className="text-xl md:text-2xl font-black text-gray-900 dark:text-white">
-              Farmer & Buyer Feedback
+              Farmer & User Feedback Form
             </h2>
             <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-              Rate your experience with AgroPulse or reach out directly to the Lead Developer.
+              We value your experience! Submit your review directly to the Lead Engineer & Platform Founder.
             </p>
           </div>
 
           {/* FOUNDER BRAND BADGE */}
-          <div className="bg-gradient-to-r from-green-900 to-emerald-900 text-white p-3.5 rounded-2xl border border-green-700/60 shadow-md text-xs space-y-1 shrink-0">
+          <div className="bg-gradient-to-r from-green-900 via-emerald-900 to-green-950 text-white p-4 rounded-2xl border border-green-700/60 shadow-md text-xs space-y-1 shrink-0">
             <div className="flex items-center gap-2">
               <User className="w-4 h-4 text-green-400" />
-              <span className="font-extrabold text-white">Uday Pratap Singh Chauhan</span>
+              <span className="font-extrabold text-white text-sm">Uday Pratap Singh Chauhan</span>
             </div>
-            <div className="flex items-center gap-2 text-[11px] text-green-200">
+            <div className="flex items-center gap-2 text-xs text-green-200">
               <Mail className="w-3.5 h-3.5 text-green-400" />
-              <a href="mailto:udchauhan0987@gmail.com" className="hover:underline font-bold">udchauhan0987@gmail.com</a>
+              <a href="mailto:udchauhan0987@gmail.com" className="hover:underline font-extrabold text-white">udchauhan0987@gmail.com</a>
             </div>
           </div>
         </div>
 
-        {/* FEEDBACK FORM & LIVE SUBMISSIONS GRID */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* FEEDBACK FORM & FEEDBACK FEED GRID */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
           
-          {/* QUICK FEEDBACK INPUT */}
-          <div className="lg:col-span-1 bg-gray-50 dark:bg-white/5 p-5 rounded-2xl border border-gray-200/60 dark:border-white/5 space-y-4 text-xs">
-            <h3 className="font-black text-sm text-gray-900 dark:text-white flex items-center gap-1.5">
-              <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" /> Submit Quick Feedback
-            </h3>
+          {/* FEEDBACK FORM */}
+          <div className="bg-gray-50 dark:bg-white/5 p-6 rounded-2xl border border-gray-200/60 dark:border-white/5 space-y-4 text-xs">
+            <div className="flex justify-between items-center">
+              <h3 className="font-black text-sm text-gray-900 dark:text-white flex items-center gap-2">
+                <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" /> Submit Your Feedback Below
+              </h3>
+              <span className="text-[10px] font-bold text-green-600 bg-green-100 dark:bg-green-950 px-2.5 py-0.5 rounded-md">
+                Direct Submission
+              </span>
+            </div>
 
             {fbSuccess && (
-              <div className="bg-green-100 dark:bg-green-950 text-green-800 dark:text-green-300 p-2.5 rounded-xl text-[11px] font-bold flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-green-600" />
-                <span>Thank you! Your feedback has been recorded.</span>
+              <div className="bg-green-100 dark:bg-green-950 text-green-800 dark:text-green-300 p-3 rounded-xl text-xs font-bold flex items-center gap-2 border border-green-300">
+                <CheckCircle2 className="w-4 h-4 text-green-600 shrink-0" />
+                <span>Thank you! Your feedback has been successfully submitted and saved.</span>
               </div>
             )}
 
-            <form onSubmit={handleQuickFeedbackSubmit} className="space-y-3">
+            <form onSubmit={handleQuickFeedbackSubmit} className="space-y-4">
               <div>
-                <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1">Your Name:</label>
+                <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1">Your Full Name:</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Rameshwar Patil"
                   value={fbName}
                   onChange={(e) => setFbName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1a1b23] font-bold"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1a1b23] font-bold text-gray-900 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1">Rating:</label>
-                <div className="flex gap-1 text-yellow-400">
+                <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1">Star Rating:</label>
+                <div className="flex items-center gap-2 text-yellow-400">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
                       type="button"
                       key={star}
                       onClick={() => setFbRating(star)}
-                      className="p-1 hover:scale-110 transition-transform"
+                      className="p-1 hover:scale-125 transition-transform focus:outline-none"
                     >
-                      <Star className={`w-5 h-5 ${star <= fbRating ? "fill-yellow-400" : "text-gray-300"}`} />
+                      <Star className={`w-6 h-6 ${star <= fbRating ? "fill-yellow-400" : "text-gray-300"}`} />
                     </button>
                   ))}
+                  <span className="text-xs font-extrabold text-gray-700 dark:text-gray-300 ml-2">
+                    ({fbRating} / 5 Stars)
+                  </span>
                 </div>
               </div>
 
               <div>
-                <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1">Feedback Comments:</label>
+                <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1">Your Feedback & Suggestions:</label>
                 <textarea
                   required
-                  rows={3}
-                  placeholder="Tell us what you liked about Mandi rates, Buying/Selling, or Weather predictions..."
+                  rows={4}
+                  placeholder="Share your thoughts about crop prices, buying/selling experience, weather predictions, or mandi finder..."
                   value={fbComments}
                   onChange={(e) => setFbComments(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1a1b23] font-bold"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1a1b23] font-bold text-gray-900 dark:text-white"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full py-2.5 bg-green-600 hover:bg-green-700 text-white font-extrabold rounded-xl shadow-sm text-xs flex items-center justify-center gap-1.5"
+                className="w-full py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-black text-xs rounded-xl shadow-md flex items-center justify-center gap-2 transition-all"
               >
-                <Send className="w-3.5 h-3.5" /> Submit Quick Review
+                <Send className="w-4 h-4" /> Submit Feedback Form
               </button>
             </form>
           </div>
 
-          {/* SUBMITTED REVIEWS CARDS */}
-          <div className="lg:col-span-2 space-y-3">
+          {/* SUBMITTED FEEDBACK REVIEWS */}
+          <div className="space-y-4">
             <div className="flex justify-between items-center">
               <h3 className="font-extrabold text-xs text-gray-900 dark:text-white uppercase tracking-wider">
-                Community Feedback Feed
+                Recent Farmer Reviews
               </h3>
               <Link href="/feedback" className="text-xs font-black text-green-600 dark:text-green-400 hover:underline flex items-center gap-1">
-                View All Feedback Portal <ChevronRight className="w-3.5 h-3.5" />
+                Full Feedback Portal <ChevronRight className="w-3.5 h-3.5" />
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-3">
               {dashboardFeedbacks.map((fb) => (
-                <div key={fb.id} className="bg-gray-50 dark:bg-white/5 p-4 rounded-2xl border border-gray-200/60 dark:border-white/5 space-y-2.5 flex flex-col justify-between">
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-1 text-yellow-400">
-                        {[...Array(fb.rating)].map((_, i) => (
-                          <Star key={i} className="w-3.5 h-3.5 fill-yellow-400" />
-                        ))}
-                      </div>
-                      <span className="text-[9px] font-bold text-gray-400">{fb.createdAt}</span>
+                <div key={fb.id} className="bg-gray-50 dark:bg-white/5 p-4 rounded-2xl border border-gray-200/60 dark:border-white/5 space-y-2">
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-1 text-yellow-400">
+                      {[...Array(fb.rating)].map((_, i) => (
+                        <Star key={i} className="w-3.5 h-3.5 fill-yellow-400" />
+                      ))}
                     </div>
-
-                    <p className="text-xs text-gray-800 dark:text-gray-200 font-semibold italic">
-                      "{fb.comments}"
-                    </p>
+                    <span className="text-[10px] font-bold text-gray-400">{fb.createdAt}</span>
                   </div>
 
-                  <div className="pt-2 border-t border-gray-200/60 dark:border-white/5 flex justify-between items-center">
-                    <span className="font-extrabold text-xs text-gray-900 dark:text-white">{fb.name}</span>
+                  <p className="text-xs text-gray-800 dark:text-gray-200 font-semibold italic">
+                    "{fb.comments}"
+                  </p>
+
+                  <div className="pt-2 border-t border-gray-200/60 dark:border-white/5 flex justify-between items-center text-xs">
+                    <span className="font-extrabold text-gray-900 dark:text-white">{fb.name}</span>
                     <span className="text-[10px] text-green-600 dark:text-green-400 font-bold">{fb.role}</span>
                   </div>
                 </div>
