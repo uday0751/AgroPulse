@@ -421,6 +421,9 @@ export default function CustomerMarketplacePage() {
           };
 
           currentListings = [localListing, ...currentListings];
+          setBuyingListing(localListing);
+        } else {
+          setBuyingListing(cityMatch);
         }
       }
     }

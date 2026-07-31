@@ -4,8 +4,10 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { 
   Search, MapPin, Navigation, Phone, Clock, Star, Map as MapIcon, ChevronRight, 
-  Landmark, ShieldCheck, Zap, RefreshCw, Compass, Building2, CheckCircle2, X, PhoneCall, ExternalLink, Tag, Car
+  Landmark, ShieldCheck, Zap, RefreshCw, Compass, Building2, CheckCircle2, X, PhoneCall, ExternalLink, Tag, Car, ShoppingBag
 } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import gsap from 'gsap';
 
 const MandiMap = dynamic(() => import('@/components/MandiMap'), { 
@@ -90,7 +92,6 @@ const MASTER_COMMODITIES_LIST: Record<string, { privatePrice: number; govtMSP: n
 
 // COMPREHENSIVE MANDIS DATABASE WITH ALL CROPS, FRUITS & VEGGIES
 const REAL_INDIAN_MANDIS: RealMandi[] = [
-  // MADHYA PRADESH
   {
     id: 'mp-bhopal-1',
     name: 'Karond APMC Mandi (Bhopal)',
@@ -104,6 +105,23 @@ const REAL_INDIAN_MANDIS: RealMandi[] = [
     lng: 77.4206,
     openTime: '06:00 AM - 05:00 PM',
     phone: '+91 755 274 1234',
+    crops: Object.keys(MASTER_COMMODITIES_LIST),
+    todayPrices: MASTER_COMMODITIES_LIST,
+    rating: 4.8
+  },
+  {
+    id: 'up-kanpur-1',
+    name: 'Kanpur APMC Mandi (Naubasta Grain Yard)',
+    type: 'Government APMC',
+    state: 'Uttar Pradesh',
+    district: 'Kanpur Nagar',
+    city: 'Kanpur',
+    pincode: '208021',
+    address: 'Naubasta Bypass Road, Kanpur Nagar, Uttar Pradesh',
+    lat: 26.4499,
+    lng: 80.3319,
+    openTime: '05:00 AM - 05:00 PM',
+    phone: '+91 512 261 4567',
     crops: Object.keys(MASTER_COMMODITIES_LIST),
     todayPrices: MASTER_COMMODITIES_LIST,
     rating: 4.8
@@ -126,61 +144,6 @@ const REAL_INDIAN_MANDIS: RealMandi[] = [
     rating: 4.8
   },
   {
-    id: 'mp-ujjain-1',
-    name: 'Ujjain APMC Grain Yard',
-    type: 'Government APMC',
-    state: 'Madhya Pradesh',
-    district: 'Ujjain',
-    city: 'Ujjain',
-    pincode: '456006',
-    address: 'Agar Road, APMC Mandi Yard, Ujjain, Madhya Pradesh',
-    lat: 23.1765,
-    lng: 75.7885,
-    openTime: '06:30 AM - 04:30 PM',
-    phone: '+91 734 251 2345',
-    crops: Object.keys(MASTER_COMMODITIES_LIST),
-    todayPrices: MASTER_COMMODITIES_LIST,
-    rating: 4.7
-  },
-
-  // UTTAR PRADESH & KANPUR
-  {
-    id: 'up-kanpur-1',
-    name: 'Kanpur APMC Mandi (Naubasta Grain Yard)',
-    type: 'Government APMC',
-    state: 'Uttar Pradesh',
-    district: 'Kanpur Nagar',
-    city: 'Kanpur',
-    pincode: '208021',
-    address: 'Naubasta Bypass Road, Kanpur Nagar, Uttar Pradesh',
-    lat: 26.4499,
-    lng: 80.3319,
-    openTime: '05:00 AM - 05:00 PM',
-    phone: '+91 512 261 4567',
-    crops: Object.keys(MASTER_COMMODITIES_LIST),
-    todayPrices: MASTER_COMMODITIES_LIST,
-    rating: 4.8
-  },
-  {
-    id: 'up-lucknow-1',
-    name: 'Lucknow Naveen Galla APMC Mandi',
-    type: 'Government APMC',
-    state: 'Uttar Pradesh',
-    district: 'Lucknow',
-    city: 'Lucknow',
-    pincode: '226020',
-    address: 'Sitapur Road, Naveen Galla Mandi, Lucknow, Uttar Pradesh',
-    lat: 26.8467,
-    lng: 80.9462,
-    openTime: '06:00 AM - 05:00 PM',
-    phone: '+91 522 243 1234',
-    crops: Object.keys(MASTER_COMMODITIES_LIST),
-    todayPrices: MASTER_COMMODITIES_LIST,
-    rating: 4.6
-  },
-
-  // MAHARASHTRA CITIES
-  {
     id: 'mh-pune-1',
     name: 'Pune APMC (Gultekdi Market Yard)',
     type: 'Government APMC',
@@ -196,27 +159,11 @@ const REAL_INDIAN_MANDIS: RealMandi[] = [
     crops: Object.keys(MASTER_COMMODITIES_LIST),
     todayPrices: MASTER_COMMODITIES_LIST,
     rating: 4.7
-  },
-  {
-    id: 'mh-nashik-1',
-    name: 'Lasalgaon APMC (Asia Largest Onion Mandi)',
-    type: 'Government APMC',
-    state: 'Maharashtra',
-    district: 'Nashik',
-    city: 'Nashik (Lasalgaon)',
-    pincode: '422306',
-    address: 'Near Railway Station Road, Lasalgaon, Niphad, Nashik',
-    lat: 20.1472,
-    lng: 74.2319,
-    openTime: '06:00 AM - 06:00 PM',
-    phone: '+91 2550 266 123',
-    crops: Object.keys(MASTER_COMMODITIES_LIST),
-    todayPrices: MASTER_COMMODITIES_LIST,
-    rating: 4.9
   }
 ];
 
 export default function MandiFinderPage() {
+  const router = useRouter();
   const [search, setSearch] = useState('');
   const [stateFilter, setStateFilter] = useState('All');
   const [typeFilter, setTypeFilter] = useState<'All' | 'Government APMC' | 'Private Mandi / Hub'>('All');
@@ -259,6 +206,13 @@ export default function MandiFinderPage() {
   useEffect(() => {
     handleDetectRealLocation();
   }, []);
+
+  // Helper to handle direct crop purchase redirection
+  const handleBuyCropDirect = (rawCropName: string, mandi: RealMandi) => {
+    // Extract clean name e.g. "Wheat" from "🌾 Wheat (Lokwan / Sharbati)"
+    const cleanCropName = rawCropName.replace(/^[^\w\s]+/, '').trim().split('(')[0].trim();
+    router.push(`/marketplace?search=${encodeURIComponent(cleanCropName)}&state=${encodeURIComponent(mandi.state)}&city=${encodeURIComponent(mandi.city)}&mandi=${encodeURIComponent(mandi.name)}`);
+  };
 
   // REAL DISTANCE CALCULATOR WITH REAL CITY GEOGRAPHIC COORDINATES
   const filteredMandis = useMemo(() => {
@@ -340,11 +294,11 @@ export default function MandiFinderPage() {
         <div className="relative z-10 space-y-1">
           <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-xs font-extrabold text-green-300 border border-white/20">
             <Compass className="w-3.5 h-3.5 text-yellow-400" />
-            <span>Real GPS Distance Calculation & Complete Commodity Price List</span>
+            <span>Click Any Mandi Price to Buy Crops Directly</span>
           </div>
           <h1 className="text-2xl md:text-4xl font-black text-white">Real-Time Mandi Finder</h1>
           <p className="text-green-100/80 text-xs md:text-sm font-medium max-w-xl">
-            Complete list of all Crops, Fruits, & Vegetables with live APMC Mandi rates across India.
+            Click any Mandi commodity price to open the 1-click Direct Crop Order & Purchase Portal.
           </p>
         </div>
 
@@ -482,13 +436,13 @@ export default function MandiFinderPage() {
                     <MapPin className="w-3.5 h-3.5 text-green-600 shrink-0" /> {mandi.city}, {mandi.district}, {mandi.state} - {mandi.pincode}
                   </p>
 
-                  {/* PRICE SUMMARY PILL */}
+                  {/* PRICE SUMMARY PILL WITH DIRECT BUY LINK */}
                   <div className="mt-3 bg-gray-50 dark:bg-white/5 p-2.5 rounded-xl border border-gray-100 dark:border-white/5 flex items-center justify-between text-xs font-bold">
                     <span className="text-gray-500 font-extrabold text-[11px]">
                       🍏 20+ Crops & Fruits Listed
                     </span>
-                    <span className="text-green-600 dark:text-green-400 font-black">
-                      View Full Rate Sheet →
+                    <span className="text-green-600 dark:text-green-400 font-black flex items-center gap-1">
+                      <ShoppingBag className="w-3.5 h-3.5 text-green-600" /> Click to Buy Crop →
                     </span>
                   </div>
                 </div>
@@ -509,7 +463,7 @@ export default function MandiFinderPage() {
             />
           </div>
 
-          {/* SELECTED MANDI INSPECTION PANEL WITH FULL ITEM-BY-ITEM CROPS & FRUITS PRICES */}
+          {/* SELECTED MANDI INSPECTION PANEL WITH CLICKABLE BUY CROP BUTTONS */}
           {selectedMandi && (
             <div className="bg-white dark:bg-[#1a1b23] rounded-3xl p-5 shadow-2xl border border-gray-100 dark:border-white/10 shrink-0 max-h-[48vh] overflow-y-auto space-y-4">
               <div className="flex justify-between items-start border-b border-gray-100 dark:border-white/10 pb-3">
@@ -556,11 +510,11 @@ export default function MandiFinderPage() {
                 </a>
               </div>
 
-              {/* MANDI COMMODITY SEARCH FILTER */}
+              {/* MANDI COMMODITY SEARCH & BUY PRICE LIST */}
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <span className="text-[11px] font-black uppercase text-gray-400 block">
-                    All Available Crops, Fruits & Vegetables Price Sheet ({Object.keys(selectedMandi.todayPrices).length} Commodities):
+                    Live Rates Sheet • Click Any Commodity to Buy Direct:
                   </span>
                 </div>
 
@@ -575,19 +529,30 @@ export default function MandiFinderPage() {
                   />
                 </div>
 
-                {/* FULL PRICE SHEET LIST */}
+                {/* FULL PRICE SHEET LIST WITH CLICKABLE BUY CROP DIRECT OPTION */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs pt-1">
                   {Object.entries(selectedMandi.todayPrices)
                     .filter(([cropName]) => !mandiItemSearch || cropName.toLowerCase().includes(mandiItemSearch.toLowerCase()))
                     .map(([cropName, priceObj]) => (
-                      <div key={cropName} className="p-3 bg-gray-50 dark:bg-white/5 rounded-2xl border border-gray-100 dark:border-white/5 flex justify-between items-center font-bold hover:border-green-500/40 transition-colors">
+                      <div 
+                        key={cropName} 
+                        className="p-3 bg-gray-50 dark:bg-white/5 rounded-2xl border border-gray-100 dark:border-white/5 flex justify-between items-center font-bold hover:border-green-500/60 hover:bg-green-50/30 dark:hover:bg-green-950/20 transition-all group"
+                      >
                         <div>
-                          <span className="text-gray-900 dark:text-white block">{cropName}</span>
+                          <span className="text-gray-900 dark:text-white block group-hover:text-green-700 dark:group-hover:text-green-400">
+                            {cropName}
+                          </span>
                           <span className="text-[10px] text-gray-400 font-medium">Govt MSP: ₹{priceObj.govtMSP}/q</span>
                         </div>
-                        <div className="text-right">
-                          <span className="text-sm font-black text-green-600 dark:text-green-400 block">₹{priceObj.privatePrice}/q</span>
-                          <span className="text-[9px] font-black text-green-600 bg-green-100 dark:bg-green-950 px-1.5 py-0.5 rounded">📈 Active APMC Rate</span>
+
+                        <div className="text-right space-y-1">
+                          <button
+                            onClick={() => handleBuyCropDirect(cropName, selectedMandi)}
+                            className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white font-extrabold text-[11px] rounded-lg shadow-sm flex items-center gap-1 transition-all"
+                            title={`Click to buy ${cropName} directly from farmer marketplace`}
+                          >
+                            <ShoppingBag className="w-3 h-3 text-white" /> ₹{priceObj.privatePrice}/q • Buy Direct
+                          </button>
                         </div>
                       </div>
                     ))}
