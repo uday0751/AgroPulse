@@ -1,0 +1,84 @@
+"use client";
+
+import { Home, LineChart, Cloud, Users, Calendar, Settings, Landmark, Stethoscope, User, MapPin, BarChart, ShoppingBag, Sprout } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useTranslation } from "react-i18next";
+import { motion } from "framer-motion";
+import { Logo } from "./Logo";
+
+export function Sidebar() {
+  const pathname = usePathname();
+  const { t } = useTranslation();
+
+  // Hide sidebar on Auth and Profile-Setup pages
+  if (pathname === "/auth" || pathname === "/auth/signup" || pathname === "/profile-setup") {
+    return null;
+  }
+
+  const links = [
+    { href: "/", label: t("dashboard") || "Dashboard", icon: Home },
+    { href: "/marketplace", label: "Buy Crops (Customer)", icon: ShoppingBag },
+    { href: "/seller", label: "Sell Crops (Farmer Desk)", icon: Sprout },
+    { href: "/market", label: t("market_prices") || "Market Prices", icon: LineChart },
+    { href: "/mandi-finder", label: t("mandi_finder") || "Mandi Finder", icon: MapPin },
+    { href: "/weather", label: t("weather") || "Weather", icon: Cloud },
+    { href: "/community", label: t("community") || "Community", icon: Users },
+    { href: "/experts", label: t("expert_consultation") || "Experts", icon: Stethoscope },
+    { href: "/planner", label: t("planner") || "Crop Planner", icon: Calendar },
+    { href: "/compare", label: t("compare") || "Compare Crops", icon: BarChart },
+    { href: "/schemes", label: t("govt_schemes") || "Govt Schemes", icon: Landmark },
+  ];
+
+  return (
+    <motion.aside 
+      initial={{ x: -100, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      className="w-64 bg-white dark:bg-[#16171f] border-r border-gray-200 dark:border-white/10 hidden md:flex flex-col min-h-screen fixed left-0 top-0 z-50 shadow-sm"
+    >
+      <div className="p-6 border-b border-gray-100 dark:border-white/10 flex items-center justify-center">
+        <Link href="/" className="text-2xl font-extrabold text-green-700 dark:text-green-400 flex items-center gap-2.5 tracking-tight">
+          <Logo className="w-9 h-9" />
+          <span>AgroPulse</span>
+        </Link>
+      </div>
+      
+      <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto">
+        {links.map((link) => {
+          const Icon = link.icon;
+          const isActive = pathname === link.href;
+          
+          return (
+            <Link 
+              key={link.href} 
+              href={link.href}
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-sm font-medium ${
+                isActive 
+                  ? "bg-green-600 text-white shadow-sm" 
+                  : "text-gray-600 dark:text-gray-400 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-700 dark:hover:text-green-400"
+              }`}
+            >
+              <Icon className="w-5 h-5" />
+              <span>{link.label}</span>
+            </Link>
+          );
+        })}
+      </nav>
+
+      <div className="p-4 border-t border-gray-100 dark:border-white/10 space-y-1">
+        <Link href="/profile" className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+          pathname === "/profile" ? "bg-green-600 text-white shadow-sm" : "text-gray-600 dark:text-gray-400 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-700 dark:hover:text-green-400"
+        }`}>
+          <User className="w-5 h-5" />
+          <span>{t("profile") || "Profile"}</span>
+        </Link>
+        <Link href="/settings" className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+          pathname === "/settings" ? "bg-green-600 text-white shadow-sm" : "text-gray-600 dark:text-gray-400 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-700 dark:hover:text-green-400"
+        }`}>
+          <Settings className="w-5 h-5" />
+          <span>{t("settings") || "Settings"}</span>
+        </Link>
+      </div>
+    </motion.aside>
+  );
+}
