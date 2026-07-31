@@ -24,11 +24,11 @@ export function Sidebar() {
     { href: "/mandi-finder", label: t("mandi_finder") || "Mandi Finder", icon: MapPin },
     { href: "/weather", label: t("weather") || "Weather", icon: Cloud },
     { href: "/community", label: t("community") || "Community", icon: Users },
-    { href: "/feedback", label: "Feedback & Support", icon: MessageSquareHeart },
     { href: "/experts", label: t("expert_consultation") || "Experts", icon: Stethoscope },
     { href: "/planner", label: t("planner") || "Crop Planner", icon: Calendar },
     { href: "/compare", label: t("compare") || "Compare Crops", icon: BarChart },
     { href: "/schemes", label: t("govt_schemes") || "Govt Schemes", icon: Landmark },
+    { href: "/feedback", label: "Feedback & Support", icon: MessageSquareHeart },
   ];
 
   return (
