@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { 
   Star, MessageSquare, Send, CheckCircle2, User, Mail, ShieldCheck, 
   ThumbsUp, Sparkles, MapPin, Tag, Edit3, Trash2, X, Save
@@ -17,6 +17,7 @@ export interface UserFeedback {
   comments: string;
   location: string;
   createdAt: string;
+  authorFarmerId?: string;
 }
 
 const INITIAL_FEEDBACKS: UserFeedback[] = [
@@ -29,7 +30,8 @@ const INITIAL_FEEDBACKS: UserFeedback[] = [
     rating: 5,
     comments: "The GPS Mandi Finder with Haversine distance is incredible! Found Bhopal Karond APMC mandi rates immediately.",
     location: "Baramati, Pune",
-    createdAt: "31 July 2026"
+    createdAt: "31 July 2026",
+    authorFarmerId: "MH-FAR-89210"
   },
   {
     id: "fb-2",
@@ -40,7 +42,8 @@ const INITIAL_FEEDBACKS: UserFeedback[] = [
     rating: 5,
     comments: "Direct crop selling with manual quantity options and order cancellation filtering made selling Basmati 1121 super easy.",
     location: "Ludhiana, Punjab",
-    createdAt: "30 July 2026"
+    createdAt: "30 July 2026",
+    authorFarmerId: "PB-FAR-44901"
   },
   {
     id: "fb-3",
@@ -51,12 +54,14 @@ const INITIAL_FEEDBACKS: UserFeedback[] = [
     rating: 5,
     comments: "The 60-day weather prediction graph with soil moisture tracking (78%) helped us plan crop harvesting perfectly.",
     location: "Bhopal, Madhya Pradesh",
-    createdAt: "29 July 2026"
+    createdAt: "29 July 2026",
+    authorFarmerId: "MP-FAR-77123"
   }
 ];
 
 export default function FeedbackPage() {
   const [feedbacks, setFeedbacks] = useState<UserFeedback[]>(INITIAL_FEEDBACKS);
+  const [currentUser, setCurrentUser] = useState<{ fullName: string; email: string; eFarmerId: string } | null>(null);
   
   // Form State
   const [rating, setRating] = useState<number>(5);
@@ -72,12 +77,23 @@ export default function FeedbackPage() {
   // Edit Feedback Modal State
   const [editingFeedback, setEditingFeedback] = useState<UserFeedback | null>(null);
 
-  // Load saved feedbacks from localStorage
+  // Load user account & saved feedbacks from localStorage
   useEffect(() => {
-    const saved = localStorage.getItem("agropulse_user_feedbacks");
-    if (saved) {
+    const savedUser = localStorage.getItem("agropulse_current_user_account");
+    if (savedUser) {
       try {
-        setFeedbacks(JSON.parse(saved));
+        const parsed = JSON.parse(savedUser);
+        setCurrentUser(parsed);
+        if (parsed.fullName) setName(parsed.fullName);
+        if (parsed.email) setEmail(parsed.email);
+        if (parsed.district && parsed.state) setLocation(`${parsed.district}, ${parsed.state}`);
+      } catch (e) { console.error(e); }
+    }
+
+    const savedFb = localStorage.getItem("agropulse_user_feedbacks");
+    if (savedFb) {
+      try {
+        setFeedbacks(JSON.parse(savedFb));
       } catch (e) { console.error(e); }
     }
   }, []);
@@ -97,36 +113,35 @@ export default function FeedbackPage() {
     const newFb: UserFeedback = {
       id: `fb-${Date.now()}`,
       name: name.trim(),
-      email: email.trim() || "anonymous@agropulse.in",
+      email: email.trim() || "user@agropulse.in",
       role,
       category,
       rating,
       comments: comments.trim(),
       location: location.trim() || "India",
-      createdAt: new Date().toLocaleDateString("en-IN", { day: 'numeric', month: 'short', year: 'numeric' })
+      createdAt: new Date().toLocaleDateString("en-IN", { day: 'numeric', month: 'short', year: 'numeric' }),
+      authorFarmerId: currentUser?.eFarmerId || name.trim().toLowerCase()
     };
 
     const updated = [newFb, ...feedbacks];
     saveFeedbacksToStorage(updated);
 
-    setName("");
-    setEmail("");
     setComments("");
-    setSuccessMessage("Thank you! Your feedback has been submitted successfully.");
+    setSuccessMessage("Thank you! Your feedback has been submitted. You can edit or delete your review anytime.");
     setTimeout(() => setSuccessMessage(null), 5000);
   };
 
-  // DELETE FEEDBACK HANDLER
-  const handleDeleteFeedback = (id: string) => {
-    if (confirm("Are you sure you want to delete this feedback review?")) {
-      const updated = feedbacks.filter(f => f.id !== id);
+  // DELETE FEEDBACK HANDLER (ONLY ALLOWED FOR AUTHOR'S OWN COMMENT)
+  const handleDeleteFeedback = (fb: UserFeedback) => {
+    if (confirm("Are you sure you want to delete your feedback review?")) {
+      const updated = feedbacks.filter(f => f.id !== fb.id);
       saveFeedbacksToStorage(updated);
-      setSuccessMessage("Feedback review deleted.");
+      setSuccessMessage("Your feedback review has been deleted.");
       setTimeout(() => setSuccessMessage(null), 4000);
     }
   };
 
-  // SAVE EDITED FEEDBACK
+  // SAVE EDITED FEEDBACK (ONLY ALLOWED FOR AUTHOR'S OWN COMMENT)
   const handleSaveEditedFeedback = (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingFeedback) return;
@@ -134,8 +149,22 @@ export default function FeedbackPage() {
     const updated = feedbacks.map(f => f.id === editingFeedback.id ? editingFeedback : f);
     saveFeedbacksToStorage(updated);
     setEditingFeedback(null);
-    setSuccessMessage("Feedback review updated successfully.");
+    setSuccessMessage("Your feedback review was updated successfully.");
     setTimeout(() => setSuccessMessage(null), 4000);
+  };
+
+  // HELPER TO CHECK IF CURRENT USER IS THE AUTHOR OF THE COMMENT
+  const isAuthorOfFeedback = (fb: UserFeedback) => {
+    if (!currentUser) {
+      // If no account logged in, match by typed name or email
+      return (name && fb.name.toLowerCase() === name.trim().toLowerCase()) || 
+             (email && fb.email.toLowerCase() === email.trim().toLowerCase());
+    }
+    return (
+      fb.authorFarmerId === currentUser.eFarmerId ||
+      fb.name.toLowerCase() === currentUser.fullName?.toLowerCase() ||
+      (currentUser.email && fb.email.toLowerCase() === currentUser.email?.toLowerCase())
+    );
   };
 
   return (
@@ -156,7 +185,7 @@ export default function FeedbackPage() {
           </h1>
 
           <p className="text-green-100/90 text-xs md:text-sm font-medium max-w-2xl leading-relaxed">
-            Submit, Edit, or Delete your platform feedback. Designed and engineered by Uday Pratap Singh Chauhan.
+            Submit reviews or manage your own comments. Designed & built by Uday Pratap Singh Chauhan (udchauhan0987@gmail.com).
           </p>
         </div>
       </div>
@@ -171,7 +200,7 @@ export default function FeedbackPage() {
               <h2 className="text-lg font-black text-gray-900 dark:text-white flex items-center gap-2">
                 <MessageSquare className="w-5 h-5 text-green-600" /> Submit Your Feedback & Rating
               </h2>
-              <p className="text-xs text-gray-500 font-medium">We appreciate every review from farmers, buyers, and agronomists.</p>
+              <p className="text-xs text-gray-500 font-medium">Farmers can edit & delete their own submitted comments anytime.</p>
             </div>
             <span className="text-xs font-black text-green-600 bg-green-50 dark:bg-green-950 px-3 py-1 rounded-full border border-green-200 dark:border-green-800">
               ⭐ 4.9 / 5 Rating
@@ -375,70 +404,82 @@ export default function FeedbackPage() {
 
       </div>
 
-      {/* SUBMITTED FEEDBACK LIST WITH EDIT & DELETE BUTTONS */}
+      {/* SUBMITTED FEEDBACK LIST WITH AUTHOR-ONLY EDIT & DELETE BUTTONS */}
       <div className="bg-white dark:bg-[#1a1b23] rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 dark:border-white/10 space-y-6">
         <div className="flex justify-between items-center border-b border-gray-100 dark:border-white/10 pb-4">
           <h2 className="text-lg font-black text-gray-900 dark:text-white flex items-center gap-2">
             <ThumbsUp className="w-5 h-5 text-green-600" /> Recent User Reviews & Feedback ({feedbacks.length})
           </h2>
           <span className="text-xs font-black text-green-600 bg-green-50 dark:bg-green-950 px-3 py-1 rounded-full">
-            ● Manage, Edit & Delete Reviews
+            ● Users can edit & delete THEIR OWN reviews
           </span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {feedbacks.map((fb) => (
-            <div 
-              key={fb.id} 
-              className="bg-gray-50 dark:bg-white/5 p-5 rounded-2xl border border-gray-200/60 dark:border-white/5 space-y-3 flex flex-col justify-between"
-            >
-              <div className="space-y-2">
-                <div className="flex justify-between items-start">
-                  <div className="flex items-center gap-1 text-yellow-500">
-                    {[...Array(fb.rating)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                    ))}
+          {feedbacks.map((fb) => {
+            const isMyComment = isAuthorOfFeedback(fb);
+
+            return (
+              <div 
+                key={fb.id} 
+                className="bg-gray-50 dark:bg-white/5 p-5 rounded-2xl border border-gray-200/60 dark:border-white/5 space-y-3 flex flex-col justify-between relative"
+              >
+                <div className="space-y-2">
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center gap-1 text-yellow-500">
+                      {[...Array(fb.rating)].map((_, i) => (
+                        <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                      ))}
+                    </div>
+
+                    {/* EDIT & DELETE BUTTONS SHOWN ONLY FOR AUTHOR'S OWN COMMENT */}
+                    {isMyComment && (
+                      <div className="flex items-center gap-1 bg-green-100 dark:bg-green-950/80 px-2 py-1 rounded-lg border border-green-300 dark:border-green-800">
+                        <button
+                          onClick={() => setEditingFeedback(fb)}
+                          className="p-1 text-green-700 dark:text-green-300 hover:text-green-900 rounded-md transition-colors"
+                          title="Edit My Comment"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                        </button>
+
+                        <button
+                          onClick={() => handleDeleteFeedback(fb)}
+                          className="p-1 text-red-600 dark:text-red-400 hover:text-red-800 rounded-md transition-colors"
+                          title="Delete My Comment"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    )}
                   </div>
 
-                  <div className="flex items-center gap-1">
-                    {/* EDIT BUTTON */}
-                    <button
-                      onClick={() => setEditingFeedback(fb)}
-                      className="p-1 text-gray-400 hover:text-green-600 rounded-md transition-colors"
-                      title="Edit Feedback"
-                    >
-                      <Edit3 className="w-3.5 h-3.5" />
-                    </button>
+                  <span className="inline-block text-[10px] font-black uppercase px-2 py-0.5 rounded-md bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-300">
+                    {fb.category}
+                  </span>
 
-                    {/* DELETE BUTTON */}
-                    <button
-                      onClick={() => handleDeleteFeedback(fb.id)}
-                      className="p-1 text-gray-400 hover:text-red-500 rounded-md transition-colors"
-                      title="Delete Feedback"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                  <p className="text-xs text-gray-800 dark:text-gray-200 font-medium leading-relaxed italic">
+                    "{fb.comments}"
+                  </p>
+                </div>
+
+                <div className="pt-3 border-t border-gray-200/60 dark:border-white/10 flex justify-between items-end">
+                  <div>
+                    <h4 className="font-extrabold text-xs text-gray-900 dark:text-white flex items-center gap-1">
+                      {fb.name}
+                      {isMyComment && (
+                        <span className="text-[9px] font-black text-green-600 bg-green-100 dark:bg-green-950 px-1.5 py-0.2 rounded">
+                          (You)
+                        </span>
+                      )}
+                    </h4>
+                    <span className="text-[10px] text-gray-400 font-semibold block">📍 {fb.location} • {fb.role}</span>
                   </div>
+                  <span className="text-[9px] font-bold text-gray-400">{fb.createdAt}</span>
                 </div>
-
-                <span className="inline-block text-[10px] font-black uppercase px-2 py-0.5 rounded-md bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-300">
-                  {fb.category}
-                </span>
-
-                <p className="text-xs text-gray-800 dark:text-gray-200 font-medium leading-relaxed italic">
-                  "{fb.comments}"
-                </p>
               </div>
-
-              <div className="pt-3 border-t border-gray-200/60 dark:border-white/10 flex justify-between items-end">
-                <div>
-                  <h4 className="font-extrabold text-xs text-gray-900 dark:text-white">{fb.name}</h4>
-                  <span className="text-[10px] text-gray-400 font-semibold block">📍 {fb.location} • {fb.role}</span>
-                </div>
-                <span className="text-[9px] font-bold text-gray-400">{fb.createdAt}</span>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -449,7 +490,7 @@ export default function FeedbackPage() {
             <div className="flex justify-between items-center border-b border-gray-100 dark:border-white/10 pb-3">
               <div className="flex items-center gap-2">
                 <Edit3 className="w-5 h-5 text-green-600" />
-                <h3 className="text-base font-black text-gray-900 dark:text-white">Edit Feedback Review</h3>
+                <h3 className="text-base font-black text-gray-900 dark:text-white">Edit Your Comment</h3>
               </div>
               <button onClick={() => setEditingFeedback(null)} className="p-1 text-gray-400 hover:text-gray-600">
                 <X className="w-5 h-5" />
@@ -474,12 +515,12 @@ export default function FeedbackPage() {
               </div>
 
               <div>
-                <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1">Comments:</label>
+                <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1">Comment Text:</label>
                 <textarea
                   rows={4}
                   value={editingFeedback.comments}
                   onChange={(e) => setEditingFeedback({ ...editingFeedback, comments: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 font-bold"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 font-bold text-gray-900 dark:text-white"
                 />
               </div>
 
