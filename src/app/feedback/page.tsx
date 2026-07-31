@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { 
   Star, MessageSquare, Send, CheckCircle2, User, Mail, ShieldCheck, 
-  ThumbsUp, Sparkles, MapPin, Tag, HeartHandshake, PhoneCall
+  ThumbsUp, Sparkles, MapPin, Tag, Edit3, Trash2, X, Save
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -67,7 +67,10 @@ export default function FeedbackPage() {
   const [email, setEmail] = useState("");
   const [location, setLocation] = useState("Pune, Maharashtra");
   const [comments, setComments] = useState("");
-  const [successMessage, setSuccessMessage] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  // Edit Feedback Modal State
+  const [editingFeedback, setEditingFeedback] = useState<UserFeedback | null>(null);
 
   // Load saved feedbacks from localStorage
   useEffect(() => {
@@ -78,6 +81,11 @@ export default function FeedbackPage() {
       } catch (e) { console.error(e); }
     }
   }, []);
+
+  const saveFeedbacksToStorage = (updated: UserFeedback[]) => {
+    setFeedbacks(updated);
+    localStorage.setItem("agropulse_user_feedbacks", JSON.stringify(updated));
+  };
 
   const handleSubmitFeedback = (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,14 +107,35 @@ export default function FeedbackPage() {
     };
 
     const updated = [newFb, ...feedbacks];
-    setFeedbacks(updated);
-    localStorage.setItem("agropulse_user_feedbacks", JSON.stringify(updated));
+    saveFeedbacksToStorage(updated);
 
     setName("");
     setEmail("");
     setComments("");
-    setSuccessMessage(true);
-    setTimeout(() => setSuccessMessage(false), 5000);
+    setSuccessMessage("Thank you! Your feedback has been submitted successfully.");
+    setTimeout(() => setSuccessMessage(null), 5000);
+  };
+
+  // DELETE FEEDBACK HANDLER
+  const handleDeleteFeedback = (id: string) => {
+    if (confirm("Are you sure you want to delete this feedback review?")) {
+      const updated = feedbacks.filter(f => f.id !== id);
+      saveFeedbacksToStorage(updated);
+      setSuccessMessage("Feedback review deleted.");
+      setTimeout(() => setSuccessMessage(null), 4000);
+    }
+  };
+
+  // SAVE EDITED FEEDBACK
+  const handleSaveEditedFeedback = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingFeedback) return;
+
+    const updated = feedbacks.map(f => f.id === editingFeedback.id ? editingFeedback : f);
+    saveFeedbacksToStorage(updated);
+    setEditingFeedback(null);
+    setSuccessMessage("Feedback review updated successfully.");
+    setTimeout(() => setSuccessMessage(null), 4000);
   };
 
   return (
@@ -123,11 +152,11 @@ export default function FeedbackPage() {
           </div>
 
           <h1 className="text-3xl md:text-5xl font-black tracking-tight leading-tight text-white">
-            Farmer Feedback & Portal Reviews
+            Farmer Feedback & Reviews Portal
           </h1>
 
           <p className="text-green-100/90 text-xs md:text-sm font-medium max-w-2xl leading-relaxed">
-            Your insights drive AgroPulse forward! Rate your experience with our Mandi Finder, Crop Marketplace, 60-Day Weather Prediction, and e-Farmer Verified Chat.
+            Submit, Edit, or Delete your platform feedback. Designed and engineered by Uday Pratap Singh Chauhan.
           </p>
         </div>
       </div>
@@ -158,7 +187,7 @@ export default function FeedbackPage() {
                 className="bg-green-50 dark:bg-green-950/60 border border-green-300 dark:border-green-800 p-4 rounded-2xl text-green-800 dark:text-green-300 text-xs font-bold flex items-center gap-3"
               >
                 <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0" />
-                <span>Thank you! Your feedback has been submitted successfully and posted below.</span>
+                <span>{successMessage}</span>
               </motion.div>
             )}
           </AnimatePresence>
@@ -336,8 +365,8 @@ export default function FeedbackPage() {
                 <span className="text-[10px] text-gray-400 font-bold">Average Satisfaction</span>
               </div>
               <div className="bg-gray-50 dark:bg-white/5 p-3 rounded-2xl border border-gray-100 dark:border-white/5 text-center">
-                <span className="text-xl font-black text-green-600 dark:text-green-400 block">3,450+</span>
-                <span className="text-[10px] text-gray-400 font-bold">Verified Reviews</span>
+                <span className="text-xl font-black text-green-600 dark:text-green-400 block">{feedbacks.length} Reviews</span>
+                <span className="text-[10px] text-gray-400 font-bold">Active Submissions</span>
               </div>
             </div>
           </div>
@@ -346,14 +375,14 @@ export default function FeedbackPage() {
 
       </div>
 
-      {/* SUBMITTED FEEDBACK LIST */}
+      {/* SUBMITTED FEEDBACK LIST WITH EDIT & DELETE BUTTONS */}
       <div className="bg-white dark:bg-[#1a1b23] rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 dark:border-white/10 space-y-6">
         <div className="flex justify-between items-center border-b border-gray-100 dark:border-white/10 pb-4">
           <h2 className="text-lg font-black text-gray-900 dark:text-white flex items-center gap-2">
             <ThumbsUp className="w-5 h-5 text-green-600" /> Recent User Reviews & Feedback ({feedbacks.length})
           </h2>
           <span className="text-xs font-black text-green-600 bg-green-50 dark:bg-green-950 px-3 py-1 rounded-full">
-            ● Real Farmers & Buyers
+            ● Manage, Edit & Delete Reviews
           </span>
         </div>
 
@@ -370,10 +399,31 @@ export default function FeedbackPage() {
                       <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                     ))}
                   </div>
-                  <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-md bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-300">
-                    {fb.category}
-                  </span>
+
+                  <div className="flex items-center gap-1">
+                    {/* EDIT BUTTON */}
+                    <button
+                      onClick={() => setEditingFeedback(fb)}
+                      className="p-1 text-gray-400 hover:text-green-600 rounded-md transition-colors"
+                      title="Edit Feedback"
+                    >
+                      <Edit3 className="w-3.5 h-3.5" />
+                    </button>
+
+                    {/* DELETE BUTTON */}
+                    <button
+                      onClick={() => handleDeleteFeedback(fb.id)}
+                      className="p-1 text-gray-400 hover:text-red-500 rounded-md transition-colors"
+                      title="Delete Feedback"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
+
+                <span className="inline-block text-[10px] font-black uppercase px-2 py-0.5 rounded-md bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-300">
+                  {fb.category}
+                </span>
 
                 <p className="text-xs text-gray-800 dark:text-gray-200 font-medium leading-relaxed italic">
                   "{fb.comments}"
@@ -391,6 +441,67 @@ export default function FeedbackPage() {
           ))}
         </div>
       </div>
+
+      {/* EDIT FEEDBACK MODAL */}
+      {editingFeedback && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#1a1b23] border border-gray-100 dark:border-white/10 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div className="flex justify-between items-center border-b border-gray-100 dark:border-white/10 pb-3">
+              <div className="flex items-center gap-2">
+                <Edit3 className="w-5 h-5 text-green-600" />
+                <h3 className="text-base font-black text-gray-900 dark:text-white">Edit Feedback Review</h3>
+              </div>
+              <button onClick={() => setEditingFeedback(null)} className="p-1 text-gray-400 hover:text-gray-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEditedFeedback} className="space-y-4 text-xs">
+              <div>
+                <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1">Star Rating:</label>
+                <div className="flex gap-1 text-yellow-400">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      type="button"
+                      key={star}
+                      onClick={() => setEditingFeedback({ ...editingFeedback, rating: star })}
+                      className="p-1 hover:scale-110 transition-transform"
+                    >
+                      <Star className={`w-6 h-6 ${star <= editingFeedback.rating ? "fill-yellow-400" : "text-gray-300"}`} />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1">Comments:</label>
+                <textarea
+                  rows={4}
+                  value={editingFeedback.comments}
+                  onChange={(e) => setEditingFeedback({ ...editingFeedback, comments: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 font-bold"
+                />
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setEditingFeedback(null)}
+                  className="w-1/2 py-2.5 bg-gray-200 dark:bg-white/10 text-gray-800 dark:text-gray-200 font-bold rounded-xl"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="w-1/2 py-2.5 bg-green-600 hover:bg-green-700 text-white font-extrabold rounded-xl shadow-md flex items-center justify-center gap-1"
+                >
+                  <Save className="w-4 h-4" /> Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
     </div>
   );
