@@ -56,6 +56,8 @@ export default function UserProfile() {
           district: parsed.district || prev.district,
           village: parsed.village || prev.village,
           primaryCrop: parsed.primaryCrops?.[0] || prev.primaryCrop,
+          farmSize: parsed.farmSize || prev.farmSize,
+          savingsGoal: parsed.savingsGoal || prev.savingsGoal,
           avatar: parsed.avatar || prev.avatar
         }));
       } catch (e) { console.error(e); }
@@ -104,6 +106,8 @@ export default function UserProfile() {
       district: profileData.district,
       village: profileData.village,
       primaryCrops: [profileData.primaryCrop],
+      farmSize: profileData.farmSize,
+      savingsGoal: profileData.savingsGoal,
       avatar: profileData.avatar
     }));
 
@@ -431,6 +435,32 @@ export default function UserProfile() {
                   required
                   value={profileData.district}
                   onChange={(e) => setProfileData({ ...profileData, district: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 font-bold text-gray-900 dark:text-white"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1">🌾 Land Holding Size:</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. 8.5 Acres"
+                  value={profileData.farmSize}
+                  onChange={(e) => setProfileData({ ...profileData, farmSize: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 font-bold text-gray-900 dark:text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1">💰 Est. Yearly Revenue Target:</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. ₹2,50,000 / year"
+                  value={profileData.savingsGoal}
+                  onChange={(e) => setProfileData({ ...profileData, savingsGoal: e.target.value })}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 font-bold text-gray-900 dark:text-white"
                 />
               </div>
