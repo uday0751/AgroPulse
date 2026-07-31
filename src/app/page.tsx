@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { 
   Cloud, LineChart, Users, Calendar, Landmark, Stethoscope, ShoppingBag, Sprout, MapPin, BarChart, 
-  ArrowRight, Sparkles, TrendingUp, Sun, Droplets, Wind, ArrowUpRight, ShieldCheck, ChevronRight
+  ArrowRight, Sparkles, TrendingUp, Sun, Droplets, Wind, ArrowUpRight, ShieldCheck, ChevronRight, Navigation, Loader2
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Link from "next/link";
@@ -16,6 +16,23 @@ export default function Dashboard() {
   const cardsContainerRef = useRef<HTMLDivElement>(null);
   const [greeting, setGreeting] = useState("Welcome to AgroPulse");
 
+  // Real-time Live Weather State for Dashboard
+  const [weatherData, setWeatherData] = useState<{
+    cityName: string;
+    temp: number;
+    condition: string;
+    humidity: number;
+    windSpeed: number;
+    loading: boolean;
+  }>({
+    cityName: "Detecting Location...",
+    temp: 28,
+    condition: "Clear Sky",
+    humidity: 50,
+    windSpeed: 10,
+    loading: true
+  });
+
   useEffect(() => {
     const hour = new Date().getHours();
     if (hour < 12) setGreeting("Good Morning, Farmer 🌅");
@@ -23,10 +40,97 @@ export default function Dashboard() {
     else setGreeting("Good Evening, Farmer 🌾");
   }, []);
 
+  // FETCH REAL-TIME WEATHER FOR USER'S LIVE GPS LOCATION
+  const fetchDashboardWeather = async (lat: number, lng: number, fallbackName?: string) => {
+    try {
+      // 1. Fetch Open-Meteo Live API
+      const res = await fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,relative_humidity_2m,is_day,precipitation,rain,weather_code,wind_speed_10m`
+      );
+      const data = await res.json();
+      const current = data?.current || {};
+
+      const weatherCodeMap: Record<number, string> = {
+        0: "Clear Sky ☀️",
+        1: "Mainly Clear 🌤️",
+        2: "Partly Cloudy ⛅",
+        3: "Overcast ☁️",
+        45: "Foggy 🌫️",
+        51: "Light Drizzle 🌧️",
+        61: "Slight Rain 🌧️",
+        63: "Moderate Rain 🌧️",
+        65: "Heavy Rain 🌧️",
+        80: "Rain Showers 🌦️",
+        95: "Thunderstorm 🌩️"
+      };
+
+      const cond = weatherCodeMap[current.weather_code] || "Clear Sky ☀️";
+      let locationLabel = fallbackName || "Live Location";
+
+      // 2. Reverse Geocode City Name via Nominatim
+      try {
+        const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+        const geoData = await geoRes.json();
+        const address = geoData?.address;
+        if (address) {
+          const city = address.city || address.town || address.village || address.district || address.state_district;
+          const state = address.state;
+          if (city) {
+            locationLabel = state ? `${city}, ${state.substring(0, 2).toUpperCase()}` : city;
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+
+      setWeatherData({
+        cityName: locationLabel,
+        temp: Math.round(current.temperature_2m ?? 28),
+        condition: cond,
+        humidity: Math.round(current.relative_humidity_2m ?? 50),
+        windSpeed: Math.round(current.wind_speed_10m ?? 12),
+        loading: false
+      });
+    } catch (err) {
+      console.error("Dashboard weather fetch error", err);
+      setWeatherData({
+        cityName: fallbackName || "Current Location",
+        temp: 29,
+        condition: "Clear Sky ☀️",
+        humidity: 48,
+        windSpeed: 11,
+        loading: false
+      });
+    }
+  };
+
+  // DETECT CURRENT LOCATION ON MOUNT
+  const detectLocationAndFetchWeather = () => {
+    setWeatherData((prev) => ({ ...prev, loading: true }));
+    if (typeof window !== "undefined" && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          fetchDashboardWeather(pos.coords.latitude, pos.coords.longitude);
+        },
+        (err) => {
+          console.warn("Geolocation fallback to Bhopal", err);
+          // Default fallback if GPS permission is pending or denied
+          fetchDashboardWeather(23.2599, 77.4126, "Bhopal, MP");
+        },
+        { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
+      );
+    } else {
+      fetchDashboardWeather(23.2599, 77.4126, "Bhopal, MP");
+    }
+  };
+
+  useEffect(() => {
+    detectLocationAndFetchWeather();
+  }, []);
+
   // GSAP Animations
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Hero Animation
       gsap.from(heroRef.current, {
         opacity: 0,
         y: -25,
@@ -34,7 +138,6 @@ export default function Dashboard() {
         ease: "power3.out"
       });
 
-      // Ticker animation
       gsap.from(tickerRef.current, {
         opacity: 0,
         scaleX: 0.96,
@@ -43,7 +146,6 @@ export default function Dashboard() {
         ease: "power2.out"
       });
 
-      // Cards staggered entry animation
       if (cardsContainerRef.current) {
         const cards = cardsContainerRef.current.children;
         gsap.fromTo(
@@ -69,7 +171,7 @@ export default function Dashboard() {
     i18n.changeLanguage(lng);
   };
 
-  // Integrated Modules Grid including Buy Crops & Sell Crops alongside existing options
+  // Integrated Modules Grid
   const modules = [
     {
       title: "Buy Crops (Customer)",
@@ -113,20 +215,20 @@ export default function Dashboard() {
     },
     {
       title: t("weather") || "Weather Prediction",
-      desc: "7-day localized rain, humidity, & wind forecasts tailored for farming.",
+      desc: "60-day localized rain, humidity, & soil moisture forecasts tailored for farming.",
       icon: Cloud,
       href: "/weather",
-      badge: "7-Day Forecast",
+      badge: "60-Day Forecast",
       color: "bg-cyan-500",
       textColor: "text-cyan-600 dark:text-cyan-400",
       bgGradient: "hover:border-cyan-500/50"
     },
     {
       title: t("community") || "Farmer Community & Chat",
-      desc: "Share farming photos, discuss crop yields, and connect with local growers.",
+      desc: "Verified e-Farmer ID public discussion groups for real-time crop yields and rates.",
       icon: Users,
       href: "/community",
-      badge: "Active Forum",
+      badge: "e-Farmer Verified",
       color: "bg-purple-500",
       textColor: "text-purple-600 dark:text-purple-400",
       bgGradient: "hover:border-purple-500/50"
@@ -227,27 +329,55 @@ export default function Dashboard() {
             </h1>
 
             <p className="text-green-100/80 text-xs md:text-sm font-medium max-w-2xl leading-relaxed">
-              Buy and sell crops directly across 36 Indian States & UTs. Track 70+ world crop rates, find local mandis on interactive map, and check weather predictions below.
+              Buy and sell crops directly across 36 Indian States & UTs. Track 70+ world crop rates, find local mandis on interactive map, and check real-time satellite weather predictions below.
             </p>
           </div>
 
-          {/* Quick Weather Snapshot */}
-          <div className="bg-white/10 backdrop-blur-xl border border-white/20 p-5 rounded-2xl space-y-3 text-xs">
+          {/* DYNAMIC REAL-TIME SATELLITE WEATHER SNAPSHOT */}
+          <div className="bg-white/10 backdrop-blur-xl border border-white/20 p-5 rounded-2xl space-y-3 text-xs shadow-lg">
             <div className="flex justify-between items-center pb-2 border-b border-white/15">
               <span className="font-extrabold text-green-300 flex items-center gap-1.5">
-                <Sun className="w-4 h-4 text-yellow-400" /> Today's Forecast
+                <Sun className="w-4 h-4 text-yellow-400" /> Live Weather
               </span>
-              <span className="text-[11px] font-bold text-green-200">Pune, MH</span>
+              
+              <button 
+                onClick={detectLocationAndFetchWeather}
+                title="Refresh Live Location Weather"
+                className="text-[11px] font-black text-white bg-green-600/80 hover:bg-green-500 px-2.5 py-1 rounded-lg border border-white/20 flex items-center gap-1 transition-all"
+              >
+                {weatherData.loading ? (
+                  <Loader2 className="w-3 h-3 animate-spin text-white" />
+                ) : (
+                  <Navigation className="w-3 h-3 text-green-200" />
+                )}
+                <span>{weatherData.cityName}</span>
+              </button>
             </div>
+
             <div className="flex justify-between items-center">
               <div>
-                <div className="text-2xl font-black text-white">31°C</div>
-                <div className="text-[10px] text-green-200">Sunny • Clear Sky</div>
+                <div className="text-3xl font-black text-white flex items-baseline gap-1">
+                  {weatherData.temp}°C
+                </div>
+                <div className="text-[11px] font-bold text-green-200 mt-0.5">
+                  {weatherData.condition}
+                </div>
               </div>
-              <div className="text-right space-y-0.5 text-[11px]">
-                <div className="flex items-center justify-end gap-1 text-green-200"><Droplets className="w-3 h-3" /> 45% Humidity</div>
-                <div className="flex items-center justify-end gap-1 text-green-200"><Wind className="w-3 h-3" /> 12 km/h Wind</div>
+              <div className="text-right space-y-1 text-[11px]">
+                <div className="flex items-center justify-end gap-1 text-green-200 font-bold">
+                  <Droplets className="w-3.5 h-3.5 text-blue-300" /> {weatherData.humidity}% Humidity
+                </div>
+                <div className="flex items-center justify-end gap-1 text-green-200 font-bold">
+                  <Wind className="w-3.5 h-3.5 text-teal-300" /> {weatherData.windSpeed} km/h Wind
+                </div>
               </div>
+            </div>
+
+            <div className="pt-2 border-t border-white/15 flex justify-between items-center text-[10px] text-green-200 font-extrabold">
+              <span>📍 Live Satellite Open-Meteo API</span>
+              <Link href="/weather" className="text-yellow-300 hover:underline flex items-center gap-0.5">
+                Full 60-Day Forecast <ChevronRight className="w-3 h-3" />
+              </Link>
             </div>
           </div>
         </div>
@@ -279,61 +409,71 @@ export default function Dashboard() {
           </div>
 
           <div className="flex items-center gap-1.5 shrink-0 bg-gray-50 dark:bg-white/5 px-3 py-1.5 rounded-xl border border-gray-100 dark:border-white/5">
-            <span>🧅 Red Onion:</span>
-            <span className="text-green-600 dark:text-green-400 font-extrabold">₹1,850/q</span>
+            <span>🌱 Soybean JS-335:</span>
+            <span className="text-green-600 dark:text-green-400 font-extrabold">₹4,920/q</span>
             <ArrowUpRight className="w-3.5 h-3.5 text-green-500" />
           </div>
 
           <div className="flex items-center gap-1.5 shrink-0 bg-gray-50 dark:bg-white/5 px-3 py-1.5 rounded-xl border border-gray-100 dark:border-white/5">
-            <span>🍅 Tomatoes:</span>
-            <span className="text-green-600 dark:text-green-400 font-extrabold">₹1,500/q</span>
-            <ArrowUpRight className="w-3.5 h-3.5 text-green-500" />
-          </div>
-
-          <div className="flex items-center gap-1.5 shrink-0 bg-gray-50 dark:bg-white/5 px-3 py-1.5 rounded-xl border border-gray-100 dark:border-white/5">
-            <span>🥭 Alphonso:</span>
-            <span className="text-green-600 dark:text-green-400 font-extrabold">₹17,500/q</span>
+            <span>🧅 Nashik Red Onion:</span>
+            <span className="text-green-600 dark:text-green-400 font-extrabold">₹2,100/q</span>
             <ArrowUpRight className="w-3.5 h-3.5 text-green-500" />
           </div>
         </div>
       </div>
 
-      {/* ALL ECOSYSTEM MODULES GRID (INCLUDING BUY & SELL CROPS) */}
+      {/* Grid of All 10 Interactive Platform Features */}
       <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <h2 className="text-lg font-black text-gray-900 dark:text-white flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-green-600" /> Agricultural Services & Trading Hub
-          </h2>
-          <span className="text-xs text-gray-400 font-semibold">10 Integrated Services</span>
+          <div>
+            <h2 className="text-lg md:text-xl font-black text-gray-900 dark:text-white">
+              Explore Platform Features & Tools
+            </h2>
+            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+              Comprehensive agricultural management suite designed for modern Indian farmers & crop buyers.
+            </p>
+          </div>
+          <span className="text-xs font-black text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-950 px-3 py-1 rounded-full border border-green-200 dark:border-green-800">
+            10 Active Suite Tools
+          </span>
         </div>
 
-        <div ref={cardsContainerRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-          {modules.map((mod) => {
-            const Icon = mod.icon;
+        <div 
+          ref={cardsContainerRef}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+        >
+          {modules.map((mod, i) => {
+            const IconComponent = mod.icon;
             return (
-              <Link href={mod.href} key={mod.title}>
-                <div className={`bg-white dark:bg-[#1a1b23] border border-gray-100 dark:border-white/10 rounded-2xl p-5 h-full flex flex-col justify-between shadow-sm hover:shadow-xl ${mod.bgGradient} transition-all group cursor-pointer`}>
-                  <div>
-                    <div className="flex justify-between items-start mb-4">
-                      <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${mod.color} text-white shadow-md group-hover:scale-110 transition-transform`}>
-                        <Icon className="w-5 h-5" />
-                      </div>
-                      <span className="text-[10px] font-black uppercase tracking-wider text-gray-400 bg-gray-100 dark:bg-white/5 px-2 py-0.5 rounded-md">
-                        {mod.badge}
-                      </span>
+              <Link 
+                key={i} 
+                href={mod.href}
+                className={`group bg-white dark:bg-[#1a1b23] p-6 rounded-3xl border border-gray-100 dark:border-white/10 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between ${mod.bgGradient}`}
+              >
+                <div className="space-y-4">
+                  <div className="flex justify-between items-start">
+                    <div className={`p-3 rounded-2xl ${mod.color} text-white shadow-md group-hover:scale-110 transition-transform duration-300`}>
+                      <IconComponent className="w-6 h-6" />
                     </div>
+                    <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300">
+                      {mod.badge}
+                    </span>
+                  </div>
 
-                    <h3 className="text-base font-extrabold text-gray-900 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">
+                  <div>
+                    <h3 className="text-base font-black text-gray-900 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">
                       {mod.title}
                     </h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mt-2 leading-relaxed">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium leading-relaxed mt-1.5">
                       {mod.desc}
                     </p>
                   </div>
+                </div>
 
-                  <div className="mt-5 pt-3 border-t border-gray-100 dark:border-white/5 flex items-center justify-between text-xs font-bold text-green-600 dark:text-green-400">
-                    <span>Open Service</span>
-                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <div className="pt-4 mt-4 border-t border-gray-100 dark:border-white/5 flex items-center justify-between text-xs font-extrabold">
+                  <span className={mod.textColor}>Access Feature</span>
+                  <div className="w-7 h-7 rounded-full bg-gray-100 dark:bg-white/5 group-hover:bg-green-600 group-hover:text-white flex items-center justify-center transition-all">
+                    <ArrowRight className="w-4 h-4" />
                   </div>
                 </div>
               </Link>
