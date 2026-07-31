@@ -323,9 +323,15 @@ export default function FeedbackPage() {
               <textarea
                 required
                 rows={4}
-                placeholder="Share your thoughts about mandi rates, crop buying/selling, weather accuracy, or community chat..."
+                placeholder="Share your thoughts... (Press Enter to Submit, Shift+Enter for new line)"
                 value={comments}
                 onChange={(e) => setComments(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSubmitFeedback(e);
+                  }
+                }}
                 className="w-full px-3.5 py-3 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 font-bold text-gray-900 dark:text-white"
               />
             </div>
@@ -533,6 +539,12 @@ export default function FeedbackPage() {
                   rows={4}
                   value={editingFeedback.comments}
                   onChange={(e) => setEditingFeedback({ ...editingFeedback, comments: e.target.value })}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSaveEditedFeedback(e);
+                    }
+                  }}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 font-bold text-gray-900 dark:text-white"
                 />
               </div>

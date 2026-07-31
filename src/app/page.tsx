@@ -595,9 +595,15 @@ export default function Dashboard() {
                 <textarea
                   required
                   rows={4}
-                  placeholder="Share your thoughts about crop prices, buying/selling experience, weather predictions, or mandi finder..."
+                  placeholder="Share your thoughts... (Press Enter to Submit, Shift+Enter for new line)"
                   value={fbComments}
                   onChange={(e) => setFbComments(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      handleQuickFeedbackSubmit(e);
+                    }
+                  }}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1a1b23] font-bold text-gray-900 dark:text-white"
                 />
               </div>
