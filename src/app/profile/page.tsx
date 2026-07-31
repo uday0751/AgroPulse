@@ -1,20 +1,31 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   User, MapPin, Sprout, Save, FileText, Settings, ShieldCheck, 
-  Mail, Phone, Award, ShoppingBag, Edit3, Trash2, Star, CheckCircle2, MessageSquare, ExternalLink
+  Mail, Phone, Award, ShoppingBag, Edit3, Trash2, Star, CheckCircle2, MessageSquare, ExternalLink,
+  Camera, Upload, Image as ImageIcon
 } from "lucide-react";
 import Link from "next/link";
 import { UserFeedback } from "../feedback/page";
 
+const DP_PRESETS = [
+  { label: "Kisan Leader", url: "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=300&h=300" },
+  { label: "Organic Cultivator", url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&h=300" },
+  { label: "Smart Agri Farmer", url: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&h=300" },
+  { label: "Mandi Trader", url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&h=300" }
+];
+
 export default function UserProfile() {
   const [activeTab, setActiveTab] = useState<"card" | "edit" | "feedbacks" | "orders">("card");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [profileData, setProfileData] = useState({
     fullName: "Rameshwar Patil",
     eFarmerId: "MH-FAR-89210",
     phone: "+91 98221 45678",
+    email: "ramesh.patil@agrimail.in",
     state: "Maharashtra",
     district: "Pune",
     village: "Baramati",
@@ -22,7 +33,7 @@ export default function UserProfile() {
     farmSize: "8.5 Acres",
     savingsGoal: "₹2,50,000 / year",
     verificationBadge: "Government APMC Verified",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&h=200"
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&h=300"
   });
 
   const [myFeedbacks, setMyFeedbacks] = useState<UserFeedback[]>([]);
@@ -40,10 +51,12 @@ export default function UserProfile() {
           fullName: parsed.fullName || prev.fullName,
           eFarmerId: parsed.eFarmerId || prev.eFarmerId,
           phone: parsed.phone || prev.phone,
+          email: parsed.email || prev.email,
           state: parsed.state || prev.state,
           district: parsed.district || prev.district,
           village: parsed.village || prev.village,
-          primaryCrop: parsed.primaryCrops?.[0] || prev.primaryCrop
+          primaryCrop: parsed.primaryCrops?.[0] || prev.primaryCrop,
+          avatar: parsed.avatar || prev.avatar
         }));
       } catch (e) { console.error(e); }
     }
@@ -57,6 +70,28 @@ export default function UserProfile() {
     }
   }, []);
 
+  // HANDLE DP FILE UPLOAD FROM COMPUTER/DEVICE
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert("Image size should be less than 5MB.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64Url = reader.result as string;
+        const updated = { ...profileData, avatar: base64Url };
+        setProfileData(updated);
+        localStorage.setItem("agropulse_current_user_account", JSON.stringify({
+          ...updated,
+          primaryCrops: [updated.primaryCrop]
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSaveProfile = (e: React.FormEvent) => {
     e.preventDefault();
     setSavingMsg(true);
@@ -64,20 +99,23 @@ export default function UserProfile() {
       eFarmerId: profileData.eFarmerId,
       fullName: profileData.fullName,
       phone: profileData.phone,
+      email: profileData.email,
       state: profileData.state,
       district: profileData.district,
       village: profileData.village,
-      primaryCrops: [profileData.primaryCrop]
+      primaryCrops: [profileData.primaryCrop],
+      avatar: profileData.avatar
     }));
 
     setTimeout(() => {
       setSavingMsg(false);
-      alert("Profile details updated & saved to local storage!");
-    }, 600);
+      alert("Profile & Display Picture (DP) saved successfully!");
+      setActiveTab("card");
+    }, 400);
   };
 
   const handleDeleteFeedback = (id: string) => {
-    if (confirm("Are you sure you want to delete this feedback review?")) {
+    if (confirm("Are you sure you want to delete your feedback review?")) {
       const updated = myFeedbacks.filter(f => f.id !== id);
       setMyFeedbacks(updated);
       localStorage.setItem("agropulse_user_feedbacks", JSON.stringify(updated));
@@ -96,16 +134,42 @@ export default function UserProfile() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 p-4 md:p-8 font-sans max-w-6xl mx-auto space-y-8 pt-[78px]">
       
+      {/* Hidden File Input for Custom DP Upload */}
+      <input 
+        type="file" 
+        ref={fileInputRef}
+        accept="image/*"
+        onChange={handleImageUpload}
+        className="hidden"
+      />
+
       {/* SEPARATE PROFILE HEADER BANNER */}
       <div className="bg-gradient-to-r from-green-900 via-emerald-900 to-green-950 text-white rounded-3xl p-6 md:p-8 shadow-xl border border-green-700/40 relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div className="flex items-center gap-4 relative z-10">
-          <div className="w-16 h-16 rounded-3xl bg-green-700/80 border-2 border-green-400 flex items-center justify-center font-black text-3xl text-white shadow-lg uppercase shrink-0">
-            {profileData.fullName.charAt(0)}
+        <div className="flex items-center gap-5 relative z-10">
+          
+          {/* PROFILE PICTURE (DP) DISPLAY & EDIT BADGE */}
+          <div className="relative group">
+            <img 
+              src={profileData.avatar} 
+              alt={profileData.fullName}
+              className="w-20 h-20 rounded-3xl object-cover border-4 border-green-400 shadow-xl"
+            />
+            <button 
+              onClick={() => fileInputRef.current?.click()}
+              className="absolute -bottom-1 -right-1 bg-green-500 hover:bg-green-400 text-white p-2 rounded-xl shadow-lg border border-white transition-transform group-hover:scale-110"
+              title="Change Profile Picture (DP)"
+            >
+              <Camera className="w-4 h-4" />
+            </button>
           </div>
+
           <div>
             <div className="flex items-center gap-2">
               <span className="bg-green-500 text-white text-[9px] font-black uppercase px-2.5 py-0.5 rounded-md flex items-center gap-1">
                 <ShieldCheck className="w-3.5 h-3.5" /> {profileData.verificationBadge}
+              </span>
+              <span className="bg-white/20 text-green-200 text-[9px] font-black uppercase px-2 py-0.5 rounded-md">
+                🆔 {profileData.eFarmerId}
               </span>
             </div>
             <h1 className="text-2xl md:text-3xl font-black text-white mt-1">
@@ -151,7 +215,7 @@ export default function UserProfile() {
               : "bg-white dark:bg-[#1a1b23] text-gray-600 dark:text-gray-400 hover:bg-green-50"
           }`}
         >
-          <Edit3 className="w-4 h-4" /> Edit Account Details
+          <Edit3 className="w-4 h-4" /> Edit Profile & DP
         </button>
 
         <button
@@ -180,7 +244,8 @@ export default function UserProfile() {
       {/* TAB 1: E-FARMER IDENTITY CARD */}
       {activeTab === "card" && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* DIGITAL PASSPORT BADGE */}
+          
+          {/* DIGITAL PASSPORT BADGE WITH DP */}
           <div className="md:col-span-1 bg-gradient-to-br from-green-800 via-emerald-800 to-teal-900 text-white rounded-3xl p-6 shadow-xl border border-green-600 flex flex-col justify-between space-y-6">
             <div className="space-y-4">
               <div className="flex justify-between items-center pb-3 border-b border-white/20">
@@ -188,14 +253,28 @@ export default function UserProfile() {
                 <ShieldCheck className="w-5 h-5 text-green-400" />
               </div>
 
-              <div className="text-center space-y-2">
-                <div className="w-20 h-20 rounded-3xl bg-white/20 border-4 border-green-400 flex items-center justify-center font-black text-3xl text-white mx-auto uppercase shadow-md">
-                  {profileData.fullName.charAt(0)}
+              <div className="text-center space-y-3">
+                <div className="relative w-24 h-24 mx-auto group">
+                  <img 
+                    src={profileData.avatar} 
+                    alt={profileData.fullName}
+                    className="w-24 h-24 rounded-3xl object-cover border-4 border-green-400 shadow-2xl mx-auto"
+                  />
+                  <button 
+                    onClick={() => fileInputRef.current?.click()}
+                    className="absolute -bottom-1 -right-1 bg-green-500 text-white p-2 rounded-xl shadow-lg border border-white"
+                    title="Upload New DP"
+                  >
+                    <Camera className="w-4 h-4" />
+                  </button>
                 </div>
-                <h3 className="font-extrabold text-lg text-white">{profileData.fullName}</h3>
-                <span className="inline-block bg-black/40 text-green-300 px-3 py-1 rounded-xl text-xs font-black tracking-wider border border-white/10">
-                  {profileData.eFarmerId}
-                </span>
+
+                <div>
+                  <h3 className="font-extrabold text-lg text-white">{profileData.fullName}</h3>
+                  <span className="inline-block bg-black/40 text-green-300 px-3 py-1 rounded-xl text-xs font-black tracking-wider border border-white/10 mt-1">
+                    {profileData.eFarmerId}
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -215,11 +294,19 @@ export default function UserProfile() {
             </div>
           </div>
 
-          {/* FARM DETAILS SUMMARY */}
+          {/* FARM DETAILS SUMMARY & QUICK EDIT BUTTON */}
           <div className="md:col-span-2 bg-white dark:bg-[#1a1b23] rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-white/10 space-y-6">
-            <h3 className="text-base font-black text-gray-900 dark:text-white border-b border-gray-100 dark:border-white/10 pb-3">
-              Agricultural Land & Crop Profile
-            </h3>
+            <div className="flex justify-between items-center border-b border-gray-100 dark:border-white/10 pb-3">
+              <h3 className="text-base font-black text-gray-900 dark:text-white">
+                Agricultural Land & Crop Profile
+              </h3>
+              <button 
+                onClick={() => setActiveTab("edit")}
+                className="px-3.5 py-1.5 bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-300 font-extrabold text-xs rounded-xl border border-green-300 dark:border-green-800 flex items-center gap-1.5"
+              >
+                <Edit3 className="w-3.5 h-3.5" /> Edit Profile & DP
+              </button>
+            </div>
 
             <div className="grid grid-cols-2 gap-4 text-xs">
               <div className="bg-gray-50 dark:bg-white/5 p-4 rounded-2xl border border-gray-100 dark:border-white/5 space-y-1">
@@ -239,8 +326,8 @@ export default function UserProfile() {
             </div>
 
             <div className="pt-2 flex gap-3">
-              <button onClick={() => setActiveTab("edit")} className="px-5 py-2.5 bg-green-600 text-white font-extrabold text-xs rounded-xl shadow-md">
-                Edit Profile Information
+              <button onClick={() => setActiveTab("edit")} className="px-5 py-2.5 bg-green-600 text-white font-extrabold text-xs rounded-xl shadow-md flex items-center gap-2">
+                <Edit3 className="w-4 h-4" /> Edit Profile Information & DP
               </button>
               <Link href="/community" className="px-5 py-2.5 bg-gray-100 dark:bg-white/10 text-gray-800 dark:text-gray-200 font-bold text-xs rounded-xl">
                 Open Community Chat
@@ -250,12 +337,57 @@ export default function UserProfile() {
         </div>
       )}
 
-      {/* TAB 2: EDIT PROFILE FORM */}
+      {/* TAB 2: EDIT PROFILE & PROFILE PICTURE (DP) */}
       {activeTab === "edit" && (
-        <div className="bg-white dark:bg-[#1a1b23] rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 dark:border-white/10 max-w-2xl mx-auto space-y-5">
+        <div className="bg-white dark:bg-[#1a1b23] rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 dark:border-white/10 max-w-2xl mx-auto space-y-6">
           <h3 className="text-base font-black text-gray-900 dark:text-white border-b border-gray-100 dark:border-white/10 pb-3">
-            Edit Account & e-Farmer Details
+            Edit Account Profile & Profile Picture (DP)
           </h3>
+
+          {/* PROFILE PICTURE (DP) SELECTION / UPLOAD SECTION */}
+          <div className="bg-gray-50 dark:bg-white/5 p-5 rounded-2xl border border-gray-200/60 dark:border-white/5 space-y-4">
+            <label className="block font-black text-xs text-gray-900 dark:text-white uppercase tracking-wider">
+              Profile Display Picture (DP):
+            </label>
+
+            <div className="flex items-center gap-5">
+              <img 
+                src={profileData.avatar} 
+                alt="Profile DP" 
+                className="w-20 h-20 rounded-3xl object-cover border-4 border-green-500 shadow-md"
+              />
+
+              <div className="space-y-2">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-black text-xs rounded-xl shadow-md flex items-center gap-2"
+                >
+                  <Upload className="w-4 h-4" /> Upload DP from Computer / Phone
+                </button>
+                <p className="text-[10px] text-gray-400 font-medium">Supports PNG, JPG, or WEBP up to 5MB.</p>
+              </div>
+            </div>
+
+            {/* PRESET AVATARS */}
+            <div>
+              <span className="text-[11px] font-bold text-gray-500 dark:text-gray-400 block mb-2">Or Choose from Preset Farmer Avatars:</span>
+              <div className="flex items-center gap-3">
+                {DP_PRESETS.map((preset, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => setProfileData({ ...profileData, avatar: preset.url })}
+                    className={`p-1 rounded-2xl border-2 transition-all ${
+                      profileData.avatar === preset.url ? "border-green-500 scale-110 shadow-md" : "border-transparent opacity-70 hover:opacity-100"
+                    }`}
+                  >
+                    <img src={preset.url} alt={preset.label} className="w-12 h-12 rounded-xl object-cover" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
 
           <form onSubmit={handleSaveProfile} className="space-y-4 text-xs">
             <div>
@@ -265,7 +397,7 @@ export default function UserProfile() {
                 required
                 value={profileData.fullName}
                 onChange={(e) => setProfileData({ ...profileData, fullName: e.target.value })}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 font-bold"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 font-bold text-gray-900 dark:text-white"
               />
             </div>
 
@@ -276,7 +408,7 @@ export default function UserProfile() {
                 required
                 value={profileData.phone}
                 onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 font-bold"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 font-bold text-gray-900 dark:text-white"
               />
             </div>
 
@@ -288,7 +420,7 @@ export default function UserProfile() {
                   required
                   value={profileData.state}
                   onChange={(e) => setProfileData({ ...profileData, state: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 font-bold"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 font-bold text-gray-900 dark:text-white"
                 />
               </div>
 
@@ -299,19 +431,19 @@ export default function UserProfile() {
                   required
                   value={profileData.district}
                   onChange={(e) => setProfileData({ ...profileData, district: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 font-bold"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 font-bold text-gray-900 dark:text-white"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1">Primary Crops:</label>
+              <label className="block font-bold text-gray-700 dark:text-gray-300 mb-1">Primary Crops Cultivated:</label>
               <input
                 type="text"
                 required
                 value={profileData.primaryCrop}
                 onChange={(e) => setProfileData({ ...profileData, primaryCrop: e.target.value })}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 font-bold"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 font-bold text-gray-900 dark:text-white"
               />
             </div>
 
@@ -320,7 +452,7 @@ export default function UserProfile() {
               disabled={savingMsg}
               className="w-full py-3 bg-green-600 hover:bg-green-700 text-white font-black text-xs rounded-xl shadow-md flex items-center justify-center gap-1.5"
             >
-              <Save className="w-4 h-4" /> Save Profile Changes
+              <Save className="w-4 h-4" /> Save Profile Details & DP
             </button>
           </form>
         </div>
