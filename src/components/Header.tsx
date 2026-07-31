@@ -70,7 +70,7 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-white dark:bg-[#16171f] border-b border-gray-100 dark:border-white/10 px-6 py-4 flex items-center justify-between shadow-sm">
+    <header className="sticky top-0 z-40 bg-white dark:bg-[#16171f] border-b-2 border-gray-200 dark:border-white/15 px-6 py-4 flex items-center justify-between shadow-sm">
       {/* Mobile Menu Trigger & Logo */}
       <div className="flex items-center gap-3 md:hidden">
         <button
