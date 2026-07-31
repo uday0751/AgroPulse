@@ -25,7 +25,7 @@ export interface CropItem {
   id: number;
   name: string;
   scientificName: string;
-  category: "Cereals & Grains" | "Pulses & Legumes" | "Oilseeds" | "Vegetables" | "Fruits" | "Spices & Herbs" | "Commercial & Plantation" | "Nuts & Seeds";
+  category: "Cereals & Grains" | "Pulses & Legumes" | "Oilseeds" | "Vegetables" | "Fruits" | "Spices & Herbs" | "Commercial & Plantation";
   iconEmoji: string;
   state: string;
   district: string;
@@ -51,26 +51,29 @@ export const ALL_INDIAN_STATES = [
   "All States",
   "Maharashtra",
   "Punjab",
-  "Rajasthan",
-  "Gujarat",
   "Uttar Pradesh",
   "Madhya Pradesh",
+  "Gujarat",
+  "Rajasthan",
   "Karnataka",
   "Tamil Nadu",
   "Andhra Pradesh",
+  "West Bengal",
+  "Haryana",
+  "Bihar",
   "Kerala",
   "Himachal Pradesh",
   "Jammu & Kashmir",
-  "Goa",
-  "Haryana",
-  "West Bengal"
+  "Telangana",
+  "Odisha",
+  "Assam"
 ];
 
 export const COMPREHENSIVE_CROPS_DATABASE: CropItem[] = [
   // CEREALS & GRAINS
   {
     id: 1,
-    name: "Wheat (Lokwan / Hard Red)",
+    name: "Wheat (Lokwan / Sharbati Red)",
     scientificName: "Triticum aestivum",
     category: "Cereals & Grains",
     iconEmoji: "🌾",
@@ -87,14 +90,15 @@ export const COMPREHENSIVE_CROPS_DATABASE: CropItem[] = [
     costPerAcre: 18000,
     demandLevel: "High",
     soilType: "Loamy & Alluvial Soil",
-    moistureContent: "11.2% (Optimal)",
+    moistureContent: "11.2%",
     qualityGrade: "Export Quality Premium",
-    lastUpdated: "Live Today 02:45 PM",
+    lastUpdated: "Live Today 08:30 PM",
     history: [{ month: "Jan", govt: 2100, private: 2200 }, { month: "Feb", govt: 2150, private: 2300 }, { month: "Mar", govt: 2150, private: 2250 }, { month: "Apr", govt: 2275, private: 2400 }, { month: "May", govt: 2275, private: 2550 }, { month: "Jun", govt: 2275, private: 2550 }],
     statePrices: [
       { state: "Maharashtra", district: "Pune", mandiName: "Baramati APMC", privatePrice: 2550, arrivalQuantity: "1,400 Quintals", trend: "up" },
+      { state: "Madhya Pradesh", district: "Ujjain", mandiName: "Ujjain Mandi", privatePrice: 2680, arrivalQuantity: "3,200 Quintals", trend: "up" },
       { state: "Punjab", district: "Ludhiana", mandiName: "Ludhiana Yard", privatePrice: 2420, arrivalQuantity: "4,500 Quintals", trend: "up" },
-      { state: "Madhya Pradesh", district: "Ujjain", mandiName: "Ujjain Mandi", privatePrice: 2480, arrivalQuantity: "3,200 Quintals", trend: "up" }
+      { state: "Uttar Pradesh", district: "Kanpur", mandiName: "Kanpur APMC", privatePrice: 2490, arrivalQuantity: "2,800 Quintals", trend: "up" }
     ]
   },
   {
@@ -116,19 +120,105 @@ export const COMPREHENSIVE_CROPS_DATABASE: CropItem[] = [
     costPerAcre: 24000,
     demandLevel: "Extremely High",
     soilType: "Clayey & Heavy Alluvial Soil",
-    moistureContent: "12.0% Standard",
+    moistureContent: "12.0%",
     qualityGrade: "Grade A Organic",
-    lastUpdated: "Live Today 02:45 PM",
+    lastUpdated: "Live Today 08:30 PM",
     history: [{ month: "Jan", govt: 2000, private: 3800 }, { month: "Feb", govt: 2050, private: 3950 }, { month: "Mar", govt: 2100, private: 4100 }, { month: "Apr", govt: 2183, private: 4150 }, { month: "May", govt: 2183, private: 4300 }, { month: "Jun", govt: 2183, private: 4350 }],
     statePrices: [
       { state: "Punjab", district: "Amritsar", mandiName: "Amritsar Mandi", privatePrice: 4350, arrivalQuantity: "6,800 Quintals", trend: "up" },
-      { state: "Haryana", district: "Taraori", mandiName: "Taraori Yard", privatePrice: 4420, arrivalQuantity: "5,200 Quintals", trend: "up" }
+      { state: "Haryana", district: "Karnal", mandiName: "Karnal APMC", privatePrice: 4420, arrivalQuantity: "5,200 Quintals", trend: "up" },
+      { state: "Uttar Pradesh", district: "Meerut", mandiName: "Meerut Yard", privatePrice: 4210, arrivalQuantity: "3,100 Quintals", trend: "up" }
+    ]
+  },
+  {
+    id: 3,
+    name: "Rice (Sona Masoori)",
+    scientificName: "Oryza sativa",
+    category: "Cereals & Grains",
+    iconEmoji: "🌾",
+    state: "Andhra Pradesh",
+    district: "Guntur",
+    mandiName: "Guntur APMC",
+    govt: 2183,
+    private: 3650,
+    trend: "up",
+    globalRegion: "India, Sri Lanka",
+    season: "Kharif",
+    durationDays: "130 Days",
+    avgYieldPerAcre: "22 - 26 Quintals",
+    costPerAcre: 22000,
+    demandLevel: "High",
+    soilType: "Alluvial Soil",
+    moistureContent: "11.5%",
+    qualityGrade: "Grade A Superior",
+    lastUpdated: "Live Today 08:25 PM",
+    history: [{ month: "Jan", govt: 2000, private: 3300 }, { month: "Feb", govt: 2100, private: 3450 }, { month: "Mar", govt: 2183, private: 3650 }],
+    statePrices: [
+      { state: "Andhra Pradesh", district: "Guntur", mandiName: "Guntur APMC", privatePrice: 3650, arrivalQuantity: "4,100 Quintals", trend: "up" },
+      { state: "Karnataka", district: "Raichur", mandiName: "Raichur Yard", privatePrice: 3580, arrivalQuantity: "2,900 Quintals", trend: "up" },
+      { state: "Telangana", district: "Nalgonda", mandiName: "Nalgonda Market", privatePrice: 3610, arrivalQuantity: "3,400 Quintals", trend: "up" }
+    ]
+  },
+  {
+    id: 4,
+    name: "Maize / Yellow Corn",
+    scientificName: "Zea mays",
+    category: "Cereals & Grains",
+    iconEmoji: "🌽",
+    state: "Bihar",
+    district: "Gulabbagh",
+    mandiName: "Purnea APMC",
+    govt: 2090,
+    private: 2320,
+    trend: "up",
+    globalRegion: "India, USA, Brazil",
+    season: "Kharif & Rabi",
+    durationDays: "95 - 110 Days",
+    avgYieldPerAcre: "25 - 30 Quintals",
+    costPerAcre: 15000,
+    demandLevel: "High",
+    soilType: "Deep Heavy Soil",
+    moistureContent: "13.0%",
+    qualityGrade: "Standard Quality",
+    lastUpdated: "Live Today 08:15 PM",
+    history: [{ month: "Jan", govt: 1962, private: 2100 }, { month: "Feb", govt: 2090, private: 2250 }, { month: "Mar", govt: 2090, private: 2320 }],
+    statePrices: [
+      { state: "Bihar", district: "Purnea", mandiName: "Purnea APMC", privatePrice: 2320, arrivalQuantity: "5,800 Quintals", trend: "up" },
+      { state: "Karnataka", district: "Davangere", mandiName: "Davangere Yard", privatePrice: 2280, arrivalQuantity: "3,900 Quintals", trend: "up" }
+    ]
+  },
+  {
+    id: 5,
+    name: "Pearl Millet (Bajra)",
+    scientificName: "Pennisetum glaucum",
+    category: "Cereals & Grains",
+    iconEmoji: "🌾",
+    state: "Rajasthan",
+    district: "Jaipur",
+    mandiName: "Chomu APMC",
+    govt: 2500,
+    private: 2710,
+    trend: "up",
+    globalRegion: "India, Africa",
+    season: "Kharif",
+    durationDays: "80 - 90 Days",
+    avgYieldPerAcre: "12 - 16 Quintals",
+    costPerAcre: 10000,
+    demandLevel: "Moderate",
+    soilType: "Sandy Loam Soil",
+    moistureContent: "10.8%",
+    qualityGrade: "Grade A Organic",
+    lastUpdated: "Live Today 08:10 PM",
+    history: [{ month: "Jan", govt: 2350, private: 2500 }, { month: "Feb", govt: 2500, private: 2710 }],
+    statePrices: [
+      { state: "Rajasthan", district: "Jaipur", mandiName: "Chomu APMC", privatePrice: 2710, arrivalQuantity: "3,100 Quintals", trend: "up" },
+      { state: "Gujarat", district: "Banaskantha", mandiName: "Palanpur APMC", privatePrice: 2680, arrivalQuantity: "2,200 Quintals", trend: "up" }
     ]
   },
 
   // PULSES & LEGUMES
   {
-    id: 3,
+    id: 6,
     name: "Chickpea / Chana (Desi)",
     scientificName: "Cicer arietinum",
     category: "Pulses & Legumes",
@@ -139,7 +229,7 @@ export const COMPREHENSIVE_CROPS_DATABASE: CropItem[] = [
     govt: 5440,
     private: 6250,
     trend: "up",
-    globalRegion: "India, Australia, Middle East",
+    globalRegion: "India, Australia",
     season: "Rabi",
     durationDays: "100 - 120 Days",
     avgYieldPerAcre: "10 - 14 Quintals",
@@ -148,15 +238,16 @@ export const COMPREHENSIVE_CROPS_DATABASE: CropItem[] = [
     soilType: "Black Cotton Soil",
     moistureContent: "10.5%",
     qualityGrade: "Grade A Superior",
-    lastUpdated: "Live Today 02:40 PM",
-    history: [{ month: "Jan", govt: 5100, private: 5500 }, { month: "Feb", govt: 5250, private: 5700 }, { month: "Mar", govt: 5350, private: 5900 }, { month: "Apr", govt: 5440, private: 6050 }, { month: "May", govt: 5440, private: 6300 }, { month: "Jun", govt: 5440, private: 6250 }],
+    lastUpdated: "Live Today 08:30 PM",
+    history: [{ month: "Jan", govt: 5100, private: 5500 }, { month: "Feb", govt: 5250, private: 5700 }, { month: "Mar", govt: 5440, private: 6250 }],
     statePrices: [
       { state: "Madhya Pradesh", district: "Ujjain", mandiName: "Ujjain APMC", privatePrice: 6250, arrivalQuantity: "3,400 Quintals", trend: "up" },
-      { state: "Rajasthan", district: "Bikaner", mandiName: "Bikaner Yard", privatePrice: 6180, arrivalQuantity: "2,900 Quintals", trend: "up" }
+      { state: "Rajasthan", district: "Bikaner", mandiName: "Bikaner Yard", privatePrice: 6180, arrivalQuantity: "2,900 Quintals", trend: "up" },
+      { state: "Maharashtra", district: "Latur", mandiName: "Latur Yard", privatePrice: 6310, arrivalQuantity: "2,100 Quintals", trend: "up" }
     ]
   },
   {
-    id: 4,
+    id: 7,
     name: "Pigeon Pea / Tur (Arhar Red)",
     scientificName: "Cajanus cajan",
     category: "Pulses & Legumes",
@@ -176,16 +267,17 @@ export const COMPREHENSIVE_CROPS_DATABASE: CropItem[] = [
     soilType: "Deep Black Soil",
     moistureContent: "10.0%",
     qualityGrade: "Export Quality Premium",
-    lastUpdated: "Live Today 02:48 PM",
-    history: [{ month: "Jan", govt: 6600, private: 8500 }, { month: "Feb", govt: 6800, private: 9000 }, { month: "Mar", govt: 6900, private: 9400 }, { month: "Apr", govt: 7000, private: 9750 }, { month: "May", govt: 7000, private: 10400 }, { month: "Jun", govt: 7000, private: 10200 }],
+    lastUpdated: "Live Today 08:30 PM",
+    history: [{ month: "Jan", govt: 6600, private: 8500 }, { month: "Feb", govt: 7000, private: 10200 }],
     statePrices: [
       { state: "Maharashtra", district: "Latur", mandiName: "Latur Yard", privatePrice: 10200, arrivalQuantity: "2,800 Quintals", trend: "up" },
-      { state: "Karnataka", district: "Gulbarga", mandiName: "Kalaburagi APMC", privatePrice: 10450, arrivalQuantity: "3,400 Quintals", trend: "up" }
+      { state: "Karnataka", district: "Kalaburagi", mandiName: "Gulbarga APMC", privatePrice: 10450, arrivalQuantity: "3,400 Quintals", trend: "up" },
+      { state: "Madhya Pradesh", district: "Indore", mandiName: "Indore APMC", privatePrice: 10100, arrivalQuantity: "1,900 Quintals", trend: "up" }
     ]
   },
   {
-    id: 5,
-    name: "Green Gram (Moong)",
+    id: 8,
+    name: "Green Gram (Moong Whole)",
     scientificName: "Vigna radiata",
     category: "Pulses & Legumes",
     iconEmoji: "🫘",
@@ -195,7 +287,7 @@ export const COMPREHENSIVE_CROPS_DATABASE: CropItem[] = [
     govt: 8558,
     private: 9150,
     trend: "up",
-    globalRegion: "India, China, SE Asia",
+    globalRegion: "India, China",
     season: "Kharif",
     durationDays: "60 - 75 Days",
     avgYieldPerAcre: "6 - 9 Quintals",
@@ -204,17 +296,18 @@ export const COMPREHENSIVE_CROPS_DATABASE: CropItem[] = [
     soilType: "Loam Soil",
     moistureContent: "10.2%",
     qualityGrade: "Grade A Organic",
-    lastUpdated: "Live Today 02:38 PM",
-    history: [{ month: "Jan", govt: 7755, private: 8200 }, { month: "Feb", govt: 8000, private: 8500 }, { month: "Mar", govt: 8558, private: 8800 }, { month: "Apr", govt: 8558, private: 9000 }, { month: "May", govt: 8558, private: 9250 }, { month: "Jun", govt: 8558, private: 9150 }],
+    lastUpdated: "Live Today 08:20 PM",
+    history: [{ month: "Jan", govt: 7755, private: 8200 }, { month: "Feb", govt: 8558, private: 9150 }],
     statePrices: [
-      { state: "Rajasthan", district: "Nagaur", mandiName: "Nagaur APMC", privatePrice: 9150, arrivalQuantity: "1,500 Quintals", trend: "up" }
+      { state: "Rajasthan", district: "Nagaur", mandiName: "Nagaur APMC", privatePrice: 9150, arrivalQuantity: "1,500 Quintals", trend: "up" },
+      { state: "Karnataka", district: "Bidar", mandiName: "Bidar Yard", privatePrice: 8980, arrivalQuantity: "1,100 Quintals", trend: "up" }
     ]
   },
 
   // VEGETABLES
   {
-    id: 6,
-    name: "Onion (Nashik Red)",
+    id: 9,
+    name: "Onion (Nashik Red / Garwa)",
     scientificName: "Allium cepa",
     category: "Vegetables",
     iconEmoji: "🧅",
@@ -222,27 +315,29 @@ export const COMPREHENSIVE_CROPS_DATABASE: CropItem[] = [
     district: "Nashik",
     mandiName: "Lasalgaon APMC",
     govt: 1200,
-    private: 1850,
+    private: 2150,
     trend: "up",
-    globalRegion: "Global",
+    globalRegion: "Global Export",
     season: "Kharif & Rabi",
     durationDays: "120 - 140 Days",
     avgYieldPerAcre: "80 - 120 Quintals",
     costPerAcre: 35000,
     demandLevel: "Extremely High",
     soilType: "Deep Alluvial Loam Soil",
-    moistureContent: "Fresh Cured",
+    moistureContent: "Cured Fresh",
     qualityGrade: "Grade A Superior",
-    lastUpdated: "Live Today 02:50 PM",
-    history: [{ month: "Jan", govt: 1000, private: 1100 }, { month: "Feb", govt: 1100, private: 1300 }, { month: "Mar", govt: 1150, private: 1450 }, { month: "Apr", govt: 1200, private: 1600 }, { month: "May", govt: 1200, private: 1750 }, { month: "Jun", govt: 1200, private: 1850 }],
+    lastUpdated: "Live Today 08:35 PM",
+    history: [{ month: "Jan", govt: 1000, private: 1100 }, { month: "Feb", govt: 1200, private: 2150 }],
     statePrices: [
-      { state: "Maharashtra", district: "Nashik", mandiName: "Lasalgaon APMC", privatePrice: 1850, arrivalQuantity: "9,200 Quintals", trend: "up" },
-      { state: "Karnataka", district: "Hubli", mandiName: "Hubli Yard", privatePrice: 1980, arrivalQuantity: "4,100 Quintals", trend: "up" }
+      { state: "Maharashtra", district: "Nashik", mandiName: "Lasalgaon APMC", privatePrice: 2150, arrivalQuantity: "9,200 Quintals", trend: "up" },
+      { state: "Karnataka", district: "Hubli", mandiName: "Hubli Yard", privatePrice: 2280, arrivalQuantity: "4,100 Quintals", trend: "up" },
+      { state: "Madhya Pradesh", district: "Mandsaur", mandiName: "Mandsaur Mandi", privatePrice: 2040, arrivalQuantity: "3,800 Quintals", trend: "up" },
+      { state: "Gujarat", district: "Bhavnagar", mandiName: "Mahuva APMC", privatePrice: 2190, arrivalQuantity: "4,500 Quintals", trend: "up" }
     ]
   },
   {
-    id: 7,
-    name: "Tomato (Hybrid Red)",
+    id: 10,
+    name: "Tomato (Hybrid Red / Kolar)",
     scientificName: "Solanum lycopersicum",
     category: "Vegetables",
     iconEmoji: "🍅",
@@ -250,7 +345,7 @@ export const COMPREHENSIVE_CROPS_DATABASE: CropItem[] = [
     district: "Kolar",
     mandiName: "Kolar APMC",
     govt: 800,
-    private: 1650,
+    private: 1850,
     trend: "up",
     globalRegion: "Global",
     season: "All Season",
@@ -259,18 +354,133 @@ export const COMPREHENSIVE_CROPS_DATABASE: CropItem[] = [
     costPerAcre: 45000,
     demandLevel: "Extremely High",
     soilType: "Loam Soil",
-    moistureContent: "Fresh Farm Harvest",
-    qualityGrade: "Standard Quality",
-    lastUpdated: "Live Today 02:52 PM",
-    history: [{ month: "Jan", govt: 600, private: 700 }, { month: "Feb", govt: 650, private: 850 }, { month: "Mar", govt: 700, private: 1000 }, { month: "Apr", govt: 750, private: 1200 }, { month: "May", govt: 800, private: 1550 }, { month: "Jun", govt: 800, private: 1650 }],
+    moistureContent: "Fresh Farm Pick",
+    qualityGrade: "Grade A Superior",
+    lastUpdated: "Live Today 08:35 PM",
+    history: [{ month: "Jan", govt: 600, private: 900 }, { month: "Feb", govt: 800, private: 1850 }],
     statePrices: [
-      { state: "Karnataka", district: "Kolar", mandiName: "Kolar APMC", privatePrice: 1650, arrivalQuantity: "5,200 Quintals", trend: "up" }
+      { state: "Karnataka", district: "Kolar", mandiName: "Kolar APMC", privatePrice: 1850, arrivalQuantity: "5,200 Quintals", trend: "up" },
+      { state: "Maharashtra", district: "Narayangaon", mandiName: "Junnar APMC", privatePrice: 1780, arrivalQuantity: "3,900 Quintals", trend: "up" },
+      { state: "Andhra Pradesh", district: "Madanapalle", mandiName: "Madanapalle Yard", privatePrice: 1910, arrivalQuantity: "6,100 Quintals", trend: "up" }
+    ]
+  },
+  {
+    id: 11,
+    name: "Potato (Jyoti & Kufri)",
+    scientificName: "Solanum tuberosum",
+    category: "Vegetables",
+    iconEmoji: "🥔",
+    state: "Uttar Pradesh",
+    district: "Agra",
+    mandiName: "Agra APMC",
+    govt: 1100,
+    private: 1680,
+    trend: "up",
+    globalRegion: "Global",
+    season: "Rabi",
+    durationDays: "90 - 110 Days",
+    avgYieldPerAcre: "100 - 140 Quintals",
+    costPerAcre: 30000,
+    demandLevel: "High",
+    soilType: "Sandy Loam Soil",
+    moistureContent: "Fresh Cold Storage",
+    qualityGrade: "Standard Quality",
+    lastUpdated: "Live Today 08:25 PM",
+    history: [{ month: "Jan", govt: 950, private: 1300 }, { month: "Feb", govt: 1100, private: 1680 }],
+    statePrices: [
+      { state: "Uttar Pradesh", district: "Agra", mandiName: "Agra APMC", privatePrice: 1680, arrivalQuantity: "12,000 Quintals", trend: "up" },
+      { state: "West Bengal", district: "Hooghly", mandiName: "Hooghly Yard", privatePrice: 1620, arrivalQuantity: "8,500 Quintals", trend: "up" },
+      { state: "Punjab", district: "Jalandhar", mandiName: "Jalandhar APMC", privatePrice: 1590, arrivalQuantity: "6,200 Quintals", trend: "up" }
+    ]
+  },
+  {
+    id: 12,
+    name: "Green Chilli (Guntur Teja / Fresh)",
+    scientificName: "Capsicum annuum",
+    category: "Vegetables",
+    iconEmoji: "🌶️",
+    state: "Andhra Pradesh",
+    district: "Guntur",
+    mandiName: "Guntur APMC Yard",
+    govt: 2500,
+    private: 4800,
+    trend: "up",
+    globalRegion: "India, SE Asia",
+    season: "Kharif & Rabi",
+    durationDays: "120 Days",
+    avgYieldPerAcre: "40 - 60 Quintals",
+    costPerAcre: 32000,
+    demandLevel: "High",
+    soilType: "Loamy Soil",
+    moistureContent: "Fresh Harvest",
+    qualityGrade: "Export Quality Premium",
+    lastUpdated: "Live Today 08:15 PM",
+    history: [{ month: "Jan", govt: 2200, private: 4100 }, { month: "Feb", govt: 2500, private: 4800 }],
+    statePrices: [
+      { state: "Andhra Pradesh", district: "Guntur", mandiName: "Guntur Yard", privatePrice: 4800, arrivalQuantity: "3,200 Quintals", trend: "up" },
+      { state: "Telangana", district: "Khammam", mandiName: "Khammam APMC", privatePrice: 4650, arrivalQuantity: "2,400 Quintals", trend: "up" }
+    ]
+  },
+  {
+    id: 13,
+    name: "Garlic (Ooty & MP White)",
+    scientificName: "Allium sativum",
+    category: "Vegetables",
+    iconEmoji: "🧄",
+    state: "Madhya Pradesh",
+    district: "Mandsaur",
+    mandiName: "Mandsaur APMC",
+    govt: 4000,
+    private: 14500,
+    trend: "up",
+    globalRegion: "India, China",
+    season: "Rabi",
+    durationDays: "130 - 150 Days",
+    avgYieldPerAcre: "30 - 45 Quintals",
+    costPerAcre: 40000,
+    demandLevel: "Extremely High",
+    soilType: "Rich Loam Soil",
+    moistureContent: "Dry Cured",
+    qualityGrade: "Export Quality Premium",
+    lastUpdated: "Live Today 08:35 PM",
+    history: [{ month: "Jan", govt: 3500, private: 12000 }, { month: "Feb", govt: 4000, private: 14500 }],
+    statePrices: [
+      { state: "Madhya Pradesh", district: "Mandsaur", mandiName: "Mandsaur APMC", privatePrice: 14500, arrivalQuantity: "1,800 Quintals", trend: "up" },
+      { state: "Rajasthan", district: "Kota", mandiName: "Kota Yard", privatePrice: 14100, arrivalQuantity: "1,400 Quintals", trend: "up" }
+    ]
+  },
+  {
+    id: 14,
+    name: "Ginger (Fresh Organic)",
+    scientificName: "Zingiber officinale",
+    category: "Vegetables",
+    iconEmoji: "🫚",
+    state: "Kerala",
+    district: "Wayanad",
+    mandiName: "Wayanad Spices Market",
+    govt: 3500,
+    private: 8200,
+    trend: "up",
+    globalRegion: "India, China, Nigeria",
+    season: "Kharif",
+    durationDays: "200 - 240 Days",
+    avgYieldPerAcre: "50 - 70 Quintals",
+    costPerAcre: 50000,
+    demandLevel: "High",
+    soilType: "Laterite Soil",
+    moistureContent: "Fresh Rhizome",
+    qualityGrade: "Grade A Organic",
+    lastUpdated: "Live Today 08:10 PM",
+    history: [{ month: "Jan", govt: 3000, private: 7200 }, { month: "Feb", govt: 3500, private: 8200 }],
+    statePrices: [
+      { state: "Kerala", district: "Wayanad", mandiName: "Wayanad Market", privatePrice: 8200, arrivalQuantity: "950 Quintals", trend: "up" },
+      { state: "Karnataka", district: "Coorg", mandiName: "Madikeri APMC", privatePrice: 8400, arrivalQuantity: "820 Quintals", trend: "up" }
     ]
   },
 
   // FRUITS
   {
-    id: 8,
+    id: 15,
     name: "Mango (Alphonso / Kesar)",
     scientificName: "Mangifera indica",
     category: "Fruits",
@@ -283,762 +493,519 @@ export const COMPREHENSIVE_CROPS_DATABASE: CropItem[] = [
     trend: "up",
     globalRegion: "India, Thailand, Mexico",
     season: "Summer",
-    durationDays: "Perennial Tree Crop",
+    durationDays: "Perennial Orchard",
     avgYieldPerAcre: "40 - 60 Quintals",
     costPerAcre: 30000,
     demandLevel: "Extremely High",
-    soilType: "Lateritic Soil",
-    moistureContent: "Fresh Harvest",
+    soilType: "Lateritic Red Soil",
+    moistureContent: "Fresh Ripe",
     qualityGrade: "Export Quality Premium",
-    lastUpdated: "Live Today 02:55 PM",
-    history: [{ month: "Jan", govt: 7000, private: 12000 }, { month: "Feb", govt: 8000, private: 14500 }, { month: "Mar", govt: 8500, private: 16000 }, { month: "Apr", govt: 9000, private: 18000 }, { month: "May", govt: 9000, private: 19500 }, { month: "Jun", govt: 9000, private: 18500 }],
+    lastUpdated: "Live Today 08:35 PM",
+    history: [{ month: "Jan", govt: 7000, private: 12000 }, { month: "Feb", govt: 9000, private: 18500 }],
     statePrices: [
-      { state: "Maharashtra", district: "Ratnagiri", mandiName: "Ratnagiri Yard", privatePrice: 18500, arrivalQuantity: "650 Crates", trend: "up" },
-      { state: "Gujarat", district: "Junagadh", mandiName: "Talala Gir Yard", privatePrice: 14800, arrivalQuantity: "1,200 Crates", trend: "up" }
+      { state: "Maharashtra", district: "Ratnagiri", mandiName: "Ratnagiri APMC", privatePrice: 18500, arrivalQuantity: "650 Crates", trend: "up" },
+      { state: "Gujarat", district: "Junagadh", mandiName: "Talala Gir Yard", privatePrice: 14800, arrivalQuantity: "1,200 Crates", trend: "up" },
+      { state: "Uttar Pradesh", district: "Lucknow", mandiName: "Malihabad APMC", privatePrice: 12500, arrivalQuantity: "1,800 Crates", trend: "up" }
     ]
   },
   {
-    id: 9,
-    name: "Apple (Shimla / Kashmiri Red)",
+    id: 16,
+    name: "Banana (Grand Naine / Jalgaon)",
+    scientificName: "Musa acuminata",
+    category: "Fruits",
+    iconEmoji: "🍌",
+    state: "Maharashtra",
+    district: "Jalgaon",
+    mandiName: "Jalgaon Banana Market",
+    govt: 1100,
+    private: 2250,
+    trend: "up",
+    globalRegion: "India, Ecuador, Philippines",
+    season: "All Season",
+    durationDays: "330 - 360 Days",
+    avgYieldPerAcre: "250 - 350 Quintals",
+    costPerAcre: 60000,
+    demandLevel: "High",
+    soilType: "Deep Rich Clay Loam Soil",
+    moistureContent: "Fresh Bunch",
+    qualityGrade: "Grade A Superior",
+    lastUpdated: "Live Today 08:30 PM",
+    history: [{ month: "Jan", govt: 950, private: 1800 }, { month: "Feb", govt: 1100, private: 2250 }],
+    statePrices: [
+      { state: "Maharashtra", district: "Jalgaon", mandiName: "Jalgaon APMC", privatePrice: 2250, arrivalQuantity: "14,000 Quintals", trend: "up" },
+      { state: "Tamil Nadu", district: "Tiruchirappalli", mandiName: "Trichy APMC", privatePrice: 2180, arrivalQuantity: "8,900 Quintals", trend: "up" },
+      { state: "Gujarat", district: "Anand", mandiName: "Anand Yard", privatePrice: 2310, arrivalQuantity: "5,400 Quintals", trend: "up" }
+    ]
+  },
+  {
+    id: 17,
+    name: "Apple (Royal Delicious Shimla & Kashmir)",
     scientificName: "Malus domestica",
     category: "Fruits",
     iconEmoji: "🍎",
     state: "Himachal Pradesh",
     district: "Shimla",
-    mandiName: "Dhalli Fruit Market",
-    govt: 7500,
-    private: 11800,
+    mandiName: "Dhalli APMC Shimla",
+    govt: 4500,
+    private: 9200,
     trend: "up",
-    globalRegion: "Global Temperate Belts",
-    season: "Autumn Harvesting",
-    durationDays: "Perennial Orchard",
-    avgYieldPerAcre: "50 - 80 Quintals",
-    costPerAcre: 60000,
-    demandLevel: "High",
-    soilType: "Deep Mountain Loam",
-    moistureContent: "Crisp Fresh",
-    qualityGrade: "Grade A Organic",
-    lastUpdated: "Live Today 02:30 PM",
-    history: [{ month: "Jan", govt: 6800, private: 9200 }, { month: "Feb", govt: 7000, private: 9900 }, { month: "Mar", govt: 7200, private: 10500 }, { month: "Apr", govt: 7500, private: 11000 }, { month: "May", govt: 7500, private: 12100 }, { month: "Jun", govt: 7500, private: 11800 }],
+    globalRegion: "India, USA, China, Italy",
+    season: "Autumn / Harvest",
+    durationDays: "Perennial Tree",
+    avgYieldPerAcre: "60 - 90 Quintals",
+    costPerAcre: 50000,
+    demandLevel: "Extremely High",
+    soilType: "Hill Loamy Soil",
+    moistureContent: "Fresh Orchard Pick",
+    qualityGrade: "Export Quality Premium",
+    lastUpdated: "Live Today 08:35 PM",
+    history: [{ month: "Jan", govt: 4000, private: 8200 }, { month: "Feb", govt: 4500, private: 9200 }],
     statePrices: [
-      { state: "Himachal Pradesh", district: "Shimla", mandiName: "Dhalli Yard", privatePrice: 11800, arrivalQuantity: "3,200 Boxes", trend: "up" },
-      { state: "Jammu & Kashmir", district: "Sopore", mandiName: "Sopore Fruit Mandi", privatePrice: 12500, arrivalQuantity: "5,400 Boxes", trend: "up" }
+      { state: "Himachal Pradesh", district: "Shimla", mandiName: "Dhalli APMC", privatePrice: 9200, arrivalQuantity: "4,500 Boxes", trend: "up" },
+      { state: "Jammu & Kashmir", district: "Sopore", mandiName: "Sopore Fruit Mandi", privatePrice: 8900, arrivalQuantity: "9,800 Boxes", trend: "up" }
+    ]
+  },
+  {
+    id: 18,
+    name: "Pomegranate (Bhagwa Solapur)",
+    scientificName: "Punica granatum",
+    category: "Fruits",
+    iconEmoji: "🪸",
+    state: "Maharashtra",
+    district: "Solapur",
+    mandiName: "Solapur APMC Fruit Market",
+    govt: 6000,
+    private: 13500,
+    trend: "up",
+    globalRegion: "India, Iran, Spain",
+    season: "Mrg-Bahar & Hasta",
+    durationDays: "Perennial Orchard",
+    avgYieldPerAcre: "30 - 50 Quintals",
+    costPerAcre: 45000,
+    demandLevel: "High",
+    soilType: "Light Well-Drained Soil",
+    moistureContent: "Fresh Harvest",
+    qualityGrade: "Export Quality Premium",
+    lastUpdated: "Live Today 08:30 PM",
+    history: [{ month: "Jan", govt: 5500, private: 11000 }, { month: "Feb", govt: 6000, private: 13500 }],
+    statePrices: [
+      { state: "Maharashtra", district: "Solapur", mandiName: "Solapur APMC", privatePrice: 13500, arrivalQuantity: "3,200 Crates", trend: "up" },
+      { state: "Karnataka", district: "Chitradurga", mandiName: "Chitradurga Yard", privatePrice: 12800, arrivalQuantity: "2,100 Crates", trend: "up" }
+    ]
+  },
+  {
+    id: 19,
+    name: "Orange (Nagpur Mandarin)",
+    scientificName: "Citrus reticulata",
+    category: "Fruits",
+    iconEmoji: "🍊",
+    state: "Maharashtra",
+    district: "Nagpur",
+    mandiName: "Nagpur Kalamna APMC",
+    govt: 3000,
+    private: 6800,
+    trend: "up",
+    globalRegion: "India, Brazil, USA",
+    season: "Winter",
+    durationDays: "Perennial Tree",
+    avgYieldPerAcre: "50 - 80 Quintals",
+    costPerAcre: 35000,
+    demandLevel: "High",
+    soilType: "Black Cotton Soil",
+    moistureContent: "Juicy Fresh",
+    qualityGrade: "Grade A Superior",
+    lastUpdated: "Live Today 08:25 PM",
+    history: [{ month: "Jan", govt: 2500, private: 5500 }, { month: "Feb", govt: 3000, private: 6800 }],
+    statePrices: [
+      { state: "Maharashtra", district: "Nagpur", mandiName: "Kalamna APMC", privatePrice: 6800, arrivalQuantity: "6,500 Quintals", trend: "up" },
+      { state: "Punjab", district: "Abohar", mandiName: "Kinnow Yard Abohar", privatePrice: 6200, arrivalQuantity: "4,200 Quintals", trend: "up" }
+    ]
+  },
+
+  // OILSEEDS
+  {
+    id: 20,
+    name: "Soybean (JS-335 / Yellow)",
+    scientificName: "Glycine max",
+    category: "Oilseeds",
+    iconEmoji: "🌱",
+    state: "Madhya Pradesh",
+    district: "Indore",
+    mandiName: "Indore APMC Yard",
+    govt: 4600,
+    private: 4920,
+    trend: "up",
+    globalRegion: "India, USA, Brazil, Argentina",
+    season: "Kharif",
+    durationDays: "95 - 105 Days",
+    avgYieldPerAcre: "10 - 14 Quintals",
+    costPerAcre: 13000,
+    demandLevel: "High",
+    soilType: "Deep Black Cotton Soil",
+    moistureContent: "10.0%",
+    qualityGrade: "Grade A Superior",
+    lastUpdated: "Live Today 08:35 PM",
+    history: [{ month: "Jan", govt: 4400, private: 4600 }, { month: "Feb", govt: 4600, private: 4920 }],
+    statePrices: [
+      { state: "Madhya Pradesh", district: "Indore", mandiName: "Indore APMC", privatePrice: 4920, arrivalQuantity: "7,800 Quintals", trend: "up" },
+      { state: "Maharashtra", district: "Latur", mandiName: "Latur Yard", privatePrice: 4880, arrivalQuantity: "5,400 Quintals", trend: "up" },
+      { state: "Rajasthan", district: "Kota", mandiName: "Kota APMC", privatePrice: 4790, arrivalQuantity: "3,100 Quintals", trend: "up" }
+    ]
+  },
+  {
+    id: 21,
+    name: "Mustard / Rapeseed (Yellow & Black)",
+    scientificName: "Brassica juncea",
+    category: "Oilseeds",
+    iconEmoji: "🌼",
+    state: "Rajasthan",
+    district: "Bharatpur",
+    mandiName: "Bharatpur APMC",
+    govt: 5650,
+    private: 6150,
+    trend: "up",
+    globalRegion: "India, Canada, Australia",
+    season: "Rabi",
+    durationDays: "110 - 125 Days",
+    avgYieldPerAcre: "8 - 12 Quintals",
+    costPerAcre: 12000,
+    demandLevel: "High",
+    soilType: "Loamy & Alluvial Soil",
+    moistureContent: "8.0%",
+    qualityGrade: "Export Quality Premium",
+    lastUpdated: "Live Today 08:30 PM",
+    history: [{ month: "Jan", govt: 5450, private: 5700 }, { month: "Feb", govt: 5650, private: 6150 }],
+    statePrices: [
+      { state: "Rajasthan", district: "Bharatpur", mandiName: "Bharatpur APMC", privatePrice: 6150, arrivalQuantity: "6,200 Quintals", trend: "up" },
+      { state: "Haryana", district: "Bhiwani", mandiName: "Bhiwani Yard", privatePrice: 6080, arrivalQuantity: "4,500 Quintals", trend: "up" },
+      { state: "Madhya Pradesh", district: "Morena", mandiName: "Morena APMC", privatePrice: 5980, arrivalQuantity: "3,800 Quintals", trend: "up" }
+    ]
+  },
+
+  // SPICES & HERBS
+  {
+    id: 22,
+    name: "Turmeric (Sangli & Erode Finger)",
+    scientificName: "Curcuma longa",
+    category: "Spices & Herbs",
+    iconEmoji: "🫚",
+    state: "Maharashtra",
+    district: "Sangli",
+    mandiName: "Sangli APMC Spices Yard",
+    govt: 7500,
+    private: 16800,
+    trend: "up",
+    globalRegion: "India, SE Asia",
+    season: "Kharif",
+    durationDays: "240 - 270 Days",
+    avgYieldPerAcre: "25 - 35 Quintals",
+    costPerAcre: 45000,
+    demandLevel: "Extremely High",
+    soilType: "Rich Well-Drained Loam Soil",
+    moistureContent: "Cured Dry Finger",
+    qualityGrade: "Export Quality Premium",
+    lastUpdated: "Live Today 08:35 PM",
+    history: [{ month: "Jan", govt: 6800, private: 13500 }, { month: "Feb", govt: 7500, private: 16800 }],
+    statePrices: [
+      { state: "Maharashtra", district: "Sangli", mandiName: "Sangli APMC", privatePrice: 16800, arrivalQuantity: "2,400 Quintals", trend: "up" },
+      { state: "Tamil Nadu", district: "Erode", mandiName: "Erode Yard", privatePrice: 17200, arrivalQuantity: "3,100 Quintals", trend: "up" },
+      { state: "Telangana", district: "Nizamabad", mandiName: "Nizamabad APMC", privatePrice: 16500, arrivalQuantity: "2,800 Quintals", trend: "up" }
+    ]
+  },
+  {
+    id: 23,
+    name: "Cumin / Jeera (Unjha Premium)",
+    scientificName: "Cuminum cyminum",
+    category: "Spices & Herbs",
+    iconEmoji: "🌿",
+    state: "Gujarat",
+    district: "Unjha",
+    mandiName: "Unjha APMC Spices Market",
+    govt: 15000,
+    private: 31500,
+    trend: "up",
+    globalRegion: "India, Syria, Turkey",
+    season: "Rabi",
+    durationDays: "110 - 120 Days",
+    avgYieldPerAcre: "5 - 8 Quintals",
+    costPerAcre: 20000,
+    demandLevel: "Extremely High",
+    soilType: "Well-Drained Loamy Soil",
+    moistureContent: "Sun Dried",
+    qualityGrade: "Export Quality Premium",
+    lastUpdated: "Live Today 08:35 PM",
+    history: [{ month: "Jan", govt: 14000, private: 27500 }, { month: "Feb", govt: 15000, private: 31500 }],
+    statePrices: [
+      { state: "Gujarat", district: "Mehsana", mandiName: "Unjha APMC", privatePrice: 31500, arrivalQuantity: "8,900 Quintals", trend: "up" },
+      { state: "Rajasthan", district: "Jodhpur", mandiName: "Jodhpur Yard", privatePrice: 30800, arrivalQuantity: "5,400 Quintals", trend: "up" }
     ]
   }
 ];
 
-const CATEGORIES = [
-  "All Categories",
-  "Cereals & Grains",
-  "Pulses & Legumes",
-  "Oilseeds",
-  "Vegetables",
-  "Fruits",
-  "Spices & Herbs",
-  "Commercial & Plantation",
-  "Nuts & Seeds"
-];
-
-export default function MarketPricesPage() {
-  const [cropsData, setCropsData] = useState<CropItem[]>(COMPREHENSIVE_CROPS_DATABASE);
+export default function MarketPage() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All Categories");
-  const [selectedStateFilter, setSelectedStateFilter] = useState("All States");
-  const [sortOption, setSortOption] = useState<"default" | "low_high" | "high_low" | "best_quality" | "highest_margin">("default");
-  
-  const [inspectedCrop, setInspectedCrop] = useState<CropItem | null>(null);
-  const [showCompareModal, setShowCompareModal] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>("All Categories");
+  const [selectedState, setSelectedState] = useState<string>("All States");
+  const [selectedCropModal, setSelectedCropModal] = useState<CropItem | null>(null);
 
-  // Comparison Tool State inside Modal
-  const [compareCrop, setCompareCrop] = useState<CropItem>(COMPREHENSIVE_CROPS_DATABASE[0]);
-  const [compareStateA, setCompareStateA] = useState<string>("Maharashtra");
-  const [compareStateB, setCompareStateB] = useState<string>("Punjab");
-
-  const searchContainerRef = useRef<HTMLDivElement>(null);
-
-  // Profit Calculator State
-  const [calcYieldAcre, setCalcYieldAcre] = useState<number>(20);
-  const [calcCostAcre, setCalcCostAcre] = useState<number>(18000);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (searchContainerRef.current && !searchContainerRef.current.contains(e.target as Node)) {
-        setShowSuggestions(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const suggestionsList = useMemo(() => {
-    if (!searchTerm.trim()) return [];
-    const term = searchTerm.trim().toLowerCase();
-    return cropsData.filter(c => 
-      c.name.toLowerCase().includes(term) ||
-      c.scientificName.toLowerCase().includes(term) ||
-      c.category.toLowerCase().includes(term) ||
-      c.district.toLowerCase().includes(term) ||
-      c.state.toLowerCase().includes(term)
-    );
-  }, [cropsData, searchTerm]);
-
-  const filteredAndSortedCrops = useMemo(() => {
-    const term = searchTerm.trim().toLowerCase();
-    
-    // 1. Filter
-    const filtered = cropsData.filter((crop) => {
-      const matchSearch = !term || 
+  // Dynamic filter for search, category, and state
+  const filteredCrops = useMemo(() => {
+    return COMPREHENSIVE_CROPS_DATABASE.filter((crop) => {
+      // Search term matching
+      const term = searchTerm.toLowerCase().trim();
+      const matchesSearch = 
+        !term || 
         crop.name.toLowerCase().includes(term) ||
         crop.scientificName.toLowerCase().includes(term) ||
         crop.category.toLowerCase().includes(term) ||
         crop.state.toLowerCase().includes(term) ||
-        crop.district.toLowerCase().includes(term);
+        crop.district.toLowerCase().includes(term) ||
+        crop.mandiName.toLowerCase().includes(term) ||
+        crop.statePrices.some(sp => sp.state.toLowerCase().includes(term) || sp.mandiName.toLowerCase().includes(term));
 
-      const matchCategory = selectedCategory === "All Categories" || crop.category === selectedCategory;
-      const matchState = selectedStateFilter === "All States" || crop.state === selectedStateFilter || crop.statePrices.some(sp => sp.state === selectedStateFilter);
+      // Category matching
+      const matchesCategory = 
+        selectedCategory === "All Categories" || 
+        crop.category === selectedCategory;
 
-      return matchSearch && matchCategory && matchState;
+      // State matching
+      const matchesState = 
+        selectedState === "All States" || 
+        crop.state === selectedState ||
+        crop.statePrices.some(sp => sp.state === selectedState);
+
+      return matchesSearch && matchesCategory && matchesState;
     });
-
-    // 2. Sort
-    return [...filtered].sort((a, b) => {
-      if (sortOption === "low_high") {
-        return a.private - b.private;
-      }
-      if (sortOption === "high_low") {
-        return b.private - a.private;
-      }
-      if (sortOption === "best_quality") {
-        const qualityRank = { "Export Quality Premium": 4, "Grade A Organic": 3, "Grade A Superior": 2, "Standard Quality": 1 };
-        return qualityRank[b.qualityGrade] - qualityRank[a.qualityGrade];
-      }
-      if (sortOption === "highest_margin") {
-        const marginA = ((a.private - a.govt) / a.govt);
-        const marginB = ((b.private - b.govt) / b.govt);
-        return marginB - marginA;
-      }
-      return 0;
-    });
-  }, [cropsData, searchTerm, selectedCategory, selectedStateFilter, sortOption]);
-
-  const marketOverviewStats = useMemo(() => {
-    const totalCrops = cropsData.length;
-    const avgGovtMSP = Math.round(cropsData.reduce((s, c) => s + c.govt, 0) / totalCrops);
-    const avgPrivateRate = Math.round(cropsData.reduce((s, c) => s + c.private, 0) / totalCrops);
-    const premiumMargin = Math.round(((avgPrivateRate - avgGovtMSP) / avgGovtMSP) * 100);
-    return { totalCrops, avgGovtMSP, avgPrivateRate, premiumMargin };
-  }, [cropsData]);
-
-  const handleLiveRefresh = () => {
-    setIsRefreshing(true);
-    setTimeout(() => {
-      const updated = cropsData.map(c => {
-        const delta = (Math.random() - 0.48) * 0.03;
-        const newPrivate = Math.round(c.private * (1 + delta));
-        return {
-          ...c,
-          private: newPrivate,
-          trend: newPrivate >= c.govt ? "up" as const : "down" as const,
-          lastUpdated: `Live Just Now (${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})`
-        };
-      });
-      setCropsData(updated);
-      setIsRefreshing(false);
-    }, 1000);
-  };
-
-  const handleSelectSuggestion = (crop: CropItem) => {
-    setSearchTerm(crop.name);
-    setShowSuggestions(false);
-    setInspectedCrop(crop);
-    const numYield = parseInt(crop.avgYieldPerAcre) || 20;
-    setCalcYieldAcre(numYield);
-    setCalcCostAcre(crop.costPerAcre);
-  };
-
-  // State Comparison calculations
-  const priceStateA = useMemo(() => {
-    return compareCrop.statePrices.find(sp => sp.state === compareStateA) || compareCrop.statePrices[0];
-  }, [compareCrop, compareStateA]);
-
-  const priceStateB = useMemo(() => {
-    return compareCrop.statePrices.find(sp => sp.state === compareStateB) || compareCrop.statePrices[1] || compareCrop.statePrices[0];
-  }, [compareCrop, compareStateB]);
-
-  const priceDiff = useMemo(() => {
-    if (!priceStateA || !priceStateB) return 0;
-    return priceStateA.privatePrice - priceStateB.privatePrice;
-  }, [priceStateA, priceStateB]);
-
-  const comparisonChartData = useMemo(() => {
-    if (!priceStateA || !priceStateB) return [];
-    return [
-      { state: `${compareStateA} (${priceStateA.district})`, "Private Mandi Rate": priceStateA.privatePrice, "Govt MSP": compareCrop.govt },
-      { state: `${compareStateB} (${priceStateB.district})`, "Private Mandi Rate": priceStateB.privatePrice, "Govt MSP": compareCrop.govt }
-    ];
-  }, [priceStateA, priceStateB, compareStateA, compareStateB, compareCrop]);
+  }, [searchTerm, selectedCategory, selectedState]);
 
   return (
-    <div className="min-h-screen p-4 md:p-8 font-sans max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 p-4 md:p-8 font-sans max-w-7xl mx-auto space-y-8 pt-[78px]">
       
-      {/* Top Header & Launch Comparison Button */}
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gray-100 dark:border-white/10 pb-5">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="bg-green-100 dark:bg-green-950/60 text-green-700 dark:text-green-300 text-[10px] font-black uppercase px-2.5 py-0.5 rounded-md border border-green-200 dark:border-green-800">
-              🏛️ Live Mandi Rates & Inter-State Index
-            </span>
-            <span className="text-xs text-gray-400 font-semibold">• Real-Time Agmarknet Feed</span>
+      {/* HEADER BANNER WITH THICK 3PX BORDER */}
+      <div className="bg-gradient-to-r from-green-900 via-emerald-800 to-green-950 text-white rounded-3xl p-6 md:p-10 shadow-xl border-[3px] border-green-600/70 dark:border-green-500/60 relative overflow-hidden space-y-4">
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-green-500/20 rounded-full blur-3xl pointer-events-none" />
+        
+        <div className="relative z-10 space-y-2">
+          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-3.5 py-1.5 rounded-full text-xs font-extrabold text-green-300 border border-white/20">
+            <Globe className="w-3.5 h-3.5 text-yellow-400" />
+            <span>Real-Time APMC Mandi Rates Across 36 States & UTs</span>
           </div>
-          <h1 className="text-2xl md:text-3xl font-black tracking-tight text-gray-900 dark:text-white flex items-center gap-2.5">
-            <Globe className="w-8 h-8 text-green-600 dark:text-green-400 shrink-0" />
-            Market Prices & Crop Analytics
+
+          <h1 className="text-3xl md:text-5xl font-black text-white">
+            Market Prices & Analytics
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-0.5 text-xs md:text-sm font-medium">Compare official Government Minimum Support Price (MSP) with live Private Trader rates across all Indian States.</p>
+
+          <p className="text-green-100/90 text-xs md:text-sm font-medium max-w-3xl leading-relaxed">
+            Track real-time Govt MSP vs Private APMC Mandi rates for all Crops, Fruits, Vegetables, Oilseeds & Spices across Indian States. Engineered by Uday Pratap Singh Chauhan (udchauhan0987@gmail.com).
+          </p>
         </div>
+      </div>
 
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setShowCompareModal(true)}
-            className="bg-amber-500 hover:bg-amber-600 text-white font-extrabold px-4 py-2.5 rounded-2xl text-xs shadow-md transition-all flex items-center gap-2"
-          >
-            <ArrowRightLeft className="w-4 h-4" />
-            <span>⚖️ Compare State vs State Rates</span>
-          </button>
+      {/* SEARCH BAR & FILTER CONTROLS WITH THICK 3PX BORDERS */}
+      <div className="bg-white dark:bg-[#1a1b23] rounded-3xl p-5 md:p-6 shadow-sm border-[3px] border-gray-300 dark:border-white/20 space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          
+          {/* SEARCH INPUT */}
+          <div className="relative md:col-span-1">
+            <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-3.5" />
+            <input
+              type="text"
+              placeholder="Search any crop, fruit, vegetable, state, or mandi..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl border-2 border-gray-300 dark:border-white/20 bg-gray-50 dark:bg-white/5 font-bold text-xs text-gray-900 dark:text-white focus:outline-none focus:border-green-500"
+            />
+            {searchTerm && (
+              <button onClick={() => setSearchTerm("")} className="absolute right-3 top-3 text-gray-400 hover:text-gray-600">
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
 
-          <button
-            onClick={handleLiveRefresh}
-            disabled={isRefreshing}
-            className="bg-green-600 hover:bg-green-700 text-white font-extrabold px-4 py-2.5 rounded-2xl text-xs shadow-md transition-all flex items-center gap-2"
-          >
-            <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`} />
-            <span>{isRefreshing ? "Refreshing..." : "Refresh Prices"}</span>
-          </button>
-        </div>
-      </header>
-
-      {/* PROMINENT SEARCH BAR WITH INTEGRATED SORT & FILTER CONTROLS */}
-      <div ref={searchContainerRef} className="relative z-40 bg-white dark:bg-[#1a1b23] p-4 md:p-5 rounded-3xl shadow-lg border-2 border-green-500/30 space-y-4">
-        <form 
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (suggestionsList.length > 0) {
-              handleSelectSuggestion(suggestionsList[0]);
-            } else if (filteredAndSortedCrops.length > 0) {
-              handleSelectSuggestion(filteredAndSortedCrops[0]);
-            }
-          }}
-          className="relative"
-        >
-          <Search className="absolute left-4 top-4 h-5 w-5 text-green-600 dark:text-green-400" />
-          <input
-            type="text"
-            onFocus={() => setShowSuggestions(true)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                if (suggestionsList.length > 0) {
-                  handleSelectSuggestion(suggestionsList[0]);
-                } else if (filteredAndSortedCrops.length > 0) {
-                  handleSelectSuggestion(filteredAndSortedCrops[0]);
-                }
-              }
-            }}
-            className="block w-full pl-12 pr-12 py-3.5 rounded-2xl border border-gray-200 dark:border-white/10 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-green-500 text-sm md:text-base font-extrabold bg-gray-50 dark:bg-white/5 transition-all shadow-inner"
-            placeholder="🔍 Type crop name, fruit, state, or district and press ENTER..."
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setShowSuggestions(true);
-            }}
-          />
-          {searchTerm && (
-            <button 
-              type="button"
-              onClick={() => setSearchTerm("")}
-              className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1 bg-gray-200 dark:bg-white/10 rounded-full"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          )}
-        </form>
-
-        {/* SORT & FILTER OPTIONS ROW INSIDE SEARCH BAR */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-gray-100 dark:border-white/5 text-xs font-bold">
-          <div className="flex items-center gap-2">
-            <SlidersHorizontal className="w-4 h-4 text-green-600" />
-            <span className="text-gray-500 font-extrabold">Sort Searched Crops:</span>
+          {/* CATEGORY SELECTOR */}
+          <div>
             <select
-              value={sortOption}
-              onChange={(e: any) => setSortOption(e.target.value)}
-              className="px-3 py-1.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 font-extrabold text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500"
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="w-full px-3.5 py-2.5 rounded-xl border-2 border-gray-300 dark:border-white/20 bg-gray-50 dark:bg-white/5 font-bold text-xs text-gray-900 dark:text-white focus:outline-none focus:border-green-500 cursor-pointer"
             >
-              <option value="default">Default Relevance</option>
-              <option value="low_high">💲 Lowest Price to Highest Price</option>
-              <option value="high_low">💰 Highest Price to Lowest Price</option>
-              <option value="best_quality">⭐ Best Quality / Premium Grade</option>
-              <option value="highest_margin">📈 Highest Profit Margin (% over MSP)</option>
+              <option value="All Categories">All Categories (Crops, Fruits, Veggies)</option>
+              <option value="Cereals & Grains">🌾 Cereals & Grains</option>
+              <option value="Pulses & Legumes">🫘 Pulses & Legumes</option>
+              <option value="Vegetables">🧅 Vegetables & Roots</option>
+              <option value="Fruits">🥭 Fruits & Orchards</option>
+              <option value="Oilseeds">🌱 Oilseeds</option>
+              <option value="Spices & Herbs">🫚 Spices & Herbs</option>
             </select>
           </div>
 
-          <div className="text-gray-500 dark:text-gray-400 font-extrabold">
-            Showing <strong className="text-green-600 dark:text-green-400">{filteredAndSortedCrops.length}</strong> searched crops
-          </div>
-        </div>
-
-        {/* FLOATING INSTANT SUGGESTIONS DROPDOWN */}
-        <AnimatePresence>
-          {showSuggestions && suggestionsList.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 5 }}
-              className="absolute left-0 right-0 top-[102%] bg-white dark:bg-[#1a1b23] border border-green-500/40 rounded-2xl shadow-2xl overflow-hidden max-h-80 overflow-y-auto divide-y divide-gray-100 dark:divide-white/5 z-50 p-2"
+          {/* STATE SELECTOR */}
+          <div>
+            <select
+              value={selectedState}
+              onChange={(e) => setSelectedState(e.target.value)}
+              className="w-full px-3.5 py-2.5 rounded-xl border-2 border-gray-300 dark:border-white/20 bg-gray-50 dark:bg-white/5 font-bold text-xs text-gray-900 dark:text-white focus:outline-none focus:border-green-500 cursor-pointer"
             >
-              <div className="p-2 text-[10px] font-black text-gray-400 uppercase tracking-wider flex justify-between">
-                <span>Instant Auto-Suggestions ({suggestionsList.length} matches)</span>
-                <span>Click to view analytics</span>
-              </div>
-              {suggestionsList.map((crop) => (
-                <div
-                  key={crop.id}
-                  onClick={() => handleSelectSuggestion(crop)}
-                  className="p-3 hover:bg-green-50 dark:hover:bg-green-950/30 rounded-xl cursor-pointer transition-colors flex items-center justify-between group"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl p-1.5 bg-gray-100 dark:bg-white/5 rounded-xl">{crop.iconEmoji}</span>
-                    <div>
-                      <h4 className="font-extrabold text-gray-900 dark:text-white text-xs group-hover:text-green-600 transition-colors flex items-center gap-1.5">
-                        {crop.name} <span className="text-[10px] text-gray-400 italic">({crop.scientificName})</span>
-                      </h4>
-                      <div className="flex items-center gap-2 text-[11px] text-gray-400 font-semibold mt-0.5">
-                        <span className="text-green-700 dark:text-green-400 font-bold">{crop.category}</span>
-                        <span>•</span>
-                        <span>{crop.district}, {crop.state}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="text-right shrink-0">
-                    <span className="text-[10px] font-bold text-gray-400 block">Private Rate</span>
-                    <span className="text-xs font-black text-green-700 dark:text-green-400">₹{crop.private.toLocaleString("en-IN")}/q</span>
-                  </div>
-                </div>
+              {ALL_INDIAN_STATES.map((st, idx) => (
+                <option key={idx} value={st}>{st === "All States" ? "📍 All Indian States" : `📍 ${st}`}</option>
               ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-[#1a1b23] p-5 rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm border-l-4 border-l-green-600">
-          <span className="text-xs font-extrabold text-gray-400 uppercase">Tracked World Commodities</span>
-          <div className="text-2xl font-black text-gray-900 dark:text-white mt-1">{marketOverviewStats.totalCrops} Crops & Fruits</div>
-          <span className="text-[10px] text-green-600 dark:text-green-400 font-bold">across 8 Crop Categories</span>
-        </div>
-
-        <div className="bg-white dark:bg-[#1a1b23] p-5 rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm border-l-4 border-l-blue-600">
-          <span className="text-xs font-extrabold text-gray-400 uppercase">Average Govt MSP</span>
-          <div className="text-2xl font-black text-blue-600 dark:text-blue-400 mt-1">₹{marketOverviewStats.avgGovtMSP.toLocaleString("en-IN")}<span className="text-xs text-gray-400">/q</span></div>
-          <span className="text-[10px] text-gray-400 font-semibold">Official Govt Rate</span>
-        </div>
-
-        <div className="bg-white dark:bg-[#1a1b23] p-5 rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm border-l-4 border-l-emerald-500">
-          <span className="text-xs font-extrabold text-gray-400 uppercase">Average Private Rate</span>
-          <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1">₹{marketOverviewStats.avgPrivateRate.toLocaleString("en-IN")}<span className="text-xs text-gray-400">/q</span></div>
-          <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">Active Private Mandi Price</span>
-        </div>
-
-        <div className="bg-white dark:bg-[#1a1b23] p-5 rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm border-l-4 border-l-amber-500">
-          <span className="text-xs font-extrabold text-gray-400 uppercase">Average Trader Premium</span>
-          <div className="text-2xl font-black text-amber-500 mt-1">+{marketOverviewStats.premiumMargin}% Above MSP</div>
-          <span className="text-[10px] text-amber-600 dark:text-amber-400 font-bold">High Buyer Demand</span>
-        </div>
-      </div>
-
-      {/* Category Tabs & State Filter Controls */}
-      <div className="space-y-3">
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2.5 rounded-xl text-xs font-extrabold transition-all whitespace-nowrap border shrink-0 ${
-                selectedCategory === cat
-                  ? "bg-green-600 border-green-600 text-white shadow-md"
-                  : "bg-white dark:bg-[#1a1b23] border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:border-green-400"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none text-xs font-semibold">
-          <span className="text-gray-400 font-bold shrink-0">Filter by State:</span>
-          {ALL_INDIAN_STATES.map((st) => (
-            <button
-              key={st}
-              onClick={() => setSelectedStateFilter(st)}
-              className={`px-3 py-1.5 rounded-xl whitespace-nowrap transition-all border ${
-                selectedStateFilter === st
-                  ? "bg-amber-500 text-white border-amber-500 font-bold"
-                  : "bg-white dark:bg-[#1a1b23] border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 hover:bg-gray-100"
-              }`}
-            >
-              {st}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* SEARCHED CROPS LISTING GRID */}
-      {filteredAndSortedCrops.length === 0 ? (
-        <div className="bg-white dark:bg-[#1a1b23] border border-gray-100 dark:border-white/10 rounded-2xl p-12 text-center shadow-sm my-8">
-          <Search className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-          <h3 className="text-base font-bold text-gray-800 dark:text-gray-200">No crop found matching "{searchTerm}"</h3>
-          <button 
-            onClick={() => { setSearchTerm(""); setSelectedCategory("All Categories"); setSelectedStateFilter("All States"); setSortOption("default"); }}
-            className="mt-4 bg-green-600 text-white px-4 py-2 rounded-xl text-xs font-bold"
-          >
-            Reset Filters
-          </button>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          <div className="text-xs font-extrabold text-gray-500 dark:text-gray-400 flex items-center justify-between">
-            <span>List of Searched & Filtered Crops ({filteredAndSortedCrops.length}):</span>
-            <span className="text-green-600 dark:text-green-400">Sorted by {sortOption.replace('_', ' ').toUpperCase()}</span>
+            </select>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {filteredAndSortedCrops.map((crop) => {
-              const profitDiff = crop.private - crop.govt;
-              const profitPercent = Math.round((profitDiff / crop.govt) * 100);
+        </div>
 
-              return (
-                <motion.div
-                  key={crop.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  onClick={() => {
-                    setInspectedCrop(crop);
-                    const numYield = parseInt(crop.avgYieldPerAcre) || 20;
-                    setCalcYieldAcre(numYield);
-                    setCalcCostAcre(crop.costPerAcre);
-                  }}
-                  className="bg-white dark:bg-[#1a1b23] border border-gray-100 dark:border-white/10 rounded-2xl p-5 shadow-sm hover:shadow-xl hover:border-green-500 cursor-pointer transition-all flex flex-col justify-between group"
-                >
-                  <div>
-                    <div className="flex justify-between items-start mb-3">
-                      <span className="text-2xl p-2 bg-green-50 dark:bg-green-950/40 rounded-xl">
+        <div className="flex justify-between items-center pt-2 text-xs font-black text-gray-500 border-t border-gray-200/80 dark:border-white/10">
+          <span>Showing {filteredCrops.length} verified commodities</span>
+          {searchTerm && (
+            <button onClick={() => { setSearchTerm(""); setSelectedCategory("All Categories"); setSelectedState("All States"); }} className="text-green-600 dark:text-green-400 hover:underline">
+              Clear All Filters
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* COMMODITY GRID WITH 3PX THICK BORDERS */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredCrops.length === 0 ? (
+          <div className="col-span-full text-center py-16 bg-white dark:bg-[#1a1b23] rounded-3xl border-[3px] border-gray-300 dark:border-white/20 space-y-3">
+            <Sprout className="w-12 h-12 text-gray-300 mx-auto" />
+            <h3 className="font-black text-base text-gray-900 dark:text-white">No Matching Crops, Fruits or Vegetables Found</h3>
+            <p className="text-xs text-gray-500 font-medium max-w-sm mx-auto">Try searching for "Wheat", "Onion", "Mango", "Tomato", "Soybean", or change your state filter.</p>
+          </div>
+        ) : (
+          filteredCrops.map((crop) => {
+            // Find price for selected state if state filter is active
+            const stateSpecific = selectedState !== "All States" 
+              ? crop.statePrices.find(sp => sp.state === selectedState) 
+              : null;
+
+            const displayPrice = stateSpecific ? stateSpecific.privatePrice : crop.private;
+            const displayMandi = stateSpecific ? `${stateSpecific.mandiName} (${stateSpecific.district})` : `${crop.mandiName} (${crop.district}, ${crop.state})`;
+
+            return (
+              <div 
+                key={crop.id}
+                className="bg-white dark:bg-[#1a1b23] rounded-3xl border-[3px] border-gray-300 dark:border-white/20 p-6 shadow-sm hover:shadow-2xl hover:border-green-500 transition-all duration-300 flex flex-col justify-between space-y-4"
+              >
+                <div className="space-y-3">
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center gap-3">
+                      <span className="text-3xl p-2.5 bg-gray-100 dark:bg-white/10 rounded-2xl border-2 border-gray-200 dark:border-white/10 shadow-sm">
                         {crop.iconEmoji}
                       </span>
-                      <div className="flex flex-col items-end gap-1">
-                        <span className="text-[10px] font-extrabold px-2.5 py-1 rounded-lg bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800 flex items-center gap-1">
-                          <ArrowUpRight className="w-3.5 h-3.5" /> +{profitPercent}% over MSP
-                        </span>
-                        <span className="text-[9px] font-bold bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 px-2 py-0.5 rounded-md">
-                          ⭐ {crop.qualityGrade}
-                        </span>
+                      <div>
+                        <h3 className="font-black text-base text-gray-900 dark:text-white leading-tight">
+                          {crop.name}
+                        </h3>
+                        <span className="text-[10px] text-gray-400 font-bold block italic">{crop.scientificName}</span>
                       </div>
                     </div>
 
-                    <h3 className="font-extrabold text-gray-900 dark:text-white text-base group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">
-                      {crop.name}
-                    </h3>
-                    <p className="text-xs font-medium text-gray-400 italic mt-0.5">{crop.scientificName}</p>
-                    
-                    <div className="flex items-center justify-between text-xs font-semibold text-gray-500 dark:text-gray-400 mt-3 bg-gray-50 dark:bg-white/5 p-2.5 rounded-xl">
-                      <div className="flex items-center gap-1">
-                        <MapPin className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                        <span>{crop.district}, {crop.state}</span>
-                      </div>
-                      <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded-md">
-                        {crop.statePrices.length} States Priced
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="mt-5 pt-4 border-t border-gray-100 dark:border-white/5 grid grid-cols-2 gap-2">
-                    <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40 p-2.5 rounded-xl text-center">
-                      <div className="text-[10px] font-extrabold text-blue-700 dark:text-blue-400 uppercase">Govt MSP Rate</div>
-                      <div className="text-xs font-bold text-gray-900 dark:text-white mt-0.5">₹{crop.govt.toLocaleString("en-IN")}/q</div>
-                    </div>
-                    <div className="bg-green-50 dark:bg-green-950/30 border border-green-100 dark:border-green-900/40 p-2.5 rounded-xl text-center">
-                      <div className="text-[10px] font-extrabold text-green-700 dark:text-green-400 uppercase">Private Mandi Rate</div>
-                      <div className="text-xs font-extrabold text-green-700 dark:text-green-400 mt-0.5">₹{crop.private.toLocaleString("en-IN")}/q</div>
-                    </div>
-                  </div>
-
-                  <div className="mt-3 flex items-center justify-between text-xs font-bold text-green-600 dark:text-green-400">
-                    <span className="text-[10px] text-gray-400 font-medium">{crop.lastUpdated}</span>
-                    <span className="flex items-center group-hover:translate-x-1 transition-transform">
-                      Detailed Analytics <ChevronRight className="w-4 h-4 ml-0.5" />
+                    <span className="text-[9px] font-black uppercase px-2.5 py-1 rounded-lg bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-300 border border-green-300 dark:border-green-800">
+                      {crop.category}
                     </span>
                   </div>
-                </motion.div>
-              );
-            })}
+
+                  <div className="flex items-center gap-1.5 text-xs text-gray-500 font-bold bg-gray-50 dark:bg-white/5 p-2.5 rounded-xl border border-gray-200/60 dark:border-white/5">
+                    <MapPin className="w-3.5 h-3.5 text-green-600 shrink-0" />
+                    <span className="truncate">{displayMandi}</span>
+                  </div>
+
+                  {/* PRICE DISPLAY */}
+                  <div className="grid grid-cols-2 gap-3 pt-1">
+                    <div className="bg-green-50/80 dark:bg-green-950/40 p-3 rounded-2xl border-2 border-green-300 dark:border-green-800 space-y-0.5">
+                      <span className="text-[10px] font-black uppercase text-green-800 dark:text-green-300 block">APMC Mandi Rate</span>
+                      <span className="text-lg font-black text-green-700 dark:text-green-400 block">₹{displayPrice.toLocaleString("en-IN")}<span className="text-[10px] font-bold text-gray-500">/q</span></span>
+                    </div>
+
+                    <div className="bg-gray-50 dark:bg-white/5 p-3 rounded-2xl border-2 border-gray-200 dark:border-white/10 space-y-0.5">
+                      <span className="text-[10px] font-black uppercase text-gray-400 block">Govt MSP Rate</span>
+                      <span className="text-lg font-black text-gray-900 dark:text-white block">₹{crop.govt.toLocaleString("en-IN")}<span className="text-[10px] font-bold text-gray-400">/q</span></span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t-2 border-gray-100 dark:border-white/10 flex justify-between items-center text-xs">
+                  <span className="text-[10px] font-extrabold text-green-600 bg-green-100 dark:bg-green-950 px-2 py-0.5 rounded-md">
+                    📈 Market Trending
+                  </span>
+
+                  <button
+                    onClick={() => setSelectedCropModal(crop)}
+                    className="px-3.5 py-1.5 bg-green-600 hover:bg-green-700 text-white font-extrabold text-xs rounded-xl shadow-md flex items-center gap-1 transition-all"
+                  >
+                    View Analytics <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* ANALYTICS MODAL WITH 3PX THICK BORDER */}
+      {selectedCropModal && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#1a1b23] border-[3px] border-green-500 rounded-3xl max-w-2xl w-full p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center border-b-2 border-gray-200 dark:border-white/10 pb-3">
+              <div className="flex items-center gap-3">
+                <span className="text-3xl">{selectedCropModal.iconEmoji}</span>
+                <div>
+                  <h3 className="text-lg font-black text-gray-900 dark:text-white">{selectedCropModal.name}</h3>
+                  <span className="text-xs text-gray-400 font-bold">{selectedCropModal.category} • {selectedCropModal.season}</span>
+                </div>
+              </div>
+              <button onClick={() => setSelectedCropModal(null)} className="p-1 text-gray-400 hover:text-gray-600">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+              <div className="bg-gray-50 dark:bg-white/5 p-3 rounded-2xl border border-gray-200/60 dark:border-white/5">
+                <span className="text-gray-400 font-bold block text-[10px]">APMC Mandi Price</span>
+                <span className="text-base font-black text-green-600 dark:text-green-400">₹{selectedCropModal.private}/q</span>
+              </div>
+              <div className="bg-gray-50 dark:bg-white/5 p-3 rounded-2xl border border-gray-200/60 dark:border-white/5">
+                <span className="text-gray-400 font-bold block text-[10px]">Govt MSP Rate</span>
+                <span className="text-base font-black text-gray-900 dark:text-white">₹{selectedCropModal.govt}/q</span>
+              </div>
+              <div className="bg-gray-50 dark:bg-white/5 p-3 rounded-2xl border border-gray-200/60 dark:border-white/5">
+                <span className="text-gray-400 font-bold block text-[10px]">Avg Yield / Acre</span>
+                <span className="text-xs font-black text-gray-900 dark:text-white">{selectedCropModal.avgYieldPerAcre}</span>
+              </div>
+              <div className="bg-gray-50 dark:bg-white/5 p-3 rounded-2xl border border-gray-200/60 dark:border-white/5">
+                <span className="text-gray-400 font-bold block text-[10px]">Quality Grade</span>
+                <span className="text-xs font-black text-green-600 dark:text-green-400">{selectedCropModal.qualityGrade}</span>
+              </div>
+            </div>
+
+            {/* STATE-BY-STATE MANDI RATES TABLE */}
+            <div className="space-y-2 text-xs">
+              <h4 className="font-extrabold text-gray-900 dark:text-white uppercase tracking-wider text-xs">
+                State-by-State APMC Mandi Rates
+              </h4>
+              <div className="space-y-2">
+                {selectedCropModal.statePrices.map((sp, idx) => (
+                  <div key={idx} className="flex justify-between items-center bg-gray-50 dark:bg-white/5 p-3 rounded-xl border border-gray-200/60 dark:border-white/5 font-bold">
+                    <div>
+                      <span className="text-gray-900 dark:text-white block">{sp.mandiName} ({sp.state})</span>
+                      <span className="text-[10px] text-gray-400">Daily Arrival: {sp.arrivalQuantity}</span>
+                    </div>
+                    <span className="text-sm font-black text-green-600 dark:text-green-400">₹{sp.privatePrice}/q</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <button
+              onClick={() => setSelectedCropModal(null)}
+              className="w-full py-3 bg-gray-200 dark:bg-white/10 font-black text-xs text-gray-800 dark:text-gray-200 rounded-xl"
+            >
+              Close Analytics Panel
+            </button>
           </div>
         </div>
       )}
-
-      {/* FULL CROP INSPECTION MODAL */}
-      <AnimatePresence>
-        {inspectedCrop && (
-          <div className="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="bg-white dark:bg-[#1a1b23] border border-gray-100 dark:border-white/10 rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative p-6 md:p-8 space-y-6"
-            >
-              <button 
-                onClick={() => setInspectedCrop(null)}
-                className="absolute top-5 right-5 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-white rounded-full bg-gray-100 dark:bg-white/10"
-              >
-                <X className="w-5 h-5" />
-              </button>
-
-              <div className="flex items-start gap-4">
-                <div className="text-4xl p-3 bg-green-50 dark:bg-green-950/50 rounded-2xl border border-green-200 shrink-0">
-                  {inspectedCrop.iconEmoji}
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-extrabold bg-green-100 text-green-800 px-2.5 py-0.5 rounded-md">
-                      {inspectedCrop.category}
-                    </span>
-                    <span className="text-xs font-bold bg-amber-100 text-amber-800 px-2.5 py-0.5 rounded-md">
-                      ⭐ {inspectedCrop.qualityGrade}
-                    </span>
-                  </div>
-                  <h2 className="text-xl md:text-2xl font-black text-gray-900 dark:text-white mt-1">
-                    {inspectedCrop.name}
-                  </h2>
-                  <p className="text-xs text-gray-400 italic font-medium">{inspectedCrop.scientificName} • Key Mandi: {inspectedCrop.district}, {inspectedCrop.state}</p>
-                </div>
-              </div>
-
-              {/* Real-Time Price Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 p-4 rounded-2xl">
-                  <span className="text-[10px] font-black text-blue-700 uppercase">Govt MSP Rate</span>
-                  <div className="text-xl font-black text-blue-700 mt-1">₹{inspectedCrop.govt.toLocaleString("en-IN")}/q</div>
-                </div>
-                <div className="bg-green-50 dark:bg-green-950/40 border border-green-200 p-4 rounded-2xl">
-                  <span className="text-[10px] font-black text-green-700 uppercase">Private Trader Rate</span>
-                  <div className="text-xl font-black text-green-700 mt-1">₹{inspectedCrop.private.toLocaleString("en-IN")}/q</div>
-                </div>
-                <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 p-4 rounded-2xl">
-                  <span className="text-[10px] font-black text-amber-700 uppercase">Buying Demand</span>
-                  <div className="text-base font-black text-amber-700 mt-1">{inspectedCrop.demandLevel}</div>
-                </div>
-              </div>
-
-              {/* Multi-State Price Breakdown */}
-              <div className="bg-gray-50 dark:bg-white/5 p-4 rounded-2xl border border-gray-100 dark:border-white/5 space-y-3">
-                <h4 className="text-xs font-black uppercase text-gray-900 dark:text-white tracking-wider flex items-center gap-1.5">
-                  <Landmark className="w-4 h-4 text-green-600" /> Rates Across Multiple Indian States
-                </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                  {inspectedCrop.statePrices.map((sp) => (
-                    <div key={sp.state} className="bg-white dark:bg-[#1a1b23] p-3 rounded-xl border border-gray-200 dark:border-white/10 text-xs">
-                      <div className="flex justify-between font-extrabold text-gray-900 dark:text-white">
-                        <span>{sp.state}</span>
-                        <span className="text-green-600">₹{sp.privatePrice.toLocaleString("en-IN")}/q</span>
-                      </div>
-                      <div className="text-[10px] text-gray-400 mt-0.5">{sp.mandiName} ({sp.district})</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* 6-Month Chart */}
-              <div className="bg-gray-50 dark:bg-white/5 p-4 rounded-2xl">
-                <h4 className="text-xs font-black text-gray-900 dark:text-white uppercase mb-3">6-Month Price Trend</h4>
-                <div className="h-56 min-h-[220px] w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={inspectedCrop.history}>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
-                      <XAxis dataKey="month" tick={{ fill: '#9ca3af', fontSize: 11 }} />
-                      <YAxis tick={{ fill: '#9ca3af', fontSize: 11 }} />
-                      <RechartsTooltip />
-                      <Line type="monotone" name="Govt MSP" dataKey="govt" stroke="#3b82f6" strokeWidth={3} />
-                      <Line type="monotone" name="Private Rate" dataKey="private" stroke="#10b981" strokeWidth={3} />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-
-              {/* Profit Calculator */}
-              <div className="bg-green-50/50 p-4 rounded-2xl space-y-3 border border-green-100">
-                <h4 className="text-xs font-black text-green-800 uppercase flex items-center gap-1.5">
-                  <Calculator className="w-4 h-4" /> Est. Net Profit Calculator per Acre
-                </h4>
-                <div className="grid grid-cols-2 gap-3 text-xs">
-                  <div>
-                    <label className="block font-bold text-gray-600 mb-1">Expected Yield (Quintals/Acre):</label>
-                    <input
-                      type="number"
-                      value={calcYieldAcre}
-                      onChange={(e) => setCalcYieldAcre(Number(e.target.value))}
-                      className="w-full px-3 py-2 border rounded-xl font-bold bg-white text-gray-900"
-                    />
-                  </div>
-                  <div>
-                    <label className="block font-bold text-gray-600 mb-1">Cultivation Cost / Acre (₹):</label>
-                    <input
-                      type="number"
-                      value={calcCostAcre}
-                      onChange={(e) => setCalcCostAcre(Number(e.target.value))}
-                      className="w-full px-3 py-2 border rounded-xl font-bold bg-white text-gray-900"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex justify-between items-center pt-2 border-t text-xs">
-                  <span className="font-bold text-gray-600">Est. Net Profit:</span>
-                  <span className="text-base font-black text-green-700">
-                    ₹{((calcYieldAcre * inspectedCrop.private) - calcCostAcre).toLocaleString("en-IN")}
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex justify-end pt-3">
-                <button 
-                  onClick={() => setInspectedCrop(null)}
-                  className="bg-gray-200 text-gray-800 font-bold px-5 py-2 rounded-xl text-xs"
-                >
-                  Close Analytics
-                </button>
-              </div>
-
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* STATE-VS-STATE COMPARISON MODAL */}
-      <AnimatePresence>
-        {showCompareModal && (
-          <div className="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="bg-white dark:bg-[#1a1b23] border border-gray-100 dark:border-white/10 rounded-3xl max-w-3xl w-full p-6 md:p-8 relative shadow-2xl space-y-5"
-            >
-              <button 
-                onClick={() => setShowCompareModal(false)}
-                className="absolute top-5 right-5 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-white rounded-full bg-gray-100 dark:bg-white/10"
-              >
-                <X className="w-5 h-5" />
-              </button>
-
-              <div className="flex items-center gap-3">
-                <Scale className="w-7 h-7 text-amber-500" />
-                <div>
-                  <h3 className="text-xl font-black text-gray-900 dark:text-white">Inter-State Price Comparison Tool</h3>
-                  <p className="text-xs text-gray-400 font-medium">Select any crop or fruit to compare mandi rates between 2 Indian States.</p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div>
-                  <label className="block text-xs font-black text-gray-500 uppercase mb-1">Select Commodity:</label>
-                  <select
-                    value={compareCrop.name}
-                    onChange={(e) => {
-                      const found = cropsData.find(c => c.name === e.target.value);
-                      if (found) setCompareCrop(found);
-                    }}
-                    className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 font-extrabold text-xs text-gray-900 dark:text-white"
-                  >
-                    {cropsData.map(c => <option key={c.id} value={c.name}>{c.iconEmoji} {c.name}</option>)}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-black text-gray-500 uppercase mb-1">State A:</label>
-                  <select
-                    value={compareStateA}
-                    onChange={(e) => setCompareStateA(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 font-extrabold text-xs text-gray-900 dark:text-white"
-                  >
-                    {compareCrop.statePrices.map(sp => <option key={sp.state} value={sp.state}>{sp.state}</option>)}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-black text-gray-500 uppercase mb-1">State B:</label>
-                  <select
-                    value={compareStateB}
-                    onChange={(e) => setCompareStateB(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 font-extrabold text-xs text-gray-900 dark:text-white"
-                  >
-                    {compareCrop.statePrices.map(sp => <option key={sp.state} value={sp.state}>{sp.state}</option>)}
-                  </select>
-                </div>
-              </div>
-
-              {priceStateA && priceStateB ? (
-                <div className="space-y-4">
-                  <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 text-xs font-bold text-amber-800 dark:text-amber-300">
-                    {priceDiff > 0 ? (
-                      <span>Selling {compareCrop.name} in <strong>{compareStateA}</strong> gives <strong>+₹{priceDiff.toLocaleString("en-IN")}/quintal</strong> higher rate than {compareStateB}!</span>
-                    ) : priceDiff < 0 ? (
-                      <span>Selling {compareCrop.name} in <strong>{compareStateB}</strong> gives <strong>+₹{Math.abs(priceDiff).toLocaleString("en-IN")}/quintal</strong> higher rate than {compareStateA}!</span>
-                    ) : (
-                      <span>Both states are trading at identical Mandi prices.</span>
-                    )}
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4 text-xs">
-                    <div className="p-4 bg-green-50 dark:bg-green-950/30 rounded-2xl border border-green-200">
-                      <span className="font-black text-green-700 uppercase">{compareStateA}</span>
-                      <div className="text-xl font-black text-green-700 mt-1">₹{priceStateA.privatePrice.toLocaleString("en-IN")}/q</div>
-                      <div className="text-[10px] text-gray-500 mt-1">{priceStateA.mandiName} ({priceStateA.district})</div>
-                    </div>
-
-                    <div className="p-4 bg-blue-50 dark:bg-blue-950/30 rounded-2xl border border-blue-200">
-                      <span className="font-black text-blue-700 uppercase">{compareStateB}</span>
-                      <div className="text-xl font-black text-blue-700 mt-1">₹{priceStateB.privatePrice.toLocaleString("en-IN")}/q</div>
-                      <div className="text-[10px] text-gray-500 mt-1">{priceStateB.mandiName} ({priceStateB.district})</div>
-                    </div>
-                  </div>
-
-                  <div className="h-56 min-h-[220px] w-full bg-gray-50 dark:bg-white/5 p-3 rounded-2xl">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={comparisonChartData}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
-                        <XAxis dataKey="state" tick={{ fill: '#9ca3af', fontSize: 11 }} />
-                        <YAxis tick={{ fill: '#9ca3af', fontSize: 11 }} />
-                        <RechartsTooltip />
-                        <Bar dataKey="Govt MSP" fill="#3b82f6" radius={[6, 6, 0, 0]} />
-                        <Bar dataKey="Private Mandi Rate" fill="#10b981" radius={[6, 6, 0, 0]} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
-              ) : null}
-
-              <div className="flex justify-end pt-2">
-                <button
-                  onClick={() => setShowCompareModal(false)}
-                  className="bg-gray-200 text-gray-800 font-bold px-5 py-2 rounded-xl text-xs"
-                >
-                  Close Comparison
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
 
     </div>
   );
