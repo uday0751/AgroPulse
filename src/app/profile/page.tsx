@@ -386,10 +386,10 @@ export default function UserProfile() {
                     onClick={() => setProfileData({ ...profileData, avatar: "" })}
                     className="px-3.5 py-2 bg-gray-200 dark:bg-white/10 text-gray-800 dark:text-gray-200 font-bold text-xs rounded-xl flex items-center gap-1.5 hover:bg-red-100 hover:text-red-600 transition-colors"
                   >
-                    <User className="w-3.5 h-3.5" /> WhatsApp Default Silhouette (No DP)
+                    <User className="w-3.5 h-3.5" /> No DP
                   </button>
                 </div>
-                <p className="text-[10px] text-gray-400 font-medium">Upload custom photo or reset to classic human face silhouette.</p>
+                <p className="text-[10px] text-gray-400 font-medium">Upload custom photo, select a cartoon preset, or set No DP.</p>
               </div>
             </div>
 
