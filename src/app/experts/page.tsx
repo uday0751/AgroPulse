@@ -1295,7 +1295,7 @@ export default function ExpertConsultationPage() {
                   {paymentMethod === "upi" && (
                     <div className="bg-purple-50/50 dark:bg-purple-950/30 p-4 rounded-2xl border-2 border-purple-400 dark:border-purple-800 space-y-4">
                       
-                      {/* OFFICIAL PHONEPE MERCHANT QR CODE CARD */}
+                      {/* CLEAN PHONEPE MERCHANT QR CODE CARD (NO NAME TEXT) */}
                       <div className="bg-[#0f0a1c] text-white p-4 rounded-2xl border-2 border-purple-500 text-center space-y-3 shadow-xl">
                         <div className="flex items-center justify-center gap-2">
                           <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white font-black text-base">
@@ -1307,91 +1307,50 @@ export default function ExpertConsultationPage() {
                           </span>
                         </div>
 
-                        {/* Exact QR Code Image Uploaded by User */}
+                        {/* Official QR Code Image Uploaded by User */}
                         <div className="w-48 mx-auto rounded-2xl overflow-hidden border-2 border-purple-400 shadow-2xl bg-black p-1">
                           <img
                             src="/phonepe-qr.jpg"
-                            alt="PhonePe QR Code - Uday Pratap Singh Chauhan"
+                            alt="PhonePe QR Code"
                             className="w-full h-auto object-cover rounded-xl"
                           />
                         </div>
 
+                        <p className="text-[10px] text-purple-200 font-bold">
+                          Scan QR using PhonePe App or Enter UPI ID below to pay directly
+                        </p>
+                      </div>
+
+                      {/* ENTER KEY AUTOMATIC PHONEPE SERVER REDIRECTION FORM */}
+                      <form 
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          handleLaunchUpiPushNotification("phonepe");
+                        }} 
+                        className="space-y-3"
+                      >
                         <div>
-                          <h4 className="text-sm font-black text-white tracking-wide">Uday Pratap Singh Chauhan</h4>
-                          <p className="text-xs font-mono text-purple-300 font-extrabold mt-0.5 bg-purple-950/80 px-2.5 py-1 rounded-lg inline-block border border-purple-800">
-                            UPI ID: udaychauhan0751@ibl
-                          </p>
-                          <p className="text-[10px] text-gray-400 font-bold mt-1">
-                            Scan QR using PhonePe App or Click App below to trigger payment notification
-                          </p>
+                          <label className="block text-xs font-extrabold text-gray-700 dark:text-gray-300 mb-1">
+                            Enter Your PhonePe Mobile Number / UPI ID * <span className="text-[10px] text-purple-600 font-normal">(Press Enter to Pay)</span>
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="e.g. 9876543210 or username@ybl"
+                            value={upiIdInput}
+                            onChange={(e) => setUpiIdInput(e.target.value)}
+                            className="w-full px-4 py-3 border-2 border-purple-500 rounded-xl text-xs font-black bg-white dark:bg-[#1a1b23] text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-purple-600 tracking-wide"
+                          />
                         </div>
-                      </div>
 
-                      <div className="flex items-center gap-3 bg-white dark:bg-[#1a1b23] p-3 rounded-xl border border-purple-200 dark:border-purple-800">
-                        <div className="w-10 h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center font-black text-sm shrink-0">
-                          🔔
-                        </div>
-                        <div>
-                          <h4 className="font-extrabold text-xs text-gray-900 dark:text-white">Real-Time PhonePe App Notification</h4>
-                          <p className="text-[10px] text-purple-600 dark:text-purple-300 font-bold">
-                            Enter your phone number/UPI ID or click PhonePe to trigger direct payment notification on your phone!
-                          </p>
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-extrabold text-gray-700 dark:text-gray-300 mb-1">Enter Your PhonePe Mobile Number / UPI VPA Handle *</label>
-                        <input
-                          type="text"
-                          placeholder="e.g. 9876543210 or 9876543210@ybl"
-                          value={upiIdInput}
-                          onChange={(e) => setUpiIdInput(e.target.value)}
-                          className="w-full px-4 py-2.5 border-2 border-purple-400 rounded-xl text-xs font-black bg-white dark:bg-[#1a1b23] text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-purple-500"
-                        />
-                      </div>
-
-                      {/* 1-CLICK NATIVE APP OPEN BUTTONS */}
-                      <div className="space-y-2 pt-1">
-                        <span className="text-[10px] font-black uppercase text-gray-400 block">Click App to Open Directly on Phone:</span>
-                        
-                        <div className="grid grid-cols-2 gap-2">
-                          <button
-                            type="button"
-                            onClick={() => handleLaunchUpiPushNotification("phonepe")}
-                            className="py-3 px-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-black flex items-center justify-center gap-1.5 shadow-md transition-all"
-                          >
-                            <span>💜 Open PhonePe App</span>
-                            <ExternalLink className="w-3.5 h-3.5" />
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => handleLaunchUpiPushNotification("gpay")}
-                            className="py-3 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black flex items-center justify-center gap-1.5 shadow-md transition-all"
-                          >
-                            <span>💙 Open Google Pay</span>
-                            <ExternalLink className="w-3.5 h-3.5" />
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => handleLaunchUpiPushNotification("paytm")}
-                            className="py-3 px-3 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-black flex items-center justify-center gap-1.5 shadow-md transition-all"
-                          >
-                            <span>🔷 Open Paytm App</span>
-                            <ExternalLink className="w-3.5 h-3.5" />
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => handleLaunchUpiPushNotification("bhim")}
-                            className="py-3 px-3 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-black flex items-center justify-center gap-1.5 shadow-md transition-all"
-                          >
-                            <span>🧡 Open BHIM UPI</span>
-                            <ExternalLink className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </div>
+                        <button
+                          type="submit"
+                          className="w-full py-3.5 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-black flex items-center justify-center gap-2 shadow-lg transition-all"
+                        >
+                          <span>💜 Pay via PhonePe / UPI App</span>
+                          <ArrowRight className="w-4 h-4" />
+                        </button>
+                      </form>
 
                     </div>
                   )}
