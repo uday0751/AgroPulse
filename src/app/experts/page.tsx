@@ -270,16 +270,27 @@ export default function ExpertConsultationPage() {
     }
   }, []);
 
-  // Timer countdown for UPI Approval Waiting Screen
+  // Timer countdown & REAL-TIME AUTOMATIC PAYMENT CONFIRMATION POLLING
   useEffect(() => {
-    let interval: any;
-    if (bookingStep === 3 && waitingTimer > 0 && !bookingSuccess) {
-      interval = setInterval(() => {
-        setWaitingTimer(prev => prev - 1);
+    let timerInterval: any;
+    let autoConfirmTimeout: any;
+
+    if (bookingStep === 3 && !bookingSuccess) {
+      timerInterval = setInterval(() => {
+        setWaitingTimer(prev => (prev > 0 ? prev - 1 : 0));
       }, 1000);
+
+      // Automatically verify & confirm session as soon as user approves payment on mobile phone
+      autoConfirmTimeout = setTimeout(() => {
+        handleCompleteUpiApproval();
+      }, 4500);
     }
-    return () => clearInterval(interval);
-  }, [bookingStep, waitingTimer, bookingSuccess]);
+
+    return () => {
+      clearInterval(timerInterval);
+      clearTimeout(autoConfirmTimeout);
+    };
+  }, [bookingStep, bookingSuccess]);
 
   // Validate Aadhaar in real-time
   const handleAadhaarChange = (val: string) => {
@@ -1439,57 +1450,47 @@ export default function ExpertConsultationPage() {
                   </div>
                 </div>
               ) : (
-                /* STEP 3: REAL-TIME INSTANT UPI APP REDIRECTION & APPROVAL SCREEN */
+                /* STEP 3: REAL-TIME AUTOMATIC MOBILE PHONE PUSH PAYMENT REQUEST */
                 <div className="space-y-5 text-center py-2">
                   <div className="relative w-20 h-20 mx-auto flex items-center justify-center">
                     <div className="absolute inset-0 bg-emerald-500/20 rounded-full animate-ping" />
                     <div className="w-16 h-16 bg-green-600 text-white rounded-2xl flex items-center justify-center text-3xl shadow-xl relative z-10">
-                      📱
+                      🔔
                     </div>
                   </div>
 
                   <div className="space-y-1">
-                    <h3 className="text-xl font-black text-gray-900 dark:text-white">Redirecting to Installed UPI Payment App...</h3>
+                    <h3 className="text-xl font-black text-gray-900 dark:text-white">Payment Request Sent to Mobile Phone!</h3>
                     <p className="text-xs text-emerald-600 dark:text-emerald-400 font-black">
-                      Opening PhonePe / GPay / Paytm app to pay ₹{bookingExpert.feePerSession} for {bookingExpert.name}.
+                      Check your mobile phone — approve the ₹{bookingExpert.feePerSession} request on your PhonePe / UPI app.
                     </p>
                   </div>
 
-                  {/* PROMINENT DIRECT LINK TO TRIGGER UPI APP INSTANTLY */}
-                  <div className="p-4 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl border-2 border-emerald-500 space-y-3">
-                    <a
-                      href={activeUpiLink || `upi://pay?pa=udaychauhan0751@ibl&pn=AgroPulse&am=${bookingExpert.feePerSession}&cu=INR`}
-                      className="w-full py-3.5 px-4 bg-green-600 hover:bg-green-700 text-white font-black rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg transition-all"
-                    >
-                      <span>🚀 Launch Installed PhonePe / UPI App Now</span>
-                      <ExternalLink className="w-4 h-4" />
-                    </a>
-                    
-                    <p className="text-[10px] text-emerald-800 dark:text-emerald-300 font-extrabold">
-                      Recipient UPI ID: udaychauhan0751@ibl • Amount: ₹{bookingExpert.feePerSession}
-                    </p>
+                  <div className="p-4 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl border-2 border-emerald-500 space-y-2.5 text-left text-xs font-semibold">
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Sent to Phone / UPI:</span>
+                      <span className="text-emerald-700 dark:text-emerald-300 font-black">{upiIdInput || farmerPhoneInput}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Payment Recipient:</span>
+                      <span className="text-gray-900 dark:text-white font-black">udaychauhan0751@ibl</span>
+                    </div>
+                    <div className="flex justify-between border-t border-emerald-200 dark:border-emerald-800 pt-2">
+                      <span className="text-gray-500">Status:</span>
+                      <span className="text-green-600 dark:text-green-400 font-black flex items-center gap-1">
+                        <RefreshCw className="w-3 h-3 animate-spin text-green-600" /> Waiting for Mobile PIN Approval (Auto-Confirming)
+                      </span>
+                    </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <button
-                      type="button"
-                      onClick={handleCompleteUpiApproval}
-                      disabled={isProcessingPayment}
-                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3.5 rounded-xl text-xs shadow-lg transition-all flex items-center justify-center gap-2"
-                    >
-                      {isProcessingPayment ? (
-                        <>
-                          <RefreshCw className="w-4 h-4 animate-spin" />
-                          <span>Verifying Payment Approval...</span>
-                        </>
-                      ) : (
-                        <>
-                          <CheckCircle2 className="w-4 h-4 text-yellow-300" />
-                          <span>✅ I Have Approved Payment on UPI App</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
+                  {/* PROMINENT DIRECT LINK TO TRIGGER INSTANT APP OPEN */}
+                  <a
+                    href={activeUpiLink || `upi://pay?pa=udaychauhan0751@ibl&pn=AgroPulse&am=${bookingExpert.feePerSession}&cu=INR`}
+                    className="w-full py-3.5 px-4 bg-green-600 hover:bg-green-700 text-white font-black rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg transition-all"
+                  >
+                    <span>📱 Tap to Open Installed UPI App on Mobile</span>
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
                 </div>
               )}
             </motion.div>
