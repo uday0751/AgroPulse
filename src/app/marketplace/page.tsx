@@ -905,14 +905,14 @@ export default function CustomerMarketplacePage() {
             </div>
           </div>
 
-          {/* Month-Wise Transaction Breakdown Summary Cards */}
-          <div className="bg-white dark:bg-[#1a1b23] p-5 rounded-3xl border border-gray-100 dark:border-white/10 shadow-sm space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-xs font-black uppercase text-gray-400 tracking-wider flex items-center gap-1.5">
-                <Calendar className="w-4 h-4 text-green-600" /> Month-Wise Purchase Transaction Details
+          {/* Month-Wise Transaction Breakdown Summary Cards with Distinct 2px Borders */}
+          <div className="bg-white dark:bg-[#1a1b23] p-5 rounded-3xl border-2 border-emerald-500/50 dark:border-emerald-500/40 shadow-lg space-y-3 relative overflow-hidden">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+              <span className="text-xs font-black uppercase text-emerald-800 dark:text-emerald-300 tracking-wider flex items-center gap-1.5 bg-emerald-100 dark:bg-emerald-950/80 px-3 py-1 rounded-xl border border-emerald-300 dark:border-emerald-800">
+                <Calendar className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> Month-Wise Purchase Transaction Details & Filters
               </span>
-              <span className="text-[10px] font-extrabold text-green-700 bg-green-50 dark:bg-green-950 px-2.5 py-1 rounded-lg border border-green-200 dark:border-green-800">
-                Sorted & Filterable Month-by-Month
+              <span className="text-[10px] font-black text-green-700 dark:text-green-300 bg-green-50 dark:bg-green-950/80 px-2.5 py-1 rounded-lg border border-green-300 dark:border-green-800">
+                🔍 Click Any Month Pill Below to Filter Orders
               </span>
             </div>
 
@@ -921,13 +921,16 @@ export default function CustomerMarketplacePage() {
                 <button
                   key={item.monthName}
                   onClick={() => setMonthFilter(monthFilter === item.monthName ? "All" : item.monthName)}
-                  className={`p-3.5 rounded-2xl border text-left transition-all ${
+                  className={`p-3.5 rounded-2xl border-2 text-left transition-all ${
                     monthFilter === item.monthName 
-                      ? "bg-green-600 border-green-600 text-white shadow-md ring-2 ring-green-500/20" 
-                      : "bg-gray-50 dark:bg-white/5 border-gray-100 dark:border-white/5 hover:border-green-500/40 text-gray-900 dark:text-white"
+                      ? "bg-green-600 border-green-600 text-white shadow-lg ring-4 ring-green-500/20 scale-[1.02]" 
+                      : "bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 hover:border-emerald-500 text-gray-900 dark:text-white"
                   }`}
                 >
-                  <div className="font-extrabold text-xs">{item.monthName}</div>
+                  <div className="font-extrabold text-xs flex justify-between items-center">
+                    <span>{item.monthName}</span>
+                    {monthFilter === item.monthName && <span className="text-[9px] bg-white/20 px-1.5 py-0.5 rounded font-black">Active Filter</span>}
+                  </div>
                   <div className="text-sm font-black mt-1">₹{item.totalAmount.toLocaleString("en-IN")}</div>
                   <div className="text-[10px] opacity-80 font-bold mt-0.5">{item.count} Transactions</div>
                 </button>
@@ -935,8 +938,8 @@ export default function CustomerMarketplacePage() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-[#1a1b23] border border-gray-100 dark:border-white/10 rounded-3xl overflow-hidden shadow-md">
-            <div className="p-5 border-b border-gray-100 dark:border-white/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gray-50/50 dark:bg-white/5">
+          <div className="bg-white dark:bg-[#1a1b23] border-2 border-gray-200 dark:border-white/10 rounded-3xl overflow-hidden shadow-md">
+            <div className="p-5 border-b-2 border-gray-100 dark:border-white/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gray-50/50 dark:bg-white/5">
               <div>
                 <h3 className="text-base font-extrabold text-gray-900 dark:text-white flex items-center gap-2">
                   <User className="w-5 h-5 text-green-600" />
@@ -945,16 +948,16 @@ export default function CustomerMarketplacePage() {
                 <p className="text-xs text-gray-400 font-medium">Filter & sort latest transactions or month-wise crop orders.</p>
               </div>
 
-              {/* ENHANCED SORT & MONTH-WISE TRANSACTION CONTROLS */}
-              <div className="flex flex-wrap items-center gap-2">
+              {/* DISTINCT BORDERED SORT & MONTH-WISE TRANSACTION CONTROLS BOX */}
+              <div className="flex flex-wrap items-center gap-2 p-2 bg-green-50/60 dark:bg-green-950/40 rounded-2xl border-2 border-green-500/40 dark:border-green-500/30">
                 
                 {/* SORT ORDER: NEWEST TO OLDEST / OLDEST TO NEWEST */}
                 <div className="flex items-center gap-1.5">
-                  <span className="text-xs text-gray-400 font-bold">Sort:</span>
+                  <span className="text-[11px] text-green-800 dark:text-green-300 font-black uppercase">Sort:</span>
                   <select
                     value={orderSort}
                     onChange={(e: any) => setOrderSort(e.target.value)}
-                    className="px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1a1b23] text-xs font-black text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-green-500"
+                    className="px-3 py-1.5 rounded-xl border-2 border-green-400 dark:border-green-700 bg-white dark:bg-[#1a1b23] text-xs font-black text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-green-500 cursor-pointer"
                   >
                     <option value="newest">🕒 Newest to Oldest (Latest First)</option>
                     <option value="oldest">⏳ Oldest to Newest</option>
@@ -963,11 +966,11 @@ export default function CustomerMarketplacePage() {
 
                 {/* MONTH FILTER */}
                 <div className="flex items-center gap-1.5">
-                  <span className="text-xs text-gray-400 font-bold">Month:</span>
+                  <span className="text-[11px] text-green-800 dark:text-green-300 font-black uppercase">Month:</span>
                   <select
                     value={monthFilter}
                     onChange={(e) => setMonthFilter(e.target.value)}
-                    className="px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1a1b23] text-xs font-black text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-green-500"
+                    className="px-3 py-1.5 rounded-xl border-2 border-green-400 dark:border-green-700 bg-white dark:bg-[#1a1b23] text-xs font-black text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-green-500 cursor-pointer"
                   >
                     <option value="All">All Months</option>
                     <option value="July 2026">🗓️ July 2026</option>
@@ -979,11 +982,11 @@ export default function CustomerMarketplacePage() {
 
                 {/* STATUS FILTER DROPDOWN */}
                 <div className="flex items-center gap-1.5">
-                  <span className="text-xs text-gray-400 font-bold">Status:</span>
+                  <span className="text-[11px] text-green-800 dark:text-green-300 font-black uppercase">Status:</span>
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
-                    className="px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1a1b23] text-xs font-black text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-green-500"
+                    className="px-3 py-1.5 rounded-xl border-2 border-green-400 dark:border-green-700 bg-white dark:bg-[#1a1b23] text-xs font-black text-gray-900 dark:text-white shadow-sm focus:ring-2 focus:ring-green-500 cursor-pointer"
                   >
                     <option value="All">All Statuses ({orders.length})</option>
                     <option value="Pending">⏳ Pending Approval ({buyerTransactionStats.pendingCount})</option>
