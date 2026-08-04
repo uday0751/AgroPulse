@@ -221,7 +221,7 @@ export default function ExpertConsultationPage() {
 
   // Booking & Secure Payment Gateway State
   const [bookingExpert, setBookingExpert] = useState<RealExpert | null>(null);
-  const [bookingStep, setBookingStep] = useState<1 | 2 | 3>(1); // Step 3 = Waiting for UPI App Push Approval
+  const [bookingStep, setBookingStep] = useState<1 | 2 | 3>(1);
   const [bookingDate, setBookingDate] = useState("");
   const [bookingTimeSlot, setBookingTimeSlot] = useState("");
   const [farmerNameInput, setFarmerNameInput] = useState("");
@@ -231,7 +231,7 @@ export default function ExpertConsultationPage() {
   // Payment Gateway Options State
   const [paymentMethod, setPaymentMethod] = useState<"upi" | "credit" | "debit">("upi");
   const [upiIdInput, setUpiIdInput] = useState("");
-  const [selectedUpiApp, setSelectedUpiApp] = useState<"phonepe" | "gpay" | "paytm" | "bhim">("phonepe");
+  const [activeUpiLink, setActiveUpiLink] = useState("");
   const [cardNumberInput, setCardNumberInput] = useState("");
   const [cardExpiryInput, setCardExpiryInput] = useState("");
   const [cardCvvInput, setCardCvvInput] = useState("");
@@ -270,7 +270,7 @@ export default function ExpertConsultationPage() {
     }
   }, []);
 
-  // Timer countdown for UPI Push Notification Approval Waiting Screen
+  // Timer countdown for UPI Approval Waiting Screen
   useEffect(() => {
     let interval: any;
     if (bookingStep === 3 && waitingTimer > 0 && !bookingSuccess) {
@@ -281,7 +281,7 @@ export default function ExpertConsultationPage() {
     return () => clearInterval(interval);
   }, [bookingStep, waitingTimer, bookingSuccess]);
 
-  // Validate Aadhaar in real-time as user types
+  // Validate Aadhaar in real-time
   const handleAadhaarChange = (val: string) => {
     setRegAadhaar(val);
     if (val.replace(/\s+/g, "").length === 12) {
@@ -374,53 +374,43 @@ export default function ExpertConsultationPage() {
     setBookingStep(2);
   };
 
-  // REAL-TIME PHONEPE / UPI APP REDIRECTION & PUSH NOTIFICATION SENDER TO UDAY PRATAP SINGH CHAUHAN
-  const handleLaunchUpiPushNotification = (app: "phonepe" | "gpay" | "paytm" | "bhim") => {
+  // REAL-TIME DIRECT REDIRECTION TO INSTALLED UPI APP (PHONEPE / GPAY / PAYTM)
+  const handleLaunchUpiDirectRedirection = () => {
     if (!bookingExpert) return;
 
-    setSelectedUpiApp(app);
     const payeeUpi = "udaychauhan0751@ibl";
-    const payeeName = "Uday Pratap Singh Chauhan";
-
-    let targetUpi = upiIdInput.trim() || `${farmerPhoneInput.replace(/\D/g, "") || "9876543210"}@ybl`;
-    if (!targetUpi.includes("@")) {
-      targetUpi = `${targetUpi}@${app === "phonepe" ? "ybl" : app === "gpay" ? "okaxis" : "paytm"}`;
-    }
-    setUpiIdInput(targetUpi);
-
-    // Fee & Merchant details
     const fee = bookingExpert.feePerSession;
     
-    // NPCI Universal UPI Deep Link for Uday Pratap Singh Chauhan (udaychauhan0751@ibl)
-    const upiIntentUri = `upi://pay?pa=${payeeUpi}&pn=${encodeURIComponent(payeeName)}&am=${fee}&cu=INR&tn=AgroPulse%20Expert%20Session%20${encodeURIComponent(bookingExpert.name)}`;
-    
-    // Native PhonePe App Direct Intent Redirection Scheme
-    let appScheme = upiIntentUri;
-    if (app === "phonepe") {
-      appScheme = `phonepe://pay?pa=${payeeUpi}&pn=${encodeURIComponent(payeeName)}&am=${fee}&cu=INR&tn=AgroPulse%20Expert%20Consultation`;
-    } else if (app === "gpay") {
-      appScheme = `gpay://upi/pay?pa=${payeeUpi}&pn=${encodeURIComponent(payeeName)}&am=${fee}&cu=INR&tn=AgroPulse%20Expert%20Consultation`;
-    } else if (app === "paytm") {
-      appScheme = `paytmmp://pay?pa=${payeeUpi}&pn=${encodeURIComponent(payeeName)}&am=${fee}&cu=INR&tn=AgroPulse%20Expert%20Consultation`;
-    }
+    // NPCI Universal UPI Link for udaychauhan0751@ibl
+    const upiUri = `upi://pay?pa=${payeeUpi}&pn=AgroPulse%20Expert%20Session&am=${fee}&cu=INR&tn=Expert%20Booking%20Session%20${encodeURIComponent(bookingExpert.name)}`;
+    setActiveUpiLink(upiUri);
 
-    // Trigger PhonePe / UPI App Redirection
+    // Direct Browser Redirection
     if (typeof window !== "undefined") {
-      window.location.href = appScheme;
+      try {
+        const link = document.createElement("a");
+        link.href = upiUri;
+        link.rel = "noreferrer";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        window.location.href = upiUri;
+      } catch (err) {
+        console.error(err);
+      }
     }
 
-    // Switch to Step 3: Real-Time Live Push Notification & Approval Polling State
     setBookingStep(3);
     setWaitingTimer(180);
   };
 
-  // Complete Payment after PhonePe / UPI Approval Confirmation
+  // Complete Payment after UPI Approval Confirmation
   const handleCompleteUpiApproval = () => {
     if (!bookingExpert) return;
     setIsProcessingPayment(true);
 
     setTimeout(() => {
-      const appName = selectedUpiApp === "phonepe" ? "PhonePe App (Push Notification Verified)" : selectedUpiApp === "gpay" ? "Google Pay (Verified)" : "Paytm / UPI";
       const txId = `PAY-AGRI-${Math.floor(100000 + Math.random() * 900000)}`;
 
       const newBooking: ConsultationBooking = {
@@ -435,7 +425,7 @@ export default function ExpertConsultationPage() {
         date: bookingDate,
         timeSlot: bookingTimeSlot,
         feePaid: bookingExpert.feePerSession,
-        paymentMethod: appName,
+        paymentMethod: `UPI ID (${upiIdInput || "udaychauhan0751@ibl"})`,
         transactionId: txId,
         status: "Confirmed",
         createdAt: new Date().toLocaleDateString()
@@ -542,7 +532,7 @@ export default function ExpertConsultationPage() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="bg-green-100 dark:bg-green-950 text-green-800 dark:text-green-300 text-[10px] font-black uppercase px-2.5 py-0.5 rounded-md border border-green-300 dark:border-green-800 flex items-center gap-1">
-              <BellRing className="w-3 h-3 text-purple-600 animate-pulse" /> Live PhonePe / GPay / Paytm Push Notification Payment
+              🛡️ 100% Real Human Experts Only • Instant UPI ID Payment Gateway
             </span>
           </div>
           <h1 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white flex items-center gap-2.5">
@@ -550,7 +540,7 @@ export default function ExpertConsultationPage() {
             Real Human Expert Agriculture Consultants
           </h1>
           <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mt-1">
-            Enter your UPI ID to trigger live push notification payment on PhonePe, GPay, or Paytm app.
+            Enter your UPI ID to trigger instant payment redirection to your UPI app.
           </p>
         </div>
 
@@ -1021,7 +1011,7 @@ export default function ExpertConsultationPage() {
                     </div>
                     <div className="flex justify-between border-t border-gray-200 dark:border-white/10 pt-1.5 mt-1">
                       <span className="text-gray-400">Payment Gateway Method:</span>
-                      <span className="text-emerald-600 dark:text-emerald-400 font-black">{b.paymentMethod || "PhonePe App Verified"}</span>
+                      <span className="text-emerald-600 dark:text-emerald-400 font-black">{b.paymentMethod || "UPI ID Verified"}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-400">Transaction ID:</span>
@@ -1091,7 +1081,7 @@ export default function ExpertConsultationPage() {
         )}
       </AnimatePresence>
 
-      {/* BOOKING & REAL-TIME PHONEPE / UPI PUSH PAYMENT GATEWAY MULTI-STEP MODAL */}
+      {/* BOOKING & INSTANT UPI ID PAYMENT GATEWAY MODAL */}
       <AnimatePresence>
         {bookingExpert && (
           <div className="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
@@ -1235,7 +1225,7 @@ export default function ExpertConsultationPage() {
                   </button>
                 </form>
               ) : bookingStep === 2 ? (
-                /* STEP 2: SELECT PAYMENT METHOD & TRIGGER PHONEPE / UPI REDIRECTION */
+                /* STEP 2: SELECT PAYMENT METHOD & TRIGGER INSTANT UPI APP REDIRECTION */
                 <div className="space-y-4">
                   <div className="flex justify-between items-center border-b border-gray-100 dark:border-white/10 pb-3">
                     <div>
@@ -1256,7 +1246,7 @@ export default function ExpertConsultationPage() {
                       onClick={() => setPaymentMethod("upi")}
                       className={`p-3 rounded-2xl border-2 text-center transition-all ${
                         paymentMethod === "upi"
-                          ? "bg-purple-600 border-purple-600 text-white shadow-md font-extrabold"
+                          ? "bg-green-600 border-green-600 text-white shadow-md font-extrabold"
                           : "bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 font-bold"
                       }`}
                     >
@@ -1291,24 +1281,24 @@ export default function ExpertConsultationPage() {
                     </button>
                   </div>
 
-                  {/* PAYMENT METHOD 1: REAL-TIME PHONEPE & UPI APP INTENT REDIRECTION */}
+                  {/* PAYMENT METHOD 1: CLEAN EMERALD UPI ID & QR REDIRECTION CONTAINER */}
                   {paymentMethod === "upi" && (
-                    <div className="bg-purple-50/50 dark:bg-purple-950/30 p-4 rounded-2xl border-2 border-purple-400 dark:border-purple-800 space-y-4">
+                    <div className="bg-emerald-50/60 dark:bg-emerald-950/30 p-5 rounded-2xl border-2 border-emerald-500/50 space-y-4">
                       
-                      {/* CLEAN PHONEPE MERCHANT QR CODE CARD (NO NAME TEXT) */}
-                      <div className="bg-[#0f0a1c] text-white p-4 rounded-2xl border-2 border-purple-500 text-center space-y-3 shadow-xl">
+                      {/* CLEAN PHONEPE MERCHANT QR CODE CARD */}
+                      <div className="bg-[#0f0a1c] text-white p-4 rounded-2xl border-2 border-emerald-500 text-center space-y-3 shadow-xl">
                         <div className="flex items-center justify-center gap-2">
                           <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white font-black text-base">
                             पे
                           </div>
                           <span className="text-xl font-black text-white tracking-wide">PhonePe</span>
-                          <span className="text-[10px] font-black bg-purple-900/90 text-purple-200 px-2 py-0.5 rounded uppercase border border-purple-700">
-                            Accepted Here
+                          <span className="text-[10px] font-black bg-emerald-900/90 text-emerald-200 px-2 py-0.5 rounded uppercase border border-emerald-700">
+                            ACCEPTED HERE
                           </span>
                         </div>
 
                         {/* Official QR Code Image Uploaded by User */}
-                        <div className="w-48 mx-auto rounded-2xl overflow-hidden border-2 border-purple-400 shadow-2xl bg-black p-1">
+                        <div className="w-48 mx-auto rounded-2xl overflow-hidden border-2 border-emerald-400 shadow-2xl bg-black p-1">
                           <img
                             src="/phonepe-qr.jpg"
                             alt="PhonePe QR Code"
@@ -1316,22 +1306,22 @@ export default function ExpertConsultationPage() {
                           />
                         </div>
 
-                        <p className="text-[10px] text-purple-200 font-bold">
-                          Scan QR using PhonePe App or Enter UPI ID below to pay directly
+                        <p className="text-[10px] text-emerald-200 font-bold">
+                          Scan QR using PhonePe / GPay / Paytm or Enter your UPI ID below to launch payment app
                         </p>
                       </div>
 
-                      {/* ENTER KEY AUTOMATIC PHONEPE SERVER REDIRECTION FORM */}
+                      {/* ENTER KEY AUTOMATIC UPI APP REDIRECTION FORM */}
                       <form 
                         onSubmit={(e) => {
                           e.preventDefault();
-                          handleLaunchUpiPushNotification("phonepe");
+                          handleLaunchUpiDirectRedirection();
                         }} 
                         className="space-y-3"
                       >
                         <div>
-                          <label className="block text-xs font-extrabold text-gray-700 dark:text-gray-300 mb-1">
-                            Enter Your UPI ID / Mobile Number * <span className="text-[10px] text-purple-600 font-normal">(Press Enter to Pay)</span>
+                          <label className="block text-xs font-black text-emerald-900 dark:text-emerald-200 mb-1">
+                            Enter Your UPI ID / Mobile Number * <span className="text-[10px] text-emerald-600 font-normal">(Press Enter to Open App)</span>
                           </label>
                           <input
                             type="text"
@@ -1339,15 +1329,15 @@ export default function ExpertConsultationPage() {
                             placeholder="e.g. 9876543210@ybl, user@okaxis, or phone number"
                             value={upiIdInput}
                             onChange={(e) => setUpiIdInput(e.target.value)}
-                            className="w-full px-4 py-3 border-2 border-purple-500 rounded-xl text-xs font-black bg-white dark:bg-[#1a1b23] text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-purple-600 tracking-wide"
+                            className="w-full px-4 py-3 border-2 border-emerald-500 rounded-xl text-xs font-black bg-white dark:bg-[#1a1b23] text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-emerald-600 tracking-wide"
                           />
                         </div>
 
                         <button
                           type="submit"
-                          className="w-full py-3.5 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-black flex items-center justify-center gap-2 shadow-lg transition-all"
+                          className="w-full py-3.5 px-4 bg-green-600 hover:bg-green-700 text-white rounded-xl text-xs font-black flex items-center justify-center gap-2 shadow-lg transition-all"
                         >
-                          <span>💜 Pay via UPI ID</span>
+                          <span>Pay via UPI ID (Open App)</span>
                           <ArrowRight className="w-4 h-4" />
                         </button>
                       </form>
@@ -1449,41 +1439,35 @@ export default function ExpertConsultationPage() {
                   </div>
                 </div>
               ) : (
-                /* STEP 3: REAL-TIME PHONEPE PUSH NOTIFICATION WAITING & VERIFICATION SCREEN */
+                /* STEP 3: REAL-TIME INSTANT UPI APP REDIRECTION & APPROVAL SCREEN */
                 <div className="space-y-5 text-center py-2">
                   <div className="relative w-20 h-20 mx-auto flex items-center justify-center">
-                    <div className="absolute inset-0 bg-purple-500/20 rounded-full animate-ping" />
-                    <div className="w-16 h-16 bg-purple-600 text-white rounded-2xl flex items-center justify-center text-3xl shadow-xl relative z-10">
-                      🔔
+                    <div className="absolute inset-0 bg-emerald-500/20 rounded-full animate-ping" />
+                    <div className="w-16 h-16 bg-green-600 text-white rounded-2xl flex items-center justify-center text-3xl shadow-xl relative z-10">
+                      📱
                     </div>
                   </div>
 
                   <div className="space-y-1">
-                    <h3 className="text-xl font-black text-gray-900 dark:text-white">Push Notification Sent to {selectedUpiApp === "phonepe" ? "PhonePe" : selectedUpiApp === "gpay" ? "Google Pay" : "Paytm"}!</h3>
-                    <p className="text-xs text-purple-600 dark:text-purple-300 font-extrabold">
-                      Open your {selectedUpiApp.toUpperCase()} app now to approve the ₹{bookingExpert.feePerSession} payment request.
+                    <h3 className="text-xl font-black text-gray-900 dark:text-white">Redirecting to Installed UPI Payment App...</h3>
+                    <p className="text-xs text-emerald-600 dark:text-emerald-400 font-black">
+                      Opening PhonePe / GPay / Paytm app to pay ₹{bookingExpert.feePerSession} for {bookingExpert.name}.
                     </p>
                   </div>
 
-                  <div className="bg-purple-50 dark:bg-purple-950/40 p-4 rounded-2xl border-2 border-purple-300 dark:border-purple-800 space-y-2 text-xs font-bold text-left">
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">Sent to UPI VPA:</span>
-                      <span className="text-purple-700 dark:text-purple-300 font-black">{upiIdInput}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">Payee Merchant / Recipient:</span>
-                      <span className="text-gray-900 dark:text-white font-extrabold">Uday Pratap Singh Chauhan (udaychauhan0751@ibl)</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Amount Request:</span>
-                      <span className="text-green-600 dark:text-green-400 font-black text-sm">₹{bookingExpert.feePerSession}</span>
-                    </div>
-                    <div className="flex justify-between border-t border-purple-200 dark:border-purple-800 pt-2 text-[11px]">
-                      <span className="text-gray-400">Time Remaining to Approve:</span>
-                      <span className="text-amber-600 dark:text-amber-400 font-black font-mono">
-                        {Math.floor(waitingTimer / 60)}:{(waitingTimer % 60).toString().padStart(2, '0')} min
-                      </span>
-                    </div>
+                  {/* PROMINENT DIRECT LINK TO TRIGGER UPI APP INSTANTLY */}
+                  <div className="p-4 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl border-2 border-emerald-500 space-y-3">
+                    <a
+                      href={activeUpiLink || `upi://pay?pa=udaychauhan0751@ibl&pn=AgroPulse&am=${bookingExpert.feePerSession}&cu=INR`}
+                      className="w-full py-3.5 px-4 bg-green-600 hover:bg-green-700 text-white font-black rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg transition-all"
+                    >
+                      <span>🚀 Launch Installed PhonePe / UPI App Now</span>
+                      <ExternalLink className="w-4 h-4" />
+                    </a>
+                    
+                    <p className="text-[10px] text-emerald-800 dark:text-emerald-300 font-extrabold">
+                      Recipient UPI ID: udaychauhan0751@ibl • Amount: ₹{bookingExpert.feePerSession}
+                    </p>
                   </div>
 
                   <div className="space-y-2">
@@ -1496,22 +1480,14 @@ export default function ExpertConsultationPage() {
                       {isProcessingPayment ? (
                         <>
                           <RefreshCw className="w-4 h-4 animate-spin" />
-                          <span>Verifying Payment Approval with {selectedUpiApp.toUpperCase()}...</span>
+                          <span>Verifying Payment Approval...</span>
                         </>
                       ) : (
                         <>
                           <CheckCircle2 className="w-4 h-4 text-yellow-300" />
-                          <span>✅ I Have Approved Payment on {selectedUpiApp.toUpperCase()} App</span>
+                          <span>✅ I Have Approved Payment on UPI App</span>
                         </>
                       )}
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => handleLaunchUpiPushNotification(selectedUpiApp)}
-                      className="w-full bg-purple-50 dark:bg-white/10 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5"
-                    >
-                      <ExternalLink className="w-3.5 h-3.5" /> Open {selectedUpiApp.toUpperCase()} App Again
                     </button>
                   </div>
                 </div>
