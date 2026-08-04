@@ -374,24 +374,39 @@ export default function ExpertConsultationPage() {
     setBookingStep(2);
   };
 
-  // REAL-TIME PHONEPE / UPI APP REDIRECTION & PUSH NOTIFICATION SENDER
+  // REAL-TIME PHONEPE / UPI APP REDIRECTION & PUSH NOTIFICATION SENDER TO UDAY PRATAP SINGH CHAUHAN
   const handleLaunchUpiPushNotification = (app: "phonepe" | "gpay" | "paytm" | "bhim") => {
     if (!bookingExpert) return;
 
     setSelectedUpiApp(app);
+    const payeeUpi = "udaychauhan0751@ibl";
+    const payeeName = "Uday Pratap Singh Chauhan";
+
     let targetUpi = upiIdInput.trim() || `${farmerPhoneInput.replace(/\D/g, "") || "9876543210"}@ybl`;
     if (!targetUpi.includes("@")) {
       targetUpi = `${targetUpi}@${app === "phonepe" ? "ybl" : app === "gpay" ? "okaxis" : "paytm"}`;
     }
     setUpiIdInput(targetUpi);
 
-    // Build NPCI Standard UPI Intent URI for PhonePe / GPay / Paytm App Redirection
+    // Fee & Merchant details
     const fee = bookingExpert.feePerSession;
-    const upiIntentUri = `upi://pay?pa=agropulse.consultant@ybl&pn=AgroPulse%20Expert%20Consultation&am=${fee}&cu=INR&tn=Expert%20Booking%20Session%20${encodeURIComponent(bookingExpert.name)}`;
     
+    // NPCI Universal UPI Deep Link for Uday Pratap Singh Chauhan (udaychauhan0751@ibl)
+    const upiIntentUri = `upi://pay?pa=${payeeUpi}&pn=${encodeURIComponent(payeeName)}&am=${fee}&cu=INR&tn=AgroPulse%20Expert%20Session%20${encodeURIComponent(bookingExpert.name)}`;
+    
+    // Native PhonePe App Direct Intent Redirection Scheme
+    let appScheme = upiIntentUri;
+    if (app === "phonepe") {
+      appScheme = `phonepe://pay?pa=${payeeUpi}&pn=${encodeURIComponent(payeeName)}&am=${fee}&cu=INR&tn=AgroPulse%20Expert%20Consultation`;
+    } else if (app === "gpay") {
+      appScheme = `gpay://upi/pay?pa=${payeeUpi}&pn=${encodeURIComponent(payeeName)}&am=${fee}&cu=INR&tn=AgroPulse%20Expert%20Consultation`;
+    } else if (app === "paytm") {
+      appScheme = `paytmmp://pay?pa=${payeeUpi}&pn=${encodeURIComponent(payeeName)}&am=${fee}&cu=INR&tn=AgroPulse%20Expert%20Consultation`;
+    }
+
     // Trigger PhonePe / UPI App Redirection
     if (typeof window !== "undefined") {
-      window.location.href = upiIntentUri;
+      window.location.href = appScheme;
     }
 
     // Switch to Step 3: Real-Time Live Push Notification & Approval Polling State
@@ -1280,21 +1295,55 @@ export default function ExpertConsultationPage() {
                   {paymentMethod === "upi" && (
                     <div className="bg-purple-50/50 dark:bg-purple-950/30 p-4 rounded-2xl border-2 border-purple-400 dark:border-purple-800 space-y-4">
                       
+                      {/* OFFICIAL PHONEPE MERCHANT QR CODE CARD */}
+                      <div className="bg-[#0f0a1c] text-white p-4 rounded-2xl border-2 border-purple-500 text-center space-y-3 shadow-xl">
+                        <div className="flex items-center justify-center gap-2">
+                          <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white font-black text-base">
+                            पे
+                          </div>
+                          <span className="text-xl font-black text-white tracking-wide">PhonePe</span>
+                          <span className="text-[10px] font-black bg-purple-900/90 text-purple-200 px-2 py-0.5 rounded uppercase border border-purple-700">
+                            Accepted Here
+                          </span>
+                        </div>
+
+                        {/* Exact QR Code Image Uploaded by User */}
+                        <div className="w-48 mx-auto rounded-2xl overflow-hidden border-2 border-purple-400 shadow-2xl bg-black p-1">
+                          <img
+                            src="/phonepe-qr.jpg"
+                            alt="PhonePe QR Code - Uday Pratap Singh Chauhan"
+                            className="w-full h-auto object-cover rounded-xl"
+                          />
+                        </div>
+
+                        <div>
+                          <h4 className="text-sm font-black text-white tracking-wide">Uday Pratap Singh Chauhan</h4>
+                          <p className="text-xs font-mono text-purple-300 font-extrabold mt-0.5 bg-purple-950/80 px-2.5 py-1 rounded-lg inline-block border border-purple-800">
+                            UPI ID: udaychauhan0751@ibl
+                          </p>
+                          <p className="text-[10px] text-gray-400 font-bold mt-1">
+                            Scan QR using PhonePe App or Click App below to trigger payment notification
+                          </p>
+                        </div>
+                      </div>
+
                       <div className="flex items-center gap-3 bg-white dark:bg-[#1a1b23] p-3 rounded-xl border border-purple-200 dark:border-purple-800">
-                        <div className="w-10 h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center font-black text-sm">
-                          💜
+                        <div className="w-10 h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center font-black text-sm shrink-0">
+                          🔔
                         </div>
                         <div>
-                          <h4 className="font-extrabold text-xs text-gray-900 dark:text-white">Real-Time PhonePe Push Notification</h4>
-                          <p className="text-[10px] text-purple-600 dark:text-purple-300 font-bold">App opens directly on your phone with payment request!</p>
+                          <h4 className="font-extrabold text-xs text-gray-900 dark:text-white">Real-Time PhonePe App Notification</h4>
+                          <p className="text-[10px] text-purple-600 dark:text-purple-300 font-bold">
+                            Enter your phone number/UPI ID or click PhonePe to trigger direct payment notification on your phone!
+                          </p>
                         </div>
                       </div>
 
                       <div>
-                        <label className="block text-xs font-extrabold text-gray-700 dark:text-gray-300 mb-1">Enter Your PhonePe / UPI VPA Address *</label>
+                        <label className="block text-xs font-extrabold text-gray-700 dark:text-gray-300 mb-1">Enter Your PhonePe Mobile Number / UPI VPA Handle *</label>
                         <input
                           type="text"
-                          placeholder="e.g. 9876543210@ybl, user@okaxis, or phone number"
+                          placeholder="e.g. 9876543210 or 9876543210@ybl"
                           value={upiIdInput}
                           onChange={(e) => setUpiIdInput(e.target.value)}
                           className="w-full px-4 py-2.5 border-2 border-purple-400 rounded-xl text-xs font-black bg-white dark:bg-[#1a1b23] text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-purple-500"
@@ -1463,8 +1512,8 @@ export default function ExpertConsultationPage() {
                       <span className="text-purple-700 dark:text-purple-300 font-black">{upiIdInput}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Payee Merchant:</span>
-                      <span className="text-gray-900 dark:text-white font-extrabold">AgroPulse Real Expert Consult</span>
+                      <span className="text-gray-500">Payee Merchant / Recipient:</span>
+                      <span className="text-gray-900 dark:text-white font-extrabold">Uday Pratap Singh Chauhan (udaychauhan0751@ibl)</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-400">Amount Request:</span>
