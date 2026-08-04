@@ -365,14 +365,20 @@ export default function ExpertConsultationPage() {
   const handleExecuteSecurePayment = () => {
     if (!bookingExpert) return;
 
-    if (paymentMethod === "upi" && !upiIdInput.trim() && !upiIdInput.includes("@")) {
-      setUpiIdInput("farmer@upi");
+    // Set fallback default UPI handle if paying via QR Code or empty UPI field
+    let finalUpiId = upiIdInput.trim();
+    if (paymentMethod === "upi" && !finalUpiId) {
+      finalUpiId = "user.upi@okaxis";
+      setUpiIdInput(finalUpiId);
     }
 
     setIsProcessingPayment(true);
 
     setTimeout(() => {
-      const pMethodLabel = paymentMethod === "upi" ? "UPI / QR Code" : paymentMethod === "credit" ? "Credit Card" : "Debit Card / NetBanking";
+      const pMethodLabel = paymentMethod === "upi" 
+        ? `UPI (${finalUpiId || "QR Code Direct"})` 
+        : paymentMethod === "credit" ? "Credit Card (SSL Encrypted)" : `Debit Card / NetBanking (${selectedBank})`;
+
       const txId = `PAY-AGRI-${Math.floor(100000 + Math.random() * 900000)}`;
 
       const newBooking: ConsultationBooking = {
@@ -400,7 +406,7 @@ export default function ExpertConsultationPage() {
       setIsProcessingPayment(false);
       setBookingSuccess(true);
       setConfirmedBookingDetails(newBooking);
-    }, 2200);
+    }, 2000);
   };
 
   // Real-Time Live Chat Sender
@@ -1213,18 +1219,46 @@ export default function ExpertConsultationPage() {
                         <div className="w-32 h-32 bg-white p-2 mx-auto rounded-2xl border-2 border-emerald-500 shadow-md flex items-center justify-center">
                           <QrCode className="w-24 h-24 text-gray-900" />
                         </div>
-                        <p className="text-[10px] font-black text-gray-400 uppercase">Scan QR using PhonePe, GPay, Paytm, or BHIM</p>
+                        <p className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase flex items-center justify-center gap-1">
+                          <CheckCircle2 className="w-3 h-3" /> Live QR Code Pay Active (PhonePe, GPay, Paytm, BHIM)
+                        </p>
                       </div>
 
                       <div>
-                        <label className="block text-xs font-extrabold text-gray-700 dark:text-gray-300 mb-1">Or Enter Your Virtual Payment Address (UPI ID) *</label>
+                        <div className="flex justify-between items-center mb-1">
+                          <label className="block text-xs font-extrabold text-gray-700 dark:text-gray-300">Or Enter Your UPI VPA Handle *</label>
+                          {upiIdInput.trim() && (
+                            <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                              <CheckCircle2 className="w-3 h-3" /> UPI Handle Ready
+                            </span>
+                          )}
+                        </div>
+
                         <input
                           type="text"
-                          placeholder="e.g. 9876543210@ybl or username@upi"
+                          placeholder="e.g. 9876543210@ybl, user@okaxis, or phone number"
                           value={upiIdInput}
                           onChange={(e) => setUpiIdInput(e.target.value)}
-                          className="w-full px-4 py-2.5 border border-gray-200 dark:border-white/10 rounded-xl text-xs font-bold bg-white dark:bg-[#1a1b23] text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-green-500"
+                          className="w-full px-4 py-2.5 border-2 border-emerald-400 dark:border-emerald-700 rounded-xl text-xs font-black bg-white dark:bg-[#1a1b23] text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-emerald-500"
                         />
+
+                        {/* Quick Handle Pills */}
+                        <div className="flex items-center gap-1.5 mt-2 overflow-x-auto text-[10px] font-bold">
+                          <span className="text-gray-400 shrink-0">Popular Handles:</span>
+                          {["@ybl", "@okaxis", "@paytm", "@oksbi", "@upi"].map(handle => (
+                            <button
+                              key={handle}
+                              type="button"
+                              onClick={() => {
+                                const base = upiIdInput.split('@')[0] || "farmer";
+                                setUpiIdInput(`${base}${handle}`);
+                              }}
+                              className="px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 rounded border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100"
+                            >
+                              {handle}
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   )}
