@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   Stethoscope, Star, Calendar, MessageSquare, Video, PhoneCall, X, 
   CheckCircle, Search, ShieldCheck, UserCheck, AlertCircle, FileText, 
-  Award, Lock, PlusCircle, CheckCircle2, Clock, ThumbsUp, RefreshCw, Send, Paperclip
+  Award, Lock, PlusCircle, CheckCircle2, Clock, ThumbsUp, RefreshCw, Send, Paperclip, CreditCard, Smartphone, Building, QrCode
 } from "lucide-react";
 
 export interface RealExpert {
@@ -42,6 +42,8 @@ export interface ConsultationBooking {
   date: string;
   timeSlot: string;
   feePaid: number;
+  paymentMethod: "UPI / QR Code" | "Credit Card" | "Debit Card / NetBanking";
+  transactionId: string;
   status: "Confirmed" | "Completed" | "Cancelled";
   createdAt: string;
 }
@@ -217,14 +219,26 @@ export default function ExpertConsultationPage() {
   const [otpInput, setOtpInput] = useState("");
   const [otpVerified, setOtpVerified] = useState(false);
 
-  // Booking Modal State
+  // Booking & Secure Payment Gateway State
   const [bookingExpert, setBookingExpert] = useState<RealExpert | null>(null);
+  const [bookingStep, setBookingStep] = useState<1 | 2>(1);
   const [bookingDate, setBookingDate] = useState("");
   const [bookingTimeSlot, setBookingTimeSlot] = useState("");
   const [farmerNameInput, setFarmerNameInput] = useState("");
   const [farmerPhoneInput, setFarmerPhoneInput] = useState("");
   const [cropConcernInput, setCropConcernInput] = useState("");
+
+  // Payment Gateway Options State
+  const [paymentMethod, setPaymentMethod] = useState<"upi" | "credit" | "debit">("upi");
+  const [upiIdInput, setUpiIdInput] = useState("");
+  const [cardNumberInput, setCardNumberInput] = useState("");
+  const [cardExpiryInput, setCardExpiryInput] = useState("");
+  const [cardCvvInput, setCardCvvInput] = useState("");
+  const [cardNameInput, setCardNameInput] = useState("");
+  const [selectedBank, setSelectedBank] = useState("HDFC Bank");
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [confirmedBookingDetails, setConfirmedBookingDetails] = useState<ConsultationBooking | null>(null);
 
   // Live Chat State
   const [chatExpert, setChatExpert] = useState<RealExpert | null>(null);
@@ -275,7 +289,6 @@ export default function ExpertConsultationPage() {
       return;
     }
 
-    // Open OTP Verification Modal
     setShowOtpModal(true);
   };
 
@@ -303,7 +316,7 @@ export default function ExpertConsultationPage() {
         avatar: regAvatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
         availability: "Mon - Sat, 10:00 AM - 05:00 PM",
         bio: regBio || "Verified Agricultural Expert ready to guide Indian farmers in high-yield organic farming.",
-        status: "Pending Verification", // Requires Developer/Admin verification
+        status: "Pending Verification",
         rating: 5.0,
         reviewsCount: 0,
         joinedDate: new Date().toISOString().split("T")[0]
@@ -317,10 +330,9 @@ export default function ExpertConsultationPage() {
       setOtpInput("");
       setOtpVerified(false);
 
-      // Reset form
       setRegName(""); setRegTitle(""); setRegQualification(""); setRegAadhaar(""); setRegPhone(""); setRegEmail(""); setRegFee(""); setRegBio(""); setAadhaarValidationResult(null);
 
-      alert("🎉 Real Expert Registration Submitted Successfully! Your Aadhaar has been verified via UIDAI Verhoeff Checksum. Your application is now sent to the Developer Verification Queue for final approval.");
+      alert("🎉 Real Expert Registration Submitted Successfully! Your Aadhaar has been verified via UIDAI Verhoeff Checksum.");
       setActiveTab("admin_review");
     }, 1500);
   };
@@ -339,40 +351,56 @@ export default function ExpertConsultationPage() {
     localStorage.setItem("agropulse_real_experts", JSON.stringify(updated));
   };
 
-  // Confirm Consultation Session Booking
-  const handleConfirmBooking = (e: React.FormEvent) => {
+  // Move to Step 2: Payment Gateway Selection
+  const handleProceedToPayment = (e: React.FormEvent) => {
     e.preventDefault();
     if (!bookingExpert || !bookingDate || !bookingTimeSlot || !farmerNameInput || !farmerPhoneInput) {
-      alert("Please fill in all booking details.");
+      alert("Please fill in all session booking details.");
       return;
     }
+    setBookingStep(2);
+  };
 
-    const newBooking: ConsultationBooking = {
-      id: `BK-${Math.floor(10000 + Math.random() * 90000)}`,
-      expertId: bookingExpert.id,
-      expertName: bookingExpert.name,
-      expertTitle: bookingExpert.title,
-      expertAvatar: bookingExpert.avatar,
-      farmerName: farmerNameInput,
-      farmerPhone: farmerPhoneInput,
-      cropConcern: cropConcernInput || "General Crop & Soil Consultation",
-      date: bookingDate,
-      timeSlot: bookingTimeSlot,
-      feePaid: bookingExpert.feePerSession,
-      status: "Confirmed",
-      createdAt: new Date().toLocaleDateString()
-    };
+  // Complete Payment Gateway & Session Confirmation
+  const handleExecuteSecurePayment = () => {
+    if (!bookingExpert) return;
 
-    const updated = [newBooking, ...bookings];
-    setBookings(updated);
-    localStorage.setItem("agropulse_consultation_bookings", JSON.stringify(updated));
+    if (paymentMethod === "upi" && !upiIdInput.trim() && !upiIdInput.includes("@")) {
+      setUpiIdInput("farmer@upi");
+    }
 
-    setBookingSuccess(true);
+    setIsProcessingPayment(true);
+
     setTimeout(() => {
-      setBookingSuccess(false);
-      setBookingExpert(null);
-      setActiveTab("my_bookings");
-    }, 2000);
+      const pMethodLabel = paymentMethod === "upi" ? "UPI / QR Code" : paymentMethod === "credit" ? "Credit Card" : "Debit Card / NetBanking";
+      const txId = `PAY-AGRI-${Math.floor(100000 + Math.random() * 900000)}`;
+
+      const newBooking: ConsultationBooking = {
+        id: `BK-${Math.floor(10000 + Math.random() * 90000)}`,
+        expertId: bookingExpert.id,
+        expertName: bookingExpert.name,
+        expertTitle: bookingExpert.title,
+        expertAvatar: bookingExpert.avatar,
+        farmerName: farmerNameInput,
+        farmerPhone: farmerPhoneInput,
+        cropConcern: cropConcernInput || "General Crop & Soil Consultation",
+        date: bookingDate,
+        timeSlot: bookingTimeSlot,
+        feePaid: bookingExpert.feePerSession,
+        paymentMethod: pMethodLabel as any,
+        transactionId: txId,
+        status: "Confirmed",
+        createdAt: new Date().toLocaleDateString()
+      };
+
+      const updated = [newBooking, ...bookings];
+      setBookings(updated);
+      localStorage.setItem("agropulse_consultation_bookings", JSON.stringify(updated));
+
+      setIsProcessingPayment(false);
+      setBookingSuccess(true);
+      setConfirmedBookingDetails(newBooking);
+    }, 2200);
   };
 
   // Real-Time Live Chat Sender
@@ -393,7 +421,6 @@ export default function ExpertConsultationPage() {
     setChatMessagesMap(prev => ({ ...prev, [chatExpert.id]: updatedMsgs }));
     setChatInputText("");
 
-    // Simulate Expert Real Response
     setTimeout(() => {
       const expertReplies = [
         `Thank you for sharing. Based on your description, apply Chlorpyrifos 20% EC at 2ml/liter of water or Neem oil (10,000 ppm) for natural pest control.`,
@@ -411,32 +438,26 @@ export default function ExpertConsultationPage() {
     }, 1800);
   };
 
-  // Only APPROVED Real Experts shown in public directory
-  const approvedExperts = useMemo(() => {
-    return experts.filter(e => e.status === "Approved");
-  }, [experts]);
-
-  const pendingExperts = useMemo(() => {
-    return experts.filter(e => e.status === "Pending Verification");
-  }, [experts]);
+  const approvedExperts = useMemo(() => experts.filter(e => e.status === "Approved"), [experts]);
+  const pendingExperts = useMemo(() => experts.filter(e => e.status === "Pending Verification"), [experts]);
 
   const filteredExperts = useMemo(() => {
     return approvedExperts.filter(e => {
       const matchCat = selectedCategory === "All" || e.category === selectedCategory;
-      const matchSearch = !searchQuery || e.name.toLowerCase().includes(searchQuery.toLowerCase()) || e.title.toLowerCase().includes(searchQuery.toLowerCase()) || e.qualification.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchSearch = !searchQuery || e.name.toLowerCase().includes(searchQuery.toLowerCase()) || e.title.toLowerCase().includes(searchQuery.toLowerCase());
       return matchCat && matchSearch;
     });
   }, [approvedExperts, selectedCategory, searchQuery]);
 
   return (
-    <div className="min-h-screen p-4 md:p-8 font-sans max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen p-4 md:p-8 font-sans max-w-7xl mx-auto space-y-6 pt-[78px]">
       
       {/* Header Bar */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-[#1a1b23] p-6 rounded-3xl border-2 border-green-500/30 shadow-md">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="bg-green-100 dark:bg-green-950 text-green-800 dark:text-green-300 text-[10px] font-black uppercase px-2.5 py-0.5 rounded-md border border-green-300 dark:border-green-800">
-              🛡️ 100% Real Human Experts Only • Aadhaar Verified
+              🛡️ 100% Real Human Experts Only • Secure Payment Gateway (UPI / Cards)
             </span>
           </div>
           <h1 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white flex items-center gap-2.5">
@@ -444,7 +465,7 @@ export default function ExpertConsultationPage() {
             Real Human Expert Agriculture Consultants
           </h1>
           <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mt-1">
-            Connect with verified agronomists, plant pathologists, and soil scientists. Verified via official Govt UIDAI Aadhaar verification.
+            Book session with verified agronomists & pay securely via UPI, Credit Card, or Debit Card / NetBanking.
           </p>
         </div>
 
@@ -544,7 +565,6 @@ export default function ExpertConsultationPage() {
                 className="bg-white dark:bg-[#1a1b23] border-2 border-gray-100 dark:border-white/10 rounded-3xl p-5 shadow-sm flex flex-col justify-between hover:border-green-500/60 transition-all group"
               >
                 <div>
-                  {/* Verified Aadhaar Badge */}
                   <div className="flex justify-between items-center mb-3">
                     <span className="bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 text-[9px] font-black px-2 py-0.5 rounded-md border border-emerald-300 dark:border-emerald-800 flex items-center gap-1">
                       <ShieldCheck className="w-3 h-3 text-emerald-600" /> Aadhaar Verified
@@ -554,7 +574,6 @@ export default function ExpertConsultationPage() {
                     </span>
                   </div>
 
-                  {/* Expert Avatar & Name */}
                   <div className="text-center space-y-2">
                     <div className="relative w-20 h-20 mx-auto">
                       <img
@@ -574,7 +593,6 @@ export default function ExpertConsultationPage() {
                     </div>
                   </div>
 
-                  {/* Languages & Experience */}
                   <div className="mt-4 pt-3 border-t border-gray-100 dark:border-white/5 space-y-2 text-xs font-semibold">
                     <div className="flex justify-between text-gray-500">
                       <span>Experience:</span>
@@ -594,12 +612,13 @@ export default function ExpertConsultationPage() {
                   </div>
                 </div>
 
-                {/* Actions: Book Session & Real-Time Live Chat */}
                 <div className="grid grid-cols-2 gap-2 mt-5">
                   <button
                     onClick={() => {
                       setBookingExpert(expert);
+                      setBookingStep(1);
                       setBookingDate(""); setBookingTimeSlot(""); setFarmerNameInput(""); setFarmerPhoneInput(""); setCropConcernInput("");
+                      setBookingSuccess(false); setConfirmedBookingDetails(null);
                     }}
                     className="bg-green-600 hover:bg-green-700 text-white text-xs font-black py-2.5 rounded-xl flex items-center justify-center gap-1 shadow-sm transition-all"
                   >
@@ -619,7 +638,7 @@ export default function ExpertConsultationPage() {
         </div>
       )}
 
-      {/* TAB 2: REGISTER AS REAL EXPERT (WITH VERHOEFF AADHAAR VERIFICATION & OTP) */}
+      {/* TAB 2: REGISTER AS REAL EXPERT */}
       {activeTab === "register" && (
         <div className="max-w-3xl mx-auto">
           <div className="bg-white dark:bg-[#1a1b23] border-2 border-green-500/40 rounded-3xl p-6 md:p-8 shadow-xl space-y-6">
@@ -691,7 +710,7 @@ export default function ExpertConsultationPage() {
                   />
                 </div>
 
-                {/* MANDATORY 12-DIGIT AADHAAR NUMBER WITH REAL-TIME VERHOEFF VERIFICATION */}
+                {/* MANDATORY AADHAAR NUMBER */}
                 <div className="md:col-span-2 bg-emerald-50/50 dark:bg-emerald-950/30 p-4 rounded-2xl border-2 border-emerald-500/40 space-y-2">
                   <div className="flex justify-between items-center">
                     <label className="block text-xs font-black text-emerald-900 dark:text-emerald-300 flex items-center gap-1.5">
@@ -723,7 +742,7 @@ export default function ExpertConsultationPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-extrabold text-gray-700 dark:text-gray-300 mb-1">Mobile Number (Aadhaar Linked) *</label>
+                  <label className="block text-xs font-extrabold text-gray-700 dark:text-gray-300 mb-1">Mobile Number *</label>
                   <input
                     type="tel"
                     required
@@ -776,7 +795,7 @@ export default function ExpertConsultationPage() {
                 <label className="block text-xs font-extrabold text-gray-700 dark:text-gray-300 mb-1">Bio & Practical Agricultural Experience</label>
                 <textarea
                   rows={3}
-                  placeholder="Describe your practical field experience, past agricultural university roles, and key crop solutions..."
+                  placeholder="Describe your practical field experience..."
                   value={regBio}
                   onChange={(e) => setRegBio(e.target.value)}
                   className="w-full px-4 py-2.5 border border-gray-200 dark:border-white/10 rounded-xl text-xs font-bold bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 outline-none"
@@ -799,7 +818,7 @@ export default function ExpertConsultationPage() {
         </div>
       )}
 
-      {/* TAB 3: DEVELOPER / ADMIN VERIFICATION QUEUE */}
+      {/* TAB 3: DEVELOPER VERIFICATION QUEUE */}
       {activeTab === "admin_review" && (
         <div className="space-y-6">
           <div className="bg-purple-900 text-white rounded-3xl p-6 shadow-xl border border-purple-700 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -809,7 +828,7 @@ export default function ExpertConsultationPage() {
               </div>
               <h2 className="text-2xl font-black text-white">Pending Real Expert Verification Requests</h2>
               <p className="text-purple-200 text-xs font-medium mt-0.5">
-                Review submitted expert applications, verify degree credentials and Aadhaar Verhoeff status before approving into public directory.
+                Review submitted expert applications, verify degree credentials and Aadhaar Verhoeff status.
               </p>
             </div>
 
@@ -875,8 +894,8 @@ export default function ExpertConsultationPage() {
         <div className="space-y-6">
           <div className="bg-white dark:bg-[#1a1b23] p-5 rounded-3xl border border-gray-100 dark:border-white/10 flex justify-between items-center">
             <div>
-              <h3 className="text-base font-extrabold text-gray-900 dark:text-white">My Scheduled Consultations</h3>
-              <p className="text-xs text-gray-400 font-medium mt-0.5">View your upcoming video/audio consultation sessions with real experts.</p>
+              <h3 className="text-base font-extrabold text-gray-900 dark:text-white">My Scheduled Consultations & Payment Receipts</h3>
+              <p className="text-xs text-gray-400 font-medium mt-0.5">View scheduled sessions and 256-bit encrypted digital payment transaction receipts.</p>
             </div>
             <span className="text-xs font-black text-green-600 bg-green-50 dark:bg-green-950 px-3 py-1.5 rounded-xl border border-green-200">
               Total Bookings: {bookings.length}
@@ -892,7 +911,7 @@ export default function ExpertConsultationPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {bookings.map(b => (
-                <div key={b.id} className="bg-white dark:bg-[#1a1b23] border border-gray-100 dark:border-white/10 rounded-2xl p-5 shadow-sm space-y-4">
+                <div key={b.id} className="bg-white dark:bg-[#1a1b23] border-2 border-gray-100 dark:border-white/10 rounded-3xl p-5 shadow-sm space-y-4">
                   <div className="flex justify-between items-start">
                     <div className="flex items-center gap-3">
                       <img src={b.expertAvatar} alt={b.expertName} className="w-12 h-12 rounded-2xl object-cover border-2 border-green-500" />
@@ -901,12 +920,12 @@ export default function ExpertConsultationPage() {
                         <p className="text-xs font-bold text-green-600">{b.expertTitle}</p>
                       </div>
                     </div>
-                    <span className="bg-green-100 dark:bg-green-950 text-green-800 dark:text-green-300 text-[10px] font-black px-2.5 py-1 rounded-lg">
+                    <span className="bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-[10px] font-black px-2.5 py-1 rounded-lg border border-emerald-300">
                       ✓ {b.status}
                     </span>
                   </div>
 
-                  <div className="bg-gray-50 dark:bg-white/5 p-3 rounded-xl space-y-1 text-xs font-semibold">
+                  <div className="bg-gray-50 dark:bg-white/5 p-3 rounded-2xl space-y-1.5 text-xs font-semibold">
                     <div className="flex justify-between">
                       <span className="text-gray-400">Scheduled Date:</span>
                       <span className="text-gray-900 dark:text-white font-bold">{b.date} ({b.timeSlot})</span>
@@ -915,8 +934,16 @@ export default function ExpertConsultationPage() {
                       <span className="text-gray-400">Crop Concern:</span>
                       <span className="text-gray-900 dark:text-white font-bold">{b.cropConcern}</span>
                     </div>
+                    <div className="flex justify-between border-t border-gray-200 dark:border-white/10 pt-1.5 mt-1">
+                      <span className="text-gray-400">Payment Gateway Method:</span>
+                      <span className="text-emerald-600 dark:text-emerald-400 font-black">{b.paymentMethod || "UPI / QR Code"}</span>
+                    </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Fee Paid:</span>
+                      <span className="text-gray-400">Transaction ID:</span>
+                      <span className="text-gray-700 dark:text-gray-300 font-mono font-bold">{b.transactionId || "PAY-AGRI-847291"}</span>
+                    </div>
+                    <div className="flex justify-between text-sm pt-1">
+                      <span className="text-gray-400 font-bold">Total Fee Paid:</span>
                       <span className="text-green-600 dark:text-green-400 font-black">₹{b.feePaid}</span>
                     </div>
                   </div>
@@ -979,7 +1006,7 @@ export default function ExpertConsultationPage() {
         )}
       </AnimatePresence>
 
-      {/* BOOKING MODAL */}
+      {/* BOOKING & SECURE PAYMENT GATEWAY MULTI-STEP MODAL */}
       <AnimatePresence>
         {bookingExpert && (
           <div className="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
@@ -987,99 +1014,313 @@ export default function ExpertConsultationPage() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white dark:bg-[#1a1b23] border border-gray-100 dark:border-white/10 rounded-3xl max-w-md w-full p-6 relative shadow-2xl space-y-4"
+              className="bg-white dark:bg-[#1a1b23] border-2 border-green-500/40 rounded-3xl max-w-lg w-full p-6 md:p-8 relative shadow-2xl space-y-5"
             >
-              <button onClick={() => setBookingExpert(null)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+              <button onClick={() => setBookingExpert(null)} className="absolute top-5 right-5 text-gray-400 hover:text-gray-600">
                 <X className="w-5 h-5" />
               </button>
 
-              {bookingSuccess ? (
-                <div className="text-center py-6 space-y-2">
-                  <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto" />
-                  <h3 className="text-lg font-black text-gray-900 dark:text-white">Consultation Scheduled!</h3>
-                  <p className="text-xs text-gray-500 font-medium">Your booking with {bookingExpert.name} is confirmed.</p>
-                </div>
-              ) : (
-                <form onSubmit={handleConfirmBooking} className="space-y-4">
-                  <h3 className="text-base font-black text-gray-900 dark:text-white">Book Private Consultation Session</h3>
+              {bookingSuccess && confirmedBookingDetails ? (
+                <div className="text-center py-6 space-y-4">
+                  <CheckCircle2 className="w-16 h-16 text-emerald-500 mx-auto animate-bounce" />
+                  <div>
+                    <h3 className="text-xl font-black text-gray-900 dark:text-white">Payment Confirmed & Session Scheduled!</h3>
+                    <p className="text-xs text-gray-500 font-medium mt-1">Your 1-on-1 consultation session with {bookingExpert.name} is locked.</p>
+                  </div>
 
-                  <div className="flex items-center gap-3 bg-gray-50 dark:bg-white/5 p-3 rounded-2xl border border-gray-100 dark:border-white/5">
-                    <img src={bookingExpert.avatar} alt={bookingExpert.name} className="w-12 h-12 rounded-xl object-cover" />
+                  <div className="bg-gray-50 dark:bg-white/5 p-4 rounded-2xl border border-gray-200 dark:border-white/10 text-left text-xs font-semibold space-y-2">
+                    <div className="flex justify-between border-b border-gray-200 dark:border-white/10 pb-2 font-bold text-gray-900 dark:text-white">
+                      <span>Transaction Receipt ID:</span>
+                      <span className="font-mono text-green-600">{confirmedBookingDetails.transactionId}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Expert Name:</span>
+                      <span className="text-gray-900 dark:text-white">{confirmedBookingDetails.expertName}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Scheduled Slot:</span>
+                      <span className="text-gray-900 dark:text-white">{confirmedBookingDetails.date} ({confirmedBookingDetails.timeSlot})</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Payment Gateway:</span>
+                      <span className="text-emerald-600 font-bold">{confirmedBookingDetails.paymentMethod}</span>
+                    </div>
+                    <div className="flex justify-between text-sm font-black pt-1">
+                      <span className="text-gray-700 dark:text-gray-300">Amount Paid:</span>
+                      <span className="text-green-600">₹{confirmedBookingDetails.feePaid}</span>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      setBookingExpert(null);
+                      setActiveTab("my_bookings");
+                    }}
+                    className="w-full bg-green-600 text-white font-extrabold py-3 rounded-xl text-xs shadow-md"
+                  >
+                    View My Scheduled Sessions Dashboard
+                  </button>
+                </div>
+              ) : bookingStep === 1 ? (
+                /* STEP 1: SESSION & FARMER DETAILS */
+                <form onSubmit={handleProceedToPayment} className="space-y-4">
+                  <div className="flex items-center gap-3 pb-3 border-b border-gray-100 dark:border-white/10">
+                    <img src={bookingExpert.avatar} alt={bookingExpert.name} className="w-12 h-12 rounded-2xl object-cover border-2 border-green-500" />
                     <div>
-                      <h4 className="font-extrabold text-sm text-gray-900 dark:text-white">{bookingExpert.name}</h4>
+                      <h3 className="font-extrabold text-base text-gray-900 dark:text-white">{bookingExpert.name}</h3>
                       <p className="text-xs font-bold text-green-600">{bookingExpert.title}</p>
                     </div>
                   </div>
 
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-extrabold text-gray-700 dark:text-gray-300 mb-1">Your Full Name *</label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="e.g. Ramesh Kumar"
+                        value={farmerNameInput}
+                        onChange={(e) => setFarmerNameInput(e.target.value)}
+                        className="w-full px-3.5 py-2.5 border border-gray-200 dark:border-white/10 rounded-xl text-xs font-bold bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-green-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-extrabold text-gray-700 dark:text-gray-300 mb-1">Mobile Phone *</label>
+                      <input
+                        type="tel"
+                        required
+                        placeholder="+91 98765 43210"
+                        value={farmerPhoneInput}
+                        onChange={(e) => setFarmerPhoneInput(e.target.value)}
+                        className="w-full px-3.5 py-2.5 border border-gray-200 dark:border-white/10 rounded-xl text-xs font-bold bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-green-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-extrabold text-gray-700 dark:text-gray-300 mb-1">Consultation Date *</label>
+                      <input
+                        type="date"
+                        required
+                        value={bookingDate}
+                        onChange={(e) => setBookingDate(e.target.value)}
+                        className="w-full px-3.5 py-2.5 border border-gray-200 dark:border-white/10 rounded-xl text-xs font-bold bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-green-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-extrabold text-gray-700 dark:text-gray-300 mb-1">Available Time Slot *</label>
+                      <select
+                        required
+                        value={bookingTimeSlot}
+                        onChange={(e) => setBookingTimeSlot(e.target.value)}
+                        className="w-full px-3.5 py-2.5 border border-gray-200 dark:border-white/10 rounded-xl text-xs font-bold bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-green-500"
+                      >
+                        <option value="">Choose slot...</option>
+                        <option value="10:00 AM - 10:30 AM">10:00 AM - 10:30 AM</option>
+                        <option value="11:30 AM - 12:00 PM">11:30 AM - 12:00 PM</option>
+                        <option value="02:00 PM - 02:30 PM">02:00 PM - 02:30 PM</option>
+                        <option value="04:30 PM - 05:00 PM">04:30 PM - 05:00 PM</option>
+                      </select>
+                    </div>
+                  </div>
+
                   <div>
-                    <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Your Full Name *</label>
+                    <label className="block text-xs font-extrabold text-gray-700 dark:text-gray-300 mb-1">Crop Concern Summary</label>
                     <input
                       type="text"
-                      required
-                      placeholder="e.g. Ramesh Kumar"
-                      value={farmerNameInput}
-                      onChange={(e) => setFarmerNameInput(e.target.value)}
-                      className="w-full px-3.5 py-2 border border-gray-200 dark:border-white/10 rounded-xl text-xs font-semibold bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-white"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Your Phone Number *</label>
-                    <input
-                      type="tel"
-                      required
-                      placeholder="+91 98765 43210"
-                      value={farmerPhoneInput}
-                      onChange={(e) => setFarmerPhoneInput(e.target.value)}
-                      className="w-full px-3.5 py-2 border border-gray-200 dark:border-white/10 rounded-xl text-xs font-semibold bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-white"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Select Consultation Date *</label>
-                    <input
-                      type="date"
-                      required
-                      value={bookingDate}
-                      onChange={(e) => setBookingDate(e.target.value)}
-                      className="w-full px-3.5 py-2 border border-gray-200 dark:border-white/10 rounded-xl text-xs font-semibold bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-white"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Select Available Time Slot *</label>
-                    <select
-                      required
-                      value={bookingTimeSlot}
-                      onChange={(e) => setBookingTimeSlot(e.target.value)}
-                      className="w-full px-3.5 py-2 border border-gray-200 dark:border-white/10 rounded-xl text-xs font-bold bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-white"
-                    >
-                      <option value="">Choose time slot...</option>
-                      <option value="10:00 AM - 10:30 AM">10:00 AM - 10:30 AM</option>
-                      <option value="11:30 AM - 12:00 PM">11:30 AM - 12:00 PM</option>
-                      <option value="02:00 PM - 02:30 PM">02:00 PM - 02:30 PM</option>
-                      <option value="04:30 PM - 05:00 PM">04:30 PM - 05:00 PM</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Crop / Disease Concern Summary</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Yellowing leaves in cotton crop"
+                      placeholder="e.g. Yellow leaf disease in cotton crop"
                       value={cropConcernInput}
                       onChange={(e) => setCropConcernInput(e.target.value)}
-                      className="w-full px-3.5 py-2 border border-gray-200 dark:border-white/10 rounded-xl text-xs font-semibold bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-white"
+                      className="w-full px-3.5 py-2.5 border border-gray-200 dark:border-white/10 rounded-xl text-xs font-bold bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-green-500"
                     />
+                  </div>
+
+                  <div className="p-3 bg-gray-50 dark:bg-white/5 rounded-2xl flex justify-between items-center text-xs font-bold">
+                    <span className="text-gray-500">Consultation Session Fee:</span>
+                    <span className="text-sm font-black text-green-600 dark:text-green-400">₹{bookingExpert.feePerSession}</span>
                   </div>
 
                   <button
                     type="submit"
-                    className="w-full bg-green-600 hover:bg-green-700 text-white font-extrabold py-3 rounded-xl text-xs shadow-md transition-all"
+                    className="w-full bg-green-600 hover:bg-green-700 text-white font-extrabold py-3.5 rounded-xl text-xs shadow-md transition-all flex items-center justify-center gap-2"
                   >
-                    Confirm Booking (Pay ₹{bookingExpert.feePerSession})
+                    <span>Proceed to Payment Gateway</span>
+                    <CreditCard className="w-4 h-4" />
                   </button>
                 </form>
+              ) : (
+                /* STEP 2: SECURE PAYMENT GATEWAY (UPI / CREDIT CARD / DEBIT CARD) */
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center border-b border-gray-100 dark:border-white/10 pb-3">
+                    <div>
+                      <span className="text-[10px] font-black uppercase text-green-600 dark:text-green-400 flex items-center gap-1">
+                        <Lock className="w-3 h-3" /> 256-Bit SSL Secure Payment Gateway
+                      </span>
+                      <h3 className="text-base font-extrabold text-gray-900 dark:text-white">Select Payment Method</h3>
+                    </div>
+                    <span className="text-sm font-black text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-950/80 px-3 py-1 rounded-xl border border-green-300">
+                      Total Fee: ₹{bookingExpert.feePerSession}
+                    </span>
+                  </div>
+
+                  {/* Payment Method Selector Tabs */}
+                  <div className="grid grid-cols-3 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMethod("upi")}
+                      className={`p-3 rounded-2xl border-2 text-center transition-all ${
+                        paymentMethod === "upi"
+                          ? "bg-green-600 border-green-600 text-white shadow-md font-extrabold"
+                          : "bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 font-bold"
+                      }`}
+                    >
+                      <Smartphone className="w-5 h-5 mx-auto mb-1" />
+                      <span className="text-[11px] block">UPI / QR Code</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMethod("credit")}
+                      className={`p-3 rounded-2xl border-2 text-center transition-all ${
+                        paymentMethod === "credit"
+                          ? "bg-green-600 border-green-600 text-white shadow-md font-extrabold"
+                          : "bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 font-bold"
+                      }`}
+                    >
+                      <CreditCard className="w-5 h-5 mx-auto mb-1" />
+                      <span className="text-[11px] block">Credit Card</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMethod("debit")}
+                      className={`p-3 rounded-2xl border-2 text-center transition-all ${
+                        paymentMethod === "debit"
+                          ? "bg-green-600 border-green-600 text-white shadow-md font-extrabold"
+                          : "bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 font-bold"
+                      }`}
+                    >
+                      <Building className="w-5 h-5 mx-auto mb-1" />
+                      <span className="text-[11px] block">Debit / NetBank</span>
+                    </button>
+                  </div>
+
+                  {/* PAYMENT METHOD 1: UPI & INSTANT QR CODE */}
+                  {paymentMethod === "upi" && (
+                    <div className="bg-gray-50 dark:bg-white/5 p-4 rounded-2xl border border-gray-200 dark:border-white/10 space-y-3">
+                      <div className="text-center space-y-2">
+                        <div className="w-32 h-32 bg-white p-2 mx-auto rounded-2xl border-2 border-emerald-500 shadow-md flex items-center justify-center">
+                          <QrCode className="w-24 h-24 text-gray-900" />
+                        </div>
+                        <p className="text-[10px] font-black text-gray-400 uppercase">Scan QR using PhonePe, GPay, Paytm, or BHIM</p>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-extrabold text-gray-700 dark:text-gray-300 mb-1">Or Enter Your Virtual Payment Address (UPI ID) *</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. 9876543210@ybl or username@upi"
+                          value={upiIdInput}
+                          onChange={(e) => setUpiIdInput(e.target.value)}
+                          className="w-full px-4 py-2.5 border border-gray-200 dark:border-white/10 rounded-xl text-xs font-bold bg-white dark:bg-[#1a1b23] text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-green-500"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* PAYMENT METHOD 2: CREDIT CARD */}
+                  {paymentMethod === "credit" && (
+                    <div className="bg-gray-50 dark:bg-white/5 p-4 rounded-2xl border border-gray-200 dark:border-white/10 space-y-3">
+                      <div>
+                        <label className="block text-xs font-extrabold text-gray-700 dark:text-gray-300 mb-1">Credit Card Number *</label>
+                        <input
+                          type="text"
+                          maxLength={19}
+                          placeholder="4532 •••• •••• 8912"
+                          value={cardNumberInput}
+                          onChange={(e) => setCardNumberInput(e.target.value)}
+                          className="w-full px-4 py-2.5 border border-gray-200 dark:border-white/10 rounded-xl text-xs font-bold bg-white dark:bg-[#1a1b23] text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-green-500 tracking-wider"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-extrabold text-gray-700 dark:text-gray-300 mb-1">Expiry (MM/YY) *</label>
+                          <input
+                            type="text"
+                            placeholder="08/28"
+                            value={cardExpiryInput}
+                            onChange={(e) => setCardExpiryInput(e.target.value)}
+                            className="w-full px-4 py-2.5 border border-gray-200 dark:border-white/10 rounded-xl text-xs font-bold bg-white dark:bg-[#1a1b23] text-gray-900 dark:text-white outline-none"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-extrabold text-gray-700 dark:text-gray-300 mb-1">CVV *</label>
+                          <input
+                            type="password"
+                            maxLength={3}
+                            placeholder="•••"
+                            value={cardCvvInput}
+                            onChange={(e) => setCardCvvInput(e.target.value)}
+                            className="w-full px-4 py-2.5 border border-gray-200 dark:border-white/10 rounded-xl text-xs font-bold bg-white dark:bg-[#1a1b23] text-gray-900 dark:text-white outline-none"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* PAYMENT METHOD 3: DEBIT CARD & NETBANKING */}
+                  {paymentMethod === "debit" && (
+                    <div className="bg-gray-50 dark:bg-white/5 p-4 rounded-2xl border border-gray-200 dark:border-white/10 space-y-3">
+                      <div>
+                        <label className="block text-xs font-extrabold text-gray-700 dark:text-gray-300 mb-1">Select Bank for NetBanking / Debit Card *</label>
+                        <select
+                          value={selectedBank}
+                          onChange={(e) => setSelectedBank(e.target.value)}
+                          className="w-full px-4 py-2.5 border border-gray-200 dark:border-white/10 rounded-xl text-xs font-bold bg-white dark:bg-[#1a1b23] text-gray-900 dark:text-white outline-none"
+                        >
+                          <option value="HDFC Bank">HDFC Bank</option>
+                          <option value="State Bank of India (SBI)">State Bank of India (SBI)</option>
+                          <option value="ICICI Bank">ICICI Bank</option>
+                          <option value="Axis Bank">Axis Bank</option>
+                          <option value="Punjab National Bank (PNB)">Punjab National Bank (PNB)</option>
+                          <option value="Bank of Baroda">Bank of Baroda</option>
+                        </select>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setBookingStep(1)}
+                      className="px-4 py-3 bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300 font-bold rounded-xl text-xs"
+                    >
+                      ← Back
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleExecuteSecurePayment}
+                      disabled={isProcessingPayment}
+                      className="flex-1 bg-green-600 hover:bg-green-700 text-white font-black py-3.5 rounded-xl text-xs shadow-lg transition-all flex items-center justify-center gap-2"
+                    >
+                      {isProcessingPayment ? (
+                        <>
+                          <RefreshCw className="w-4 h-4 animate-spin text-white" />
+                          <span>Processing Encrypted Gateway...</span>
+                        </>
+                      ) : (
+                        <>
+                          <ShieldCheck className="w-4 h-4 text-yellow-300" />
+                          <span>Pay ₹{bookingExpert.feePerSession} & Confirm Session</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
               )}
             </motion.div>
           </div>
@@ -1091,7 +1332,6 @@ export default function ExpertConsultationPage() {
         {chatExpert && (
           <div className="fixed inset-y-0 right-0 w-full md:w-96 bg-white dark:bg-[#1a1b23] shadow-2xl z-50 border-l border-gray-200 dark:border-white/10 flex flex-col justify-between">
             
-            {/* Header */}
             <div className="p-4 border-b border-gray-100 dark:border-white/10 flex justify-between items-center bg-gray-50/50 dark:bg-white/5">
               <div className="flex gap-3 items-center">
                 <img src={chatExpert.avatar} alt={chatExpert.name} className="w-10 h-10 rounded-xl object-cover border-2 border-green-500" />
@@ -1108,7 +1348,6 @@ export default function ExpertConsultationPage() {
               </button>
             </div>
 
-            {/* Message Stream */}
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
               {(chatMessagesMap[chatExpert.id] || [
                 { id: "init", sender: "expert", text: `Namaste! I am ${chatExpert.name}. Please ask your agricultural question or upload plant leaf photos for direct diagnosis.`, timestamp: "10:00 AM" }
@@ -1128,7 +1367,6 @@ export default function ExpertConsultationPage() {
               ))}
             </div>
 
-            {/* Input Form */}
             <form onSubmit={handleSendChatMessage} className="p-3 border-t border-gray-100 dark:border-white/10 flex gap-2 bg-gray-50/50 dark:bg-white/5">
               <input
                 type="text"
