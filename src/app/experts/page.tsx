@@ -1261,7 +1261,7 @@ export default function ExpertConsultationPage() {
                       }`}
                     >
                       <Smartphone className="w-5 h-5 mx-auto mb-1" />
-                      <span className="text-[11px] block">PhonePe / UPI</span>
+                      <span className="text-[11px] block">UPI ID</span>
                     </button>
 
                     <button
@@ -1331,12 +1331,12 @@ export default function ExpertConsultationPage() {
                       >
                         <div>
                           <label className="block text-xs font-extrabold text-gray-700 dark:text-gray-300 mb-1">
-                            Enter Your PhonePe Mobile Number / UPI ID * <span className="text-[10px] text-purple-600 font-normal">(Press Enter to Pay)</span>
+                            Enter Your UPI ID / Mobile Number * <span className="text-[10px] text-purple-600 font-normal">(Press Enter to Pay)</span>
                           </label>
                           <input
                             type="text"
                             required
-                            placeholder="e.g. 9876543210 or username@ybl"
+                            placeholder="e.g. 9876543210@ybl, user@okaxis, or phone number"
                             value={upiIdInput}
                             onChange={(e) => setUpiIdInput(e.target.value)}
                             className="w-full px-4 py-3 border-2 border-purple-500 rounded-xl text-xs font-black bg-white dark:bg-[#1a1b23] text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-purple-600 tracking-wide"
@@ -1347,7 +1347,7 @@ export default function ExpertConsultationPage() {
                           type="submit"
                           className="w-full py-3.5 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-black flex items-center justify-center gap-2 shadow-lg transition-all"
                         >
-                          <span>💜 Pay via PhonePe / UPI App</span>
+                          <span>💜 Pay via UPI ID</span>
                           <ArrowRight className="w-4 h-4" />
                         </button>
                       </form>
